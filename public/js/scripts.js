@@ -14,13 +14,13 @@ $('#summernote').summernote({
     onImageUpload: function(files) {
       for (let file of files) {
         const objectURL = URL.createObjectURL(file);
-        imagesToUpload.push({ file, placeholder: objectURL }); // Thêm ảnh mới vào danh sách
-        $('#summernote').summernote('insertImage', objectURL); // Hiển thị ảnh trong editor
+        imagesToUpload.push({ file, placeholder: objectURL }); // Add new images to list
+        $('#summernote').summernote('insertImage', objectURL); // Show image in editor
       }
     },
     onInit: function() {
       const content = $('#summernote').summernote('code');
-      // Lấy danh sách ảnh đã có từ nội dung bài viết và lưu vào `existingImages`
+      // Save existing image URLs from the article content
       $(content)
         .find('img')
         .each((_, img) => {
@@ -30,7 +30,7 @@ $('#summernote').summernote({
   }
 });
 
-// Hàm lưu bài viết
+// Save article
 $('#save-button').on('click', function() {
   const title = $('#title').val().trim();
   const summary = $('#summary').val().trim();
@@ -39,33 +39,35 @@ $('#save-button').on('click', function() {
 
   let content = $('#summernote').summernote('code');
 
-  toggleLoading(true); // Hiển thị overlay loading
+  toggleLoading(true); // Show loading overlay
 
-  // Chỉ upload ảnh chưa có trên Cloud
+  // Upload only images not already in cloud
   const uploadPromises = imagesToUpload.map(({ file, placeholder }) => 
     uploadToCloud(file).then(url => ({ placeholder, url }))
   );
 
   Promise.all(uploadPromises)
     .then(results => {
-      // Thay thế các ảnh tải lên bằng URL từ Cloud
+      // Replace uploaded image placeholders with actual URLs from Cloud
       results.forEach(({ placeholder, url }) => {
         content = content.replace(new RegExp(placeholder, "g"), url);
       });
       return saveArticle({ title, content, summary, category, tags });
     })
     .then(() => {
-      alert('Article saved successfully!');
-      imagesToUpload.length = 0; // Xóa danh sách ảnh sau khi lưu thành công
+      // SweetAlert2 success message
+      Swal.fire('Success!', 'Article saved successfully!', 'success');
+      imagesToUpload.length = 0; // Clear image list after successful save
     })
     .catch(error => {
       console.error("Error saving article:", error);
-      alert('Error saving article.');
+      // SweetAlert2 error message
+      Swal.fire('Error', 'Error saving article.', 'error');
     })
-    .finally(() => toggleLoading(false)); // Ẩn overlay loading
+    .finally(() => toggleLoading(false)); // Hide loading overlay
 });
 
-// Hàm cập nhật bài viết
+// Update article
 $('#update-button').on('click', function() {
   const id = +$('#id').val().trim();
   const title = $('#title').val().trim() || "";
@@ -74,9 +76,9 @@ $('#update-button').on('click', function() {
   const tags = $('#tags').val().trim() || "";
   let content = $('#summernote').summernote('code');
 
-  toggleLoading(true); // Hiển thị overlay loading
+  toggleLoading(true); // Show loading overlay
 
-  // Chỉ upload ảnh chưa có trên Cloud
+  // Upload only images not already in cloud
   const uploadPromises = imagesToUpload.map(({ file, placeholder }) => 
     uploadToCloud(file).then(url => ({ placeholder, url }))
   );
@@ -89,24 +91,26 @@ $('#update-button').on('click', function() {
       return updateArticle({ id, title, content, summary, category, tags });
     })
     .then(() => {
-      alert('Article updated successfully!');
-      imagesToUpload.length = 0; // Xóa danh sách ảnh sau khi cập nhật thành công
+      // SweetAlert2 success message
+      Swal.fire('Success!', 'Article updated successfully!', 'success');
+      imagesToUpload.length = 0; // Clear image list after successful update
     })
     .catch(error => {
       console.error("Error updating article:", error);
-      alert('Error updating article.');
+      // SweetAlert2 error message
+      Swal.fire('Error', 'Error updating article.', 'error');
     })
-    .finally(() => toggleLoading(false)); // Ẩn overlay loading
+    .finally(() => toggleLoading(false)); // Hide loading overlay
 });
 
-// Hàm tải ảnh lên Cloud
+// Upload image to Cloud
 function uploadToCloud(file) {
   return new Promise((resolve, reject) => {
     const formData = new FormData();
     formData.append('file', file);
 
     $.ajax({
-      url: '/upload-image', // Endpoint để tải ảnh lên
+      url: '/upload-image', // Endpoint to upload image
       method: 'POST',
       data: formData,
       processData: false,
@@ -117,7 +121,7 @@ function uploadToCloud(file) {
   });
 }
 
-// Hàm lưu bài viết
+// Save article data
 async function saveArticle(articleData) {
   try {
     const response = await fetch('/writer/save-article', {
@@ -133,7 +137,7 @@ async function saveArticle(articleData) {
   }
 }
 
-// Hàm cập nhật bài viết
+// Update article data
 async function updateArticle(articleData) {
   try {
     const response = await fetch('/writer/update-article', {

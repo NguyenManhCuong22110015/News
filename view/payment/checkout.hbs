@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.2/dist/sweetalert2.min.css">
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.2/dist/sweetalert2.min.js"></script>
+
+  <style>
+    /* Global styles */
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .strong-border{
+        border: 1px solid black  ;
+    }
+    /* Checkout box */
+    .checkout-box h2 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      
+    }
+
+    .checkout-box h5 {
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    .card {
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card.selected {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      border-color: #007bff;
+      background-color: rgb(255, 205, 112);
+    }
+
+    /* Order summary styles */
+    .order-summary {
+      background-color: #f9f9f9;
+      padding: 20px;
+      border: 1px solid #000000;
+      border-radius: 8px;
+    }
+
+    .order-summary h5 {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+
+    .order-summary .line-item {
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .order-summary .total {
+      font-size: 1rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+    }
+
+    .order-summary .small-text {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .order-summary a {
+      text-decoration: none;
+      font-size: 0.85rem;
+      color: #007bff;
+      
+    }
+
+    .order-summary a:hover {
+      text-decoration: underline;
+    }
+
+    .you-save {
+      color: green;
+      font-weight: bold;
+    }
+     .custom-input {
+    border: none; /* Ẩn viền */
+    background-color: transparent; /* Làm nền trong suốt */
+    font-size: 1rem; /* Cỡ chữ giống văn bản */
+    color: #212529; /* Màu chữ */
+    width: 50vw; /* Chỉ rộng theo nội dung */
+    outline: none; /* Xóa hiệu ứng viền khi nhấn */
+    cursor: text; 
+  }
+
+  .custom-input:focus {
+    outline: none; 
+  }
+  </style>
+</head>
+<body>
+  <div class="container my-5">
+    <div class="row">
+     
+      <div class="col-md-8">
+        <div class="checkout-box mx-auto p-4  rounded shadow-sm strong-border" style="max-width: 100%;">
+          <h2 class="mb-4">Checkout</h2>
+
+          <!-- Account Section -->
+         <div class="mb-4">
+            <h5>1. Account</h5>
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- Input thay thế -->
+                <input 
+                type="text" 
+                value="22110015@student.hcmute.edu.vn" 
+                class="custom-input" 
+                 
+                />
+                <a href="#" class="text-decoration-none">Edit</a>
+            </div>
+            <hr>
+            </div>
+
+          <!-- Payment Section -->
+          <div class="mb-4">
+            <h5>2. Payment</h5>
+            <form id="paymentForm">
+                  <div class="card mb-2" data-method="VNPay">
+                    <div class="card-body">
+                    VNPay ( NCB )
+                    </div>
+                </div>
+              <div class="card mb-2" data-method="Credit or Debit Card">
+                <div class="card-body">
+                  Credit or Debit Card
+                </div>
+              </div>
+              <div class="card mb-2" data-method="PayPal">
+                <div class="card-body">
+                  PayPal
+                </div>
+              </div>
+              <div class="card mb-2" data-method="Cash on Delivery">
+                <div class="card-body">
+                  Cash on Delivery
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <button id="continueButton" class="btn btn-primary w-100">Continue</button>
+          <div class="text-center mt-3 small text-muted">
+            <i class="bi bi-lock"></i> End-to-end encrypted
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Order Summary -->
+      <div class="col-md-4 ">
+        <div class="order-summary ">
+          <h5>Order Summary</h5>
+          <p><strong>All Access subscription</strong></p>
+          <p class="small-text">Unlimited digital access to The New York Times.</p>
+          
+          <div class="line-item">
+            <span>Weekly price</span>
+            <b style="color:red" >$0.5 = 10.000VND</b>
+          </div>
+         
+          <p class="small-text">
+                Welcome offer price until: <strong id="offerDate"></strong>
+            </p>
+          <hr>
+          
+          <p class="you-save">You save $11.00</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const oneWeekLater = new Date(); // Get today's date
+    oneWeekLater.setDate(oneWeekLater.getDate() + 7); // Add 7 days
+
+    // Format the date as "Month Day, Year" (e.g., November 26, 2024)
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = oneWeekLater.toLocaleDateString('en-US', options);
+
+    // Set the formatted date into the <strong> element with ID "offerDate"
+    document.getElementById('offerDate').textContent = formattedDate;
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.card');
+    let selectedCard = null;
+
+    // Add click event to each card
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        if (selectedCard) {
+          selectedCard.classList.remove('selected');
+        }
+        if (selectedCard !== card) {
+          card.classList.add('selected');
+          selectedCard = card;
+        } else {
+          selectedCard = null; 
+        }
+      });
+    });
+
+    // Handle the continue button click
+    document.getElementById('continueButton').addEventListener('click', async () => {
+      if (selectedCard) {
+        const method = selectedCard.getAttribute('data-method');
+        const emailInput = document.querySelector('.custom-input'); 
+        const email = emailInput.value.trim(); 
+        const date = document.querySelector('#offerDate').textContent;
+
+        if (!email || !isValidEmail(email)) {
+          // Use SweetAlert2 for invalid email
+          Swal.fire('Invalid Email', 'Please enter a valid email address.', 'error');
+          return; // Stop if the email is invalid
+        }
+
+        if (method === 'VNPay') {
+          // Create payload only for VNPay method
+          const payload = {
+            amount: 10000,
+            bankCode: 'NCB',
+            orderDescription: '',
+            email: email,
+            date: date
+          };
+
+          try {
+            // Send POST request to the server
+            const response = await fetch('/api/payment/create_payment_url', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            // Parse response data from server
+            const data = await response.json();
+
+            if (data.status === 'OK' && data.url) {
+              // Redirect to the payment URL
+              window.location.href = data.url;
+            } else {
+              // Use SweetAlert2 for failed payment URL generation
+              Swal.fire('Error', 'Failed to generate payment URL. Please try again.', 'error');
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            // Use SweetAlert2 for general error
+            Swal.fire('Error', 'An error occurred while processing your request.', 'error');
+          }
+        } else {
+          // Use SweetAlert2 for unsupported method
+          Swal.fire('Error', `${method} does not support VNPay.`, 'error');
+        }
+      } else {
+        // Use SweetAlert2 for missing payment method selection
+        Swal.fire('Error', 'Please select a payment method.', 'error');
+      }
+    });
+
+    // Email validation function
+    function isValidEmail(email) {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      return emailRegex.test(email);
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -10,6 +10,9 @@ import googlePassport from './authentication/google.js';
 import router from './routes/index.js';
 import githubPassport from './authentication/github.js';
 import flash from 'connect-flash';
+import adminRoute from  './routes/adminRoute.js';
+import writerRoute from  './routes/writerRoute.js';
+import authLogin from  './routes/authLoginRoute.js';
 const app = express()
 
 
@@ -38,6 +41,7 @@ const app = express()
   app.use(flash());
   app.use((req, res, next) => {
     res.locals.errorMessage = req.flash('error');
+    res.locals.successMessage = req.flash('success');
     next();
 });
   
@@ -54,24 +58,28 @@ const app = express()
   app.use('/', router);
   
 
-import authLogin from  './routes/authLoginRoute.js';
+
 
 app.use('/auth', authLogin);
 
-import writerRoute from  './routes/writerRoute.js';
-
 app.use('/writer', writerRoute);
 
-import adminRoute from  './routes/adminRoute.js';
-
 app.use('/admin', adminRoute);
+
+
+import vnpay from "./routes/payment/vnpay.js"
+
+app.use('/api/payment', vnpay);
+
+import payment from "./routes/payment/payment.js"
+
+app.use('/payment', payment);
+
+
 
 app.get("/", (req, res) => {
     res.send("Hello word")
 })
-
-
-
 
 
 app.listen(3000, ()  => {

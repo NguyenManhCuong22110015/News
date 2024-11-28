@@ -56,7 +56,7 @@ router.post('/login', async (req, res) => { // Thêm async
   } catch (error) {
     console.error('Error logging in:', error);
     req.session.errorMessage = 'Internal server error';
-    res.redirect('/auth/login');
+    res.redirect('/login');
   }
 });
 
@@ -70,24 +70,18 @@ router.post('/signup', async (req, res) => {
 
     if (existingUser === null) {
       req.flash('error', 'Account already exists. Please log in.');
-      return res.redirect('/login');
+      return res.redirect('/login'); 
     }
-    const user = await authService.login(email, password); 
-    if (!user) {
-      req.flash('error', 'Invalid email or password');
-      return res.redirect('/login');
-    }
-    req.user = user;
-    req.session.userId = user.id;
-    req.session.role = user.role;
-    res.cookie('userRole', user.role, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
-    res.redirect('/'); 
+    req.flash('success', 'Account created successfully. Please log in.');
+    res.redirect('/login'); 
+
   } catch (error) {
     console.error('Error during signup:', error);
     req.flash('error', 'Internal server error');
-    res.redirect('/auth/login');
+    res.redirect('/login');
   }
 });
+
 
 
 router.get('/google',googlePassport.authenticate('google', { scope: ['profile', 'email'] ,prompt: 'select_account' }));

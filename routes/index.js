@@ -3,9 +3,8 @@ import { Router } from 'express';
 import sendConfirmationEmail from '../service/mailService.js';
 import upload from '../service/CloudinaryService.js';
 import db from '../utils/db.js'
-import newsPaperService from '../service/news-paperService.js';
-import saveUserToDatabase from '../service/userService.js';
-
+import authService from '../service/authService.js';
+import  Swal from 'sweetalert2';
 
 const router = Router();
 
@@ -20,12 +19,17 @@ const roleBasedAccess = (requiredRole) => (req, res, next) => {
 
 
 
-
+router.get('/success', (req,res) => { res.render('success-Payment', {layout: false} )
+});
 
 
 
 router.get('/login', (req,res) => { res.render('login', {layout: false} )
 });
+
+router.get('/reset-password', (req,res) => { res.render('reset-password', {layout: false} )
+});
+
 
 
 router.get('/logout', (req, res, next) => {
@@ -62,15 +66,36 @@ router.get('/', (req, res) => {
   `);
 });
 
-
-router.post('/send-confirmation', async (req, res) => {
+router.post('/send-email-getCode', async (req, res) => {
   const { email } = req.body;
-  const confirmationCode = Math.floor(100000 + Math.random() * 900000); // Mã 6 chữ số
+  const confirmationCode = Math.floor(100000 + Math.random() * 900000);
+  req.session.otp = {
+    email,
+    code: confirmationCode,
+    timestamp: Date.now()
+  };
   await sendConfirmationEmail(email, confirmationCode);
-  res.status(200).json({ message: 'Email xác nhận đã được gửi', confirmationCode });
+  res.status(200).json({ message: 'Email xác nhận đã được gửi.' });
 });
 
 
+router.post('/verify-otp', (req, res) => {
+  const { email, otp } = req.body;
+  const sessionOtp = req.session.otp;
+  if (!sessionOtp || sessionOtp.email !== email || sessionOtp.code.toString() !== otp.toString()) {
+    return res.status(400).json({ message: 'OTP không hợp lệ.' });
+  }
+  
+  const otpExpirationTime = 1800000; 
+  const otpAge = Date.now() - sessionOtp.timestamp;
+
+  if (otpAge > otpExpirationTime) {
+    delete req.session.otp; 
+    return res.status(400).json({ message: 'OTP đã hết hạn.' });
+  }
+  delete req.session.otp;
+  res.status(200).json({ message: 'OTP xác nhận thành công.' });
+});
 
 router.post('/upload-image', upload.single('file'), (req, res) => {
   if (!req.file) {
@@ -79,8 +104,22 @@ router.post('/upload-image', upload.single('file'), (req, res) => {
   res.send({ imageUrl: req.file.path }); 
 });
 
+router.post('/reset-password', async (req, res) => {
+  const { email, newPassword } = req.body;  // Get the new password from the request body
 
+  if (!newPassword) {
+    return res.status(400).json({ message: 'Password is required' });
+  }
 
+  try {
+    await authService.resetPassword(email,newPassword);
+    res.json({ success: true, message: 'Password successfully reset' });
+    
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    res.status(500).json({ success: false, message: 'An error occurred while resetting password' });
+  }
+});
 
 
 
