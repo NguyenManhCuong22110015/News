@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News Card</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .card-custom {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 10px 0;
+    }
+    .card-custom img {
+        max-width: 250px;
+      width: 200px;
+      height: auto;
+      max-height: 200px;
+      border-radius: 5px;
+      margin-right: 20px;
+    }
+    .card-custom .card-body {
+      flex: 1;
+    }
+    .card-custom .card-body h5 {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+    .card-custom .card-body p {
+      font-size: 1rem;
+      color: #555;
+    }
+    .card-custom .card-footer {
+      font-size: 0.875rem;
+      color: #777;
+    }
+    .search-box {
+        max-width: 900px;
+        margin: 20px auto;
+    }
+    .btn-clear {
+        border: none;
+        background: none;
+        color: gray;
+    }
+    .btn-clear:hover {
+        color: black;
+        text-decoration: none;
+    }
+    .btn-search {
+        background-color: #e60000;
+        color: white;
+    }
+  </style>
+</head>
+<body>
+
+
+    <div class="search-box">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search here..." aria-label="Search input">
+            <button class="btn btn-clear" onclick="clearInput()">Clear</button>
+            <button class="btn btn-search"><i class="bi bi-search"></i></button>
+        </div>
+    </div>
+    <hr/>
+<div class="container">
+  <div class="card-custom">
+    <img src="https://via.placeholder.com/150" alt="Nvidia Logo">
+    <div class="card-body">
+      <h5 class="card-title">China is probing Nvidia in a major escalation of its chip war with the US </h5>
+      <p class="card-text">China has opened an antitrust investigation into Nvidia, an American chipmaker and the world’s largest provider of processors that power artificial intelligence, according to China Central Television.</p>
+    </div>
+    <div class="card-footer text-muted">
+      Dec 9, 2024
+    </div>
+  </div>
+</div>
+<div class="container">
+    <div class="card-custom">
+      <img src="https://via.placeholder.com/150" alt="Nvidia Logo">
+      <div class="card-body">
+        <h5 class="card-title">China is probing Nvidia in a major escalation of its chip war with the US </h5>
+        <p class="card-text">China has opened an antitrust investigation into Nvidia, an American chipmaker and the world’s largest provider of processors that power artificial intelligence, according to China Central Television.</p>
+      </div>
+      <div class="card-footer text-muted">
+        Dec 9, 2024
+      </div>
+    </div>
+  </div>
+
+
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+<!-- Bootstrap JS (Optional) -->
+<script>
+    function clearInput() {
+        document.querySelector('.search-box input').value = '';
+    }
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -13,6 +13,10 @@ import flash from 'connect-flash';
 import adminRoute from  './routes/adminRoute.js';
 import writerRoute from  './routes/writerRoute.js';
 import authLogin from  './routes/authLoginRoute.js';
+import articleRoute from './routes/articleRoute.js';
+
+
+
 const app = express()
 
 
@@ -57,7 +61,7 @@ const app = express()
   app.use(githubPassport.session());
   app.use('/', router);
   
-
+  app.use('/article', articleRoute);
 
 
 app.use('/auth', authLogin);
