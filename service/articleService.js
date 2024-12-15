@@ -7,7 +7,7 @@ export default {
         
         const articleIds = list.map(item => item.article_id);
 
-        return db('articles').whereIn('id', articleIds);
+        return db('articles').whereIn('id', articleIds).orderBy('id', 'desc');;
     },
 
     getArticleByID(id) {
@@ -57,6 +57,17 @@ export default {
       },
       async findPageByCatId(id, limit, offset) {
         return db('articles').where('category_id', id).limit(limit).offset(offset);
-      }
+      },
+      async findChildCatById(id) {
+        return db('category as child')
+          .select('child.*', 'parent.name as parent_name')
+          .leftJoin('category as parent', 'child.parent_id', 'parent.id')
+          .where('child.parent_id', id);
+      },
+      async findCatById(id) {
+        return db('category')
+            .where('id', id)
+            .first();
+    },
     
 }

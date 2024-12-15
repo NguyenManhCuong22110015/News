@@ -17,7 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
     <!-- SweetAlert2 CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.2/dist/sweetalert2.min.css">
-
+<link rel="stylesheet" href="/css/footer.css">
 <!-- SweetAlert2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.2/dist/sweetalert2.min.js"></script>
 
@@ -41,18 +41,20 @@
                 </div>
             </div>
         </div>
-    <div class="container mt-5" style="">
+    <div class="container mt-5 mb-5" style="">
          
-        <h1 class="text-center mb-4">Newspaper Editor</h1>
+        <h1 class="text-center mb-4" style="color: black;" >Newspaper Editor</h1>
         
-        <input type="text" id="title" class="form-control mb-3" placeholder="Enter article title" value="{{data.title}}">
+        <label>Title</label>
 
+        <input type="text" id="title" class="form-control mb-3" placeholder="Enter article title" value="{{data.title}}">
+         <label>Summary</label>
         <textarea id="summary" class="form-control mb-3" rows="2" placeholder="Enter article summary">{{data.summary}}</textarea>
 
         <input readonly value="{{data.id}}" id="id" style="display: none" />
-
+        <label  >Content</label>
         <div id="summernote"></div>
-
+         <label class="mt-5" >Category</label>
         <select id="category" class="form-control mb-3">
             <option value="">Select category</option>
             <option value="Politics" selected>Politics</option>
@@ -60,11 +62,55 @@
             <option value="Technology">Technology</option>
             <option value="Health">Health</option>
         </select>
-        
+         <label  >Tags</label>
         <input type="text" id="tags" class="form-control mb-3" placeholder="Enter tags (comma-separated)" value="news, updates">
-        <button id="update-button" class="btn btn-primary mt-3">Save Article</button>
+        <button id="update-button" class="btn btn-primary mt-3 mb-5">Save Article</button>
     </div>
+<div class="footer">
+  <div class="navbar">
+    <a href="https://edition.cnn.com" class="logo-link">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/CNN.svg" alt="CNN Logo">
+    </a>
 
+    <div class="nav-content">
+      <div class="footer-links">
+        <a href="https://edition.cnn.com/videos" class="footer-link">Watch</a>
+        <a href="https://edition.cnn.com/audio" class="footer-link">Listen</a>
+        <a href="https://edition.cnn.com/videos/live" class="footer-link">Live TV</a>
+        <a style="color: white" >|</a>
+        <span  style="font-weight: bold; color: white">FOLLOW CNN</span>
+      </div>
+      
+      <div class="social-icons">
+        <a href="https://www.facebook.com/cnn/" class="social-link"><i class="fab fa-facebook"></i></a>
+  
+        <a href="https://www.instagram.com/CNN/" class="social-link"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.tiktok.com/@cnn?lang=en" class="social-link"><i class="fab fa-tiktok"></i></a>
+        <a href="https://www.linkedin.com/company/cnn" class="social-link"><i class="fab fa-linkedin"></i></a>
+      </div>
+      <div class="sign-font">
+        <a href ="https://edition.cnn.com/account/log-in" class="sign-link" style="font-weight: bold;">Sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="policy-links">
+      <a href="https://www.cnn.com/terms" class="footer-link">Terms of Use</a>
+      <a href="https://www.cnn.com/privacy" class="footer-link">Privacy Policy</a>
+      <a href="https://www.cnn.com/cookie-settings" class="footer-link">Cookie Settings</a>
+      <a href="https://www.cnn.com/adchoices" class="footer-link">Ad Choices</a>
+      <a href="https://www.cnn.com/accessibility" class="footer-link">Accessibility & CC</a>
+      <a href="https://www.cnn.com/about" class="footer-link">About</a>
+      <a href="https://www.cnn.com/newsletters" class="footer-link">Newsletters</a>
+      <a href="https://www.cnn.com/transcripts" class="footer-link">Transcripts</a>
+    </div>
+    <br/>
+    <br/>
+    <div>© 2024 Cable News Network. A Warner Bros. Discovery Company. All Rights Reserved.</div>
+    <div>CNN Sans ™ & © 2016 Cable News Network.</div>
+  </div>
+</div>
     <script>
         $(document).ready(function() {
             // Khởi tạo Summernote với dữ liệu mặc định

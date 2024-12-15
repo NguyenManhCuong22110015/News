@@ -178,7 +178,7 @@
                         <th>Title</th>
                         
                         <th>Summary</th>
-                        <th>Create At</th>
+                        
                         <th>Update At</th>
                         <th>Status</th>
                         <th scope="col">&nbsp</th>
@@ -192,10 +192,10 @@
                         <td>{{id}}</td>
                         <td>{{title}}</td>
                         <td>{{summary}}</td>
-                        <td>{{created_at}}</td>
+                        
                         <td>{{updated_at}}</td>
                          <td>
-                            <select class="status-dropdown" data-id="{{id}}">
+                            <select class="status-dropdown form-control parent-select" data-id="{{id}}">
                             <option value="Draft" {{#if (eq status 'draft')}}selected{{/if}}>Draft</option>
                             
                             <option value="Approved" {{#if (eq status 'Approved')}}selected{{/if}}>Approved</option>

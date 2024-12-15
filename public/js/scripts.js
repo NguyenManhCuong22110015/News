@@ -56,8 +56,20 @@ $('#save-button').on('click', function() {
     })
     .then(() => {
       // SweetAlert2 success message
-      Swal.fire('Success!', 'Article saved successfully!', 'success');
-      imagesToUpload.length = 0; // Clear image list after successful save
+      Swal.fire({
+        title: 'Success!',
+        text: 'Article saved successfully!',
+        icon: 'success',
+        showCancelButton: true,
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Back',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.dismiss === Swal.DismissReason.cancel) {
+            window.history.back();
+        }
+    });
+    imagesToUpload.length = 0; // Clear image list after successful save
     })
     .catch(error => {
       console.error("Error saving article:", error);
@@ -92,8 +104,20 @@ $('#update-button').on('click', function() {
     })
     .then(() => {
       // SweetAlert2 success message
-      Swal.fire('Success!', 'Article updated successfully!', 'success');
-      imagesToUpload.length = 0; // Clear image list after successful update
+      Swal.fire({
+        title: 'Success!',
+        text: 'Article updated successfully!',
+        icon: 'success',
+        showCancelButton: true,
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Back',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.dismiss === Swal.DismissReason.cancel) {
+            window.history.back();
+        }
+    });
+    imagesToUpload.length = 0; // Clear image list after successful update
     })
     .catch(error => {
       console.error("Error updating article:", error);

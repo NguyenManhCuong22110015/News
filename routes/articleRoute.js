@@ -53,19 +53,36 @@ router.put('/:id/status', async (req, res) => {
       });
     }
     
+    // Check current category type
+    const cat = await articleService.findCatById(id); 
+    let child_cat;
+    let parent_cat; // Declare variable here
 
-   
+    if (cat.parent_id) {
+        // Get sibling categories if this is a child
+        child_cat = await articleService.findChildCatById(cat.parent_id);
+        // For child category, use its own name
+        parent_cat = child_cat.find(c => c.id === parseInt(id))?.name || '';
+    } else {
+        // Get child categories if this is a parent
+        child_cat = await articleService.findChildCatById(id);
+        // For parent category, use its name
+        parent_cat = cat.name;
+    }
 
     const list = await articleService.findPageByCatId(id, limit, offset);
+
     res.render('articles/byCat', {
-      layout: false,
-      articles: list,
-      empty: list.length === 0,
-      pageNumbers: pageNumbers,
-      catId: id
+        is_parent: !cat.parent_id,
+        categories: child_cat,
+        parent_cat: parent_cat,
+        layout: "footer",
+        articles: list,
+        empty: list.length === 0,
+        pageNumbers: pageNumbers,
+        catId: id
     });
-  });
-  
+});
 
 
 export default router;

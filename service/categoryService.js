@@ -29,7 +29,23 @@ export default {
 
    patch(id,category){
        return db("category").where("id", id).update(category);
-   }
+   },
+    async getAll() {
+        return db('category as c1')
+            .leftJoin('category as c2', 'c1.parent_id', 'c2.id')
+            .select('c1.*', 'c2.name as parent_name');
+    },
+
+    async getAllParents() {
+        return db('category')
+            .where('parent_id', 0)
+            .select('*');
+    },
+    async updateParent(id, parent_id) {
+        return db('category')
+            .where('id', id)
+            .update({ parent_id });
+    }
 
 
 }

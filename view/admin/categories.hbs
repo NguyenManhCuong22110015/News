@@ -8,7 +8,8 @@
       <th scope="col">#</th>
       <th scope="col">Name</th>
       <th scope="col">Description</th>
-      
+      <th scope="col">Parent Category</th>
+      <th scope="col">&nbsp;</th>
       <th scope="col">Edit</th>
       <th scope="col">Delete</th>
     </tr>
@@ -20,8 +21,24 @@
         <th scope="row">{{id}}</th>
         <td>{{name}}</td>
         <td>{{description}}</td>
-        
-        <!-- Edit Category Button -->
+        <td>
+            {{#if parent_id}}
+                {{parent_name}}
+            {{else}}
+                Root Category
+            {{/if}}
+        </td>
+                <td>
+            <select class="form-control parent-select" data-id="{{id}}">
+                <option value="0" {{#unless parent_id}}selected{{/unless}}>None (Root)</option>
+                {{#each ../parents}}
+                    <option value="{{id}}" {{#if (eq ../parent_id id)}}selected{{/if}}>
+                        {{name}}
+                    </option>
+                {{/each}}
+            </select>
+        </td>
+              <!-- Edit Category Button -->
         <td>
           <a class="btn btn-success" href="/admin/categories/edit/{{id}}" aria-label="Edit">
             <i class='bx bxs-edit'></i>
@@ -64,4 +81,27 @@
       });
     });
   });
+  document.querySelectorAll('.parent-select').forEach(select => {
+    select.addEventListener('change', async function() {
+        const categoryId = this.dataset.id;
+        const newParentId = this.value;
+        
+        try {
+            const response = await fetch(`/admin/categories/updateParent/${categoryId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ parent_id: newParentId })
+            });
+            
+            if (response.ok) {
+                Swal.fire('Success', 'Parent category updated', 'success')
+                    .then(() => window.location.reload());
+            }
+        } catch (error) {
+            Swal.fire('Error', 'Failed to update parent category', 'error');
+        }
+    });
+});
 </script>

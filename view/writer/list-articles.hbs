@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookings</title>
+    <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/nav-bar-admin.css"/>
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <style>
         * {
             box-sizing: border-box;
@@ -171,7 +175,7 @@
     </style>
 </head>
 <body>
-    <div class="container-fluid ms-5 me-5 mt-5">
+    <div class="container-fluid ms-5 me-5 ">
         <!-- Header Section -->
         <div class="header">
             <h2>Artiles</h2>
@@ -224,13 +228,13 @@
                         <td>{{updated_at}}</td>
                         <td>{{status}}</td>
                         <td  >
-                            <a href="/writer/edit-article?id={{id}}" >
-                                <i class="bi bi-pencil-square"></i>
+                            <a class="btn btn-success" href="/writer/edit-article?id={{id}}" >
+                                <i class='bx bxs-edit'></i>
                             </a>
                         </td>
                         <td>
-                            <a>
-                                <i class="bi bi-archive-fill"></i>
+                            <a class="btn btn-danger delete-button">
+                               <i class='bx bxs-trash-alt'></i>
                             </a>
                         </td>
                     </tr>

@@ -1,11 +1,15 @@
 body {
-    background-color: black;
+    background-color: rgb(255, 255, 255);
     color: rgb(255, 255, 255);
     
     margin: 0;
     padding: 0;
   }
   
+label{
+color: black;
+}
+
   .footer {
     padding: 20px;
     display: flex;

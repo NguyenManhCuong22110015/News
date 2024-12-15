@@ -16,6 +16,7 @@ import authLogin from  './routes/authLoginRoute.js';
 import articleRoute from './routes/articleRoute.js';
 import mainPageRoute from './routes/mainPageRoute.js';
 import moment from 'moment-timezone';
+import readPageRoute from './routes/readPageRoute.js';
 
 const app = express()
 
@@ -82,8 +83,7 @@ const app = express()
     next();
   });
 
-
-
+ 
   
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json()); 
@@ -115,7 +115,7 @@ import payment from "./routes/payment/payment.js"
 
 app.use('/payment', payment);
 
-
+app.use('/read', readPageRoute);
 
 app.get("/", (req, res) => {
     res.send("Hello word")

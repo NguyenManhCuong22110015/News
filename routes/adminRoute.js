@@ -7,8 +7,10 @@ const router = Router();
 
 router.get('/categories', async (req, res) => {
     const list = await categoryService.getAll();
+    const parents = await categoryService.getAllParents();
     res.render('admin/categories', {
         list: list,
+        parents: parents,
         layout: "nav-bar-admin"
     });
 });
@@ -86,6 +88,21 @@ router.get('/categories/edit/:id', async (req, res) => {
         res.status(500).send('An unexpected error occurred while retrieving the category.');
     }
 });
+
+
+router.post('/categories/updateParent/:id', async (req, res) => {
+    const { id } = req.params;
+    const { parent_id } = req.body;
+    
+    try {
+        await categoryService.updateParent(id, parent_id);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update parent category' });
+    }
+});
+
+
 // Tags
 router.get('/tags', async (req, res) => {
     const list = await adminService.getTags();
