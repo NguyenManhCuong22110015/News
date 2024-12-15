@@ -1,0 +1,145 @@
+body {
+    background-color: black;
+    color: rgb(255, 255, 255);
+    
+    margin: 0;
+    padding: 0;
+  }
+  
+  .footer {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: black;
+  }
+  
+  .navbar {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    max-width: 1200px;
+  }
+  
+  .logo-link {
+    flex: 1 0 auto; /* Sử dụng auto để logo không chiếm quá nhiều không gian */
+  }
+  
+  .logo-link img {
+    height: 20px;
+    width: auto;
+  }
+  
+  .nav-content {
+    display: flex;
+    justify-content: flex-end; /* Đặt các thành phần bên phải */
+    align-items: center;
+    flex: 1 1 auto; /* Để phần này chiếm không gian còn lại */
+  }
+  
+  .footer-links {
+    display: flex;
+    gap: 15px;
+    margin-right: 20px; /* Thêm khoảng cách bên phải cho footer links */
+  }
+  
+  .footer-link {
+    color: white;
+    text-decoration: none;
+    font-size: 1em;
+    cursor: pointer;
+    transition: color 0.3s, background-color 0.3s;
+  }
+  
+  .footer-link:hover {
+    color: rgb(194, 3, 3);
+    text-decoration: underline;
+  }
+  
+  .social-icons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .social-link {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+  
+  .social-link:hover {
+    color: #ddd; /* Thay đổi màu khi hover */
+  }
+  
+  .footer-bottom {
+    text-align: left;
+    font-size: 0.8em;
+    color: #aaa;
+    margin-top: 15px;
+    width: 90%;
+    max-width: 1200px;
+  }
+  .sign-link{
+    color: black;
+  }
+  
+  .policy-links {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    font-size: 0.9em;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  
+  .policy-links a {
+    color: white;
+    text-decoration: none;
+  }
+  
+  .policy-links a:hover {
+    color: white;
+    text-decoration: underline;
+  }
+  
+  .sign-link:hover{
+    cursor: pointer;
+    color: white;
+    margin-left: 10px;
+  }
+  
+  @media screen and (max-width: 1024px) {
+    .footer-links a {
+      display: none; 
+    }
+  
+   
+    .footer-links span {
+      display: inline-block;
+    }
+  
+    .footer-bottom {
+      text-align: center; 
+      margin-top: 15px;
+      width: 90%;
+      max-width: 1200px;
+    }
+  
+    .policy-links {
+      justify-content: center; 
+      gap: 20px;
+      font-size: 0.9em;
+    }
+  
+    .social-icons {
+      justify-content: center; 
+    }
+  }

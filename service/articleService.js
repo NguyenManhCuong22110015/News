@@ -42,6 +42,21 @@ export default {
             console.error('Error searching articles:', error);
             throw error;
         }
-    }
+    },
+    async getArticle() {
+        return db('articles').orderBy('id', 'desc');
+    },
+    async updateStatus(id, status) {
+        return db('articles')
+          .where('id', id)
+          .update({ status: status, updated_at: new Date().toISOString().slice(0, 19).replace('T', ' ') });
+      },
+
+      async countByCatId(id) {
+        return db('articles').count('id as total').where('category_id', id).first();
+      },
+      async findPageByCatId(id, limit, offset) {
+        return db('articles').where('category_id', id).limit(limit).offset(offset);
+      }
     
 }

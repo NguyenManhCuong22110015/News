@@ -33,6 +33,7 @@ router.get('/reset-password', (req,res) => { res.render('reset-password', {layou
 
 
 router.get('/logout', (req, res, next) => {
+  
   req.logout(function(err) {
     if (err) { return next(err); }
     
@@ -42,7 +43,8 @@ router.get('/logout', (req, res, next) => {
         return next(err);
       }
       res.clearCookie('connect.sid');
-      res.redirect('/');
+      
+      res.redirect(req.headers.referer || '/' );
     });
   });
 });
@@ -50,7 +52,7 @@ router.get('/logout', (req, res, next) => {
 
 
 
-router.get('/', (req, res) => {
+router.get('/test', (req, res) => {
   const userGreeting = req.user ? `<h1>Hello ${req.user.displayName}</h1>` : '<h1>Hello Guest</h1>';
   const loginLink = req.user ? 
       `<a href="/logout" class="btn btn-danger">Logout</a>` : 

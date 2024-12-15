@@ -1,0 +1,56 @@
+<link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/nav-bar-admin.css"/>
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+     <style>
+        body{
+            font-family: cnn_sans_display, helveticaneue, Helvetica, Arial, Utkal, sans-serif;
+        }
+    </style>
+
+
+<h1>Add User</h1>
+<form method="post" action="/admin/users/add">
+  <div class="card">
+    <div class="card-header">New User</div>
+    <div class="card-body">
+      <div class="form-group">
+        <label for="firstname">First Name</label>
+        <input
+          type="text"
+          name="Firstname"
+          id="firstname"
+          class="form-control"
+          placeholder="Enter first name"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="lastname">Last Name</label>
+        <input
+          type="text"
+          name="LastName"
+          id="lastname"
+          class="form-control"
+          placeholder="Enter last name"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          name="Email"
+          id="email"
+          class="form-control"
+          placeholder="Enter email"
+          required
+        />
+      </div>
+    </div>
+    <div class="card-footer">
+      <button class="btn btn-primary" type="submit">Save</button>
+      <a href="/admin/users" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </div>
+</form>

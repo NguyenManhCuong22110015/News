@@ -1,30 +1,67 @@
 <h1>Categories Management</h1>
-<button class="btn btn-primary">Add</button>
+<!-- Add Category Button -->
+<a class="btn btn-primary" href="/admin/categories/add">Add</a>
+
 <table class="table">
   <thead class="thead-dark">
     <tr>
       <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Handle</th>
-	  <th scope="col">&nbsp</th>
-	  <th scope="col">&nbsp</th>
+      <th scope="col">Name</th>
+      <th scope="col">Description</th>
+      
+      <th scope="col">Edit</th>
+      <th scope="col">Delete</th>
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <td >1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-	  <td>
-		<button class="btn btn-success"><i class='bx bxs-edit'></i></button>
-	  </td>
-	  <td>
-		<button class="btn btn-danger"><i class='bx bxs-trash-alt'></i></button>
-	  </td>
-    </tr>
-   
+    {{#if this.list.length}}
+      {{#each this.list}}
+      <tr>
+        <th scope="row">{{id}}</th>
+        <td>{{name}}</td>
+        <td>{{description}}</td>
+        
+        <!-- Edit Category Button -->
+        <td>
+          <a class="btn btn-success" href="/admin/categories/edit/{{id}}" aria-label="Edit">
+            <i class='bx bxs-edit'></i>
+          </a>
+        </td>
+        <!-- Delete Category Button -->
+        <td>
+          <form id="delete-form-{{id}}" action="/admin/categories/delete/{{id}}" method="post" style="display: inline;">
+            <button class="btn btn-danger delete-button" type="button" aria-label="Delete" data-id="{{id}}">
+              <i class='bx bxs-trash-alt'></i>
+            </button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+    {{else}}
+      <tr>
+        <td colspan="6" class="text-center">No data available</td>
+      </tr>
+    {{/if}}
   </tbody>
 </table>
 
+<script>
+  document.querySelectorAll('.delete-button').forEach(button => {
+    button.addEventListener('click', function() {
+      const categoryId = this.getAttribute('data-id');
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.getElementById(`delete-form-${categoryId}`).submit();
+        }
+      });
+    });
+  });
+</script>

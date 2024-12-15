@@ -1,0 +1,248 @@
+    <!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.2/dist/sweetalert2.min.css">
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.2/dist/sweetalert2.min.js"></script>
+<h1>Articles</h1>
+<!-- Add Category Button -->
+<style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #316da9;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px 8px 0 0;
+        }
+        .header h2 {
+            margin: 0;
+        }
+        .add-button {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .filter-container {
+            margin: 20px 0;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .filter-container label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .filter-container select {
+            padding: 5px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th, table td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        table th {
+            background-color: #316da9;
+            color: white;
+            font-weight: bold;
+        }
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .search-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        .search-container input {
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            width: 200px;
+        }
+                .status-container {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .filter-container {
+            width: 80%;
+            display: flex;
+            justify-content: space-between;
+            margin-left: 10%;
+            margin-right: 10%;
+        }
+
+        .status-container {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .status-button {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            color: #151111;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .status-button-number {
+            padding: 5px 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .status-button span {
+            margin-left: 8px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Chỉ tô màu nền cho số */
+        .status-button-number.empty {
+            background-color: #007bff;
+        }
+
+        .status-button-number.occupied {
+            background-color: #28a745;
+        }
+
+        .status-button-number.booking {
+            background-color: #6f42c1;
+        }
+
+        .status-button-number.checkout {
+            background-color: #fd7e14;
+        }
+
+        .status-button-number.maintenance {
+            background-color: #dc3545;
+        }
+        .status-button:hover .status-button-number,
+        .status-button:hover span {
+            
+            color: black;
+        }
+
+        .status-button:hover {
+            transform: translateY(-5px);
+  }
+    </style>
+<div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        
+                        <th>Summary</th>
+                        <th>Create At</th>
+                        <th>Update At</th>
+                        <th>Status</th>
+                        <th scope="col">&nbsp</th>
+                        <th scope="col">&nbsp</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each this.list}}
+                    <tr>
+                        <td>{{id}}</td>
+                        <td>{{title}}</td>
+                        <td>{{summary}}</td>
+                        <td>{{created_at}}</td>
+                        <td>{{updated_at}}</td>
+                         <td>
+                            <select class="status-dropdown" data-id="{{id}}">
+                            <option value="Draft" {{#if (eq status 'draft')}}selected{{/if}}>Draft</option>
+                            
+                            <option value="Approved" {{#if (eq status 'Approved')}}selected{{/if}}>Approved</option>
+                            </select>
+                        </td>
+                        <td  >
+                            <a href="/writer/edit-article?id={{id}}" >
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a>
+                                <i class="bi bi-archive-fill"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+<script>
+  document.querySelectorAll('.status-dropdown').forEach(dropdown => {
+    dropdown.addEventListener('change', function() {
+      const articleId = this.getAttribute('data-id');
+      const newStatus = this.value;
+
+      fetch(`/article/${articleId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: newStatus })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          
+          Swal.fire('Success!', 'Status updated successfully!', 'success');
+        } else {
+          
+          Swal.fire('Failed!', 'Failed to update status!', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the status');
+      });
+    });
+  });
+</script>

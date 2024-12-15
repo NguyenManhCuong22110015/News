@@ -29,7 +29,10 @@ router.get(
 
       // Set role cookie
       res.cookie('userRole', user.role, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day
-      res.redirect('/');
+      req.session.auth = true;
+    req.session.authUser = user;
+    const retUrl = req.session.retUrl || '/';
+      res.redirect(retUrl);
     } catch (error) {
       res.redirect('/login');
     }
@@ -52,7 +55,10 @@ router.post('/login', async (req, res) => { // Thêm async
     req.session.role = user.role;
     
     res.cookie('userRole', user.role, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
-    res.redirect('/'); 
+    req.session.auth = true;
+    req.session.authUser = user;
+    const retUrl = req.session.retUrl || '/';
+      res.redirect(retUrl);
   } catch (error) {
     console.error('Error logging in:', error);
     req.session.errorMessage = 'Internal server error';
@@ -94,7 +100,10 @@ async (req, res) => {
     
     // Set role cookie
     res.cookie('userRole', user.role, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day
-    res.redirect('/');
+    req.session.auth = true;
+    req.session.authUser = user;
+    const retUrl = req.session.retUrl || '/';
+      res.redirect(retUrl);
   } catch (error) {
     res.redirect('/login');
   }
@@ -118,7 +127,10 @@ router.get( '/github/callback', githubPassport.authenticate('github', { failureR
 
     // Set role cookie
     res.cookie('userRole', user.role, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day
-    res.redirect('/');
+    req.session.auth = true;
+    req.session.authUser = user;
+    const retUrl = req.session.retUrl || '/';
+      res.redirect(retUrl);
     } catch (error) {
     res.redirect('/login');
     }
