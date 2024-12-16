@@ -45,6 +45,10 @@ export default {
         return db('category')
             .where('id', id)
             .update({ parent_id });
+    },
+
+    findByName(name){
+        return db("category").where("name", name).first();
     }
 
 

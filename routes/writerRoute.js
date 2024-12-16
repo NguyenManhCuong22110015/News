@@ -39,7 +39,15 @@ router.post('/save-article', async (req, res) => {
 
   const { title, content, summary, category, tags } = req.body;
 
-  const ret = await newsPaperService.add(title, content, summary, category, tags, userId)
+  
+
+  const category_id = await categoryService.findByName(category);
+
+  const ret = await newsPaperService.add(title, content, summary, category_id.id, tags, userId)
+
+ 
+
+
   if(ret!== undefined) {
     res.send('Bài viết đã được lưu thành công!');
   }

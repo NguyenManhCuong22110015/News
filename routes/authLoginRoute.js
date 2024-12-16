@@ -41,28 +41,40 @@ router.get(
 
 
 
-router.post('/login', async (req, res) => { // Thêm async
+router.get('/login', (req, res) => {
+  // Store the referring URL unless it's the login page itself
+  const referer = req.headers.referer;
+  if (referer && !referer.includes('/login')) {
+      req.session.returnTo = referer;
+  }
+  res.render('login');
+});
+
+router.post('/login', async (req, res) => {
   const email = req.body.login_email || '';
   const password = req.body.login_password || '';
   try {
-    const user = await authService.login(email, password); 
-    if (!user) {
-      req.flash('error', 'Invalid email or password');
-      return res.redirect('/login');
-    }
-    req.user = user;
-    req.session.userId = user.id;
-    req.session.role = user.role;
-    
-    res.cookie('userRole', user.role, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
-    req.session.auth = true;
-    req.session.authUser = user;
-    const retUrl = req.session.retUrl || '/';
-      res.redirect(retUrl);
+      const user = await authService.login(email, password); 
+      if (!user) {
+          req.flash('error', 'Invalid email or password');
+          return res.redirect('/login');
+      }
+      req.user = user;
+      req.session.userId = user.id;
+      req.session.role = user.role;
+      
+      res.cookie('userRole', user.role, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+      req.session.auth = true;
+      req.session.authUser = user;
+
+      // Redirect to stored URL or homepage
+      const returnTo = req.session.returnTo || '/';
+      delete req.session.returnTo;
+      res.redirect(returnTo);
   } catch (error) {
-    console.error('Error logging in:', error);
-    req.session.errorMessage = 'Internal server error';
-    res.redirect('/login');
+      console.error('Error logging in:', error);
+      req.session.errorMessage = 'Internal server error';
+      res.redirect('/login');
   }
 });
 

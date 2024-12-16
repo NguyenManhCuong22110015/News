@@ -3,11 +3,7 @@ import db from '../utils/db.js';
 export default {
     async getArticlesByWriterID(userID){
 
-        const list = await db('writer_article').where('writer_id', userID)
-        
-        const articleIds = list.map(item => item.article_id);
-
-        return db('articles').whereIn('id', articleIds).orderBy('id', 'desc');;
+        return db('articles').where('writer_id', userID).orderBy('id', 'desc');;
     },
 
     getArticleByID(id) {
@@ -69,5 +65,40 @@ export default {
             .where('id', id)
             .first();
     },
+    getArticleById(id) {
+        return db('articles').where('id', id).first();
+    },
+    getAuthorById(id) {
+        return db('users').where('id', id).first();
+    },
+    getArticleSameCate(category_id, article_id) {
+        return db('articles')
+            .where('category_id', category_id)
+            .whereNot('id', article_id) 
+            .orderByRaw('RAND()') 
+            .limit(5);
+    },
+    getCommentByArticleId(id) {
+        return db("comments")
+            .join('users', 'comments.user_id', '=', 'users.id')
+            .where('article_id', id)
+            .select(
+                'comments.*',
+                'users.name as user_name'
+            ).orderBy('comments.created_at', 'desc');;
+    },
+    addComment(article_id, user_id, content) {
+        return db('comments').insert({
+            article_id,
+            user_id,
+            content,
+            created_at: new Date().toISOString().slice(0, 19).replace('T', ' ')
+        });
+    },
+    async incrementViews(id) {
+        return db('articles')
+            .where('id', id)
+            .increment('views', 1);
+    }
     
 }
