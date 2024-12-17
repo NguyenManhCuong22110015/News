@@ -31,7 +31,7 @@
   <div class="row">
     
     <div class="col-lg-8">
-      <a href="/read?id={{this.topArticle.id}}" style="text-decoration: none; color: inherit;">
+      <a href="/read?id={{this.topArticle.id}}" style="text-decoration-thickness: 2px;color: inherit;">
       <h1>{{this.topArticle.title}}</h1>
       <img class="card-img-top" style="max-width:100%; max-height:60%"  src={{extractFirstImage this.topArticle.content}} alt="Card image cap">
       <div class="article-info">
@@ -55,8 +55,8 @@
       {{else}}
       <div class="row">
         {{#each this.articles}}
-        <div class="col-md-6">
-          <a href="/read?id={{id}}" style="text-decoration: none; color: inherit;">
+        <div class="col-md-6 col-sm-6 col-xs-6">
+          <a href="/read?id={{id}}" style="color: inherit;">
           <div class="card mb-4">
             <img class="card-img-top custom-img" src={{extractFirstImage content}} alt="Card image cap">
             <div class="card-body">
@@ -161,7 +161,7 @@
             </div>
             <div class="card-body">
               {{#if category.article}}
-                <img class="card-img-top custom-img" src="{{extractFirstImage category.latestArticle.content}}" alt="Card image cap">
+                <img class="card-img-top custom-img" src="{{extractFirstImage category.article.content}}" alt="Card image cap">
                 <h6 class="card-title">{{category.article.title}}</h6>
                 <p class="card-text">{{category.article.summary}}</p>
                   <p class="updated-time">Updated {{formatDate updated_at}}</p>

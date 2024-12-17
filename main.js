@@ -17,7 +17,7 @@ import articleRoute from './routes/articleRoute.js';
 import mainPageRoute from './routes/mainPageRoute.js';
 import moment from 'moment-timezone';
 import readPageRoute from './routes/readPageRoute.js';
-
+import accountRoute from './routes/accountRoute.js';
 
 
 const app = express()
@@ -47,7 +47,18 @@ const app = express()
         return moment(dateString)
           .tz('Asia/Ho_Chi_Minh')  
           .format('h:mm A z, dddd MMMM D, YYYY');  
-      }
+      },
+      formatLongDate: function(dateString) {
+        return moment(dateString)
+            .tz('Asia/Ho_Chi_Minh')
+            .format('dddd, MMMM Do YYYY');
+    },
+      isUndefined: function(value) {
+        return value === null || value === undefined;
+       },
+       toUpperCase: function(text) {
+        return text ? text.toUpperCase() : '';
+    },
     }
   }));
   app.set('view engine', 'hbs');
@@ -118,6 +129,9 @@ import payment from "./routes/payment/payment.js"
 app.use('/payment', payment);
 
 app.use('/read', readPageRoute);
+
+app.use('/account', accountRoute);
+
 
 app.get("/", (req, res) => {
     res.send("Hello word")

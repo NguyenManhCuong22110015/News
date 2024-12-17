@@ -9,7 +9,7 @@ export default {
 
 
 
-    async getApprovedArticlesEachWeek(limit = 5) {
+    async getApprovedArticlesEachWeek(limit = 7) {
         try {
              const now = new Date();
         const lastWeek = new Date();

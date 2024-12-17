@@ -52,7 +52,7 @@
 <div class="main-container mt-5 ">
   <div class="row">
     <!-- Article Main Section on the left (occupy 8 columns) -->
-    <div class="col-lg-10">
+    <div class="col-lg-9">
       <h1>{{this.article.title}}</h1>
       <p class="d-flex align-items-center"><span>By</span>  <span class="ms-2 mt-5" style="text-decoration:underline" >{{#if author.name}}{{ author.name}}{{else}}  Anonymous{{/if}}</span></p>      
       <div class="article-info">
@@ -75,26 +75,29 @@
     </div>
 
     <!-- Latest News Section on the right (occupy 4 columns) -->
-    <div class="col-lg-2">
+    <div class="col-lg-3">
       <h5 class="text mb-4">| Latest News</h5>
-      <div class="row">
-        {{#each this.articlesSameCate}}
-        <a href="/read?id={{id}}" style="text-decoration: none; color: inherit;">
-        <div class="col-12 mb-2">
-          <div class="card">
-            <img src={{extractFirstImage content}} class="card-img-top" alt="News 1">
-            <div class="card-body">
-              <h5 class="card-title">{{title}}</h5>
-              
-              <p class="text-muted"><small>Uploaded {{formatDate updated_at}}</small></p>
-              
+      <div class="card">
+        
+        <ul class="list-group list-group-flush">
+          {{#if empty}}
+          <li class="list-group-item">Không có dữ liệu.</li>
+          {{else}}
+          {{#each this.articlesSameCate}}
+          <a href="/read?id={{id}}">
+          <li class="list-group-item ">
+            <div class="d-flex align-items-center" >
+              <img src={{extractFirstImage content}} class="mr-3" alt="Story 1">
+              <p href="#" class="short-description">{{title}}</p>
             </div>
-          </div>
-        </div>
-      </a>
-      {{/each}}
-        
-        
+            <p class="updated-time">  Updated {{formatDate updated_at}}</p>
+             <p class="updated-time" style="color: red; font-size:15px" >{{category_name}}</p>
+          </li>
+          </a>
+          {{/each}}
+          {{/if}}
+         
+        </ul>
       </div>
     </div>
 
