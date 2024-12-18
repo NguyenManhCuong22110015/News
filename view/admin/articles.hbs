@@ -193,7 +193,7 @@
                         <td>{{title}}</td>
                         <td>{{summary}}</td>
                         
-                        <td>{{updated_at}}</td>
+                        <td>{{formatLongDate updated_at}}</td>
                          <td>
                             <select class="status-dropdown form-control parent-select" data-id="{{id}}">
                             <option value="Draft" {{#if (eq status 'draft')}}selected{{/if}}>Draft</option>

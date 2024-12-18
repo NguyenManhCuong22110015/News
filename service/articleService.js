@@ -1,3 +1,4 @@
+import { subscribe } from 'diagnostics_channel';
 import db from '../utils/db.js';
 
 export default {
@@ -11,7 +12,7 @@ export default {
     },
 
 
-    async searchArticles(keyword) {
+    async searchArticles(keyword, limit, offset) {
         try {
             // Updated query with correct column names
             const results = await db('articles')
@@ -31,7 +32,8 @@ export default {
                     [keyword]
                 )
                 .orderBy('score', 'desc')
-                .limit(5);
+                .limit(limit)
+                .offset(offset);;
     
             return results;
         } catch (error) {
@@ -39,6 +41,45 @@ export default {
             throw error;
         }
     },
+    async searchAndCountArticles(keyword) {
+        try {
+            // Lấy danh sách bài viết
+            const articles = await db('articles')
+                .select(
+                    'id',
+                    'title',
+                    'content',
+                    'summary',
+                    db.raw(
+                        `MATCH (title, content, summary) AGAINST (? IN NATURAL LANGUAGE MODE) AS score`,
+                        [keyword]
+                    )
+                )
+                .whereRaw(
+                    `MATCH (title, content, summary) AGAINST (? IN NATURAL LANGUAGE MODE)`,
+                    [keyword]
+                )
+                .orderBy('score', 'desc');
+    
+            // Đếm tổng số bài viết
+            const totalResults = await db('articles')
+                .whereRaw(
+                    `MATCH (title, content, summary) AGAINST (? IN NATURAL LANGUAGE MODE)`,
+                    [keyword]
+                )
+                .count('id as total')
+                .first();
+    
+            return {
+                articles,
+                total: totalResults.total,
+            };
+        } catch (error) {
+            console.error('Error searching and counting articles:', error);
+            throw error;
+        }
+    },
+    
     async getArticle() {
         return db('articles').orderBy('id', 'desc');
     },
@@ -99,6 +140,23 @@ export default {
         return db('articles')
             .where('id', id)
             .increment('views', 1);
-    }
+    },
+    countByCatId(id) {
+        return db('articles').count('id as total').where('category_id', id).first();
+    },
+    updateSubscription(userId, days) {
+        return db('users')
+            .where('id', userId)
+            .update({
+                subscription_expiry: new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ')
+            });
+    },
+    cancelSubscription(userId) {
+        return db('users')
+            .where('id', userId)
+            .update({
+                subscription_expiry: new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ')
+            });
+    },
     
 }

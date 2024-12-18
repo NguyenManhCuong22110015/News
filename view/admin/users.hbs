@@ -1,42 +1,174 @@
+<style>
+  .custom-modal {
+    background: rgba(0,0,0,0.5);
+}
+
+.custom-modal .modal-dialog {
+    z-index: 1055;
+    position: relative;
+}
+
+body.modal-open {
+    overflow: initial !important;
+    padding-right: 0 !important;
+}
+
+.modal-backdrop {
+    display: none !important;
+}
+</style>
+
 <h1>Users Management</h1>
-<a class="btn btn-primary" href="/admin/users/add">Add</a>
+
 <table class="table">
   <thead class="thead-dark">
     <tr>
       <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Email</th>
+      <th scope="col">Name</th>
+      <th scope="col">Role</th>
+      <th scope="col">Status</th>
+      <th scope="col">Renew Subscription</th>
+      <th scope="col">Assign Categories</th>
       <th scope="col">&nbsp;</th>
-      <th scope="col">&nbsp;</th>
+      
     </tr>
   </thead>
   <tbody>
     {{#if list}}
       {{#each list}}
       <tr>
-        <th scope="row">{{this.UserID}}</th>
-        <td>{{this.Firstname}}</td>
-        <td>{{this.LastName}}</td>
-        <td>{{this.Email}}</td>
+        <th scope="row">{{this.id}}</th>
+        <td>{{this.name}}</td>
+        <td>{{this.role}}</td>
+        
+       
+        {{#if (isSubscriptionActive this.subscription_expiry)}}
+            <td class="text-success">Active ({{getRemainingDays this.subscription_expiry }}) </td>
+        {{else}}
+            <td class="text-danger">Expired</td>
+            
+        {{/if}}
+        {{#if (eq this.role 'user')}}
         <td>
-          <a class="btn btn-success" href="/admin/users/edit/{{this.UserID}}" aria-label="Edit">
-            <i class='bx bxs-edit'></i>
-          </a>
+          <select class="form-control subscription-select" data-user-id="{{id}}">
+              <option value="">Select duration</option>
+              <option value="1">1 day</option>
+              <option value="7">7 days</option>
+              <option value="14">14 days</option>
+              <option value="28">28 days</option>
+              <option value="0">Cancel</option>
+          </select>
         </td>
+          {{else}}
+        <td></td>
+        {{/if}}
+         {{#if (eq this.role 'editer')}}
         <td>
-          <form action="/admin/users/delete/{{this.UserID}}" method="post" style="display: inline;">
-            <button class="btn btn-danger" type="submit" aria-label="Delete">
-              <i class='bx bxs-trash-alt'></i>
-            </button>
-          </form>
+          <button class="btn btn-outline-dark" onClick="openTextModal()">Update</button>
         </td>
+        {{/if}}
+        
       </tr>
       {{/each}}
     {{else}}
       <tr>
+
         <td colspan="6" class="text-center">No data available</td>
       </tr>
     {{/if}}
   </tbody>
 </table>
+<div class="modal fade custom-modal" id="modal_text" data-bs-backdrop="static" tabindex="-1" aria-labelledby="text-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="text-modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">                  
+                <input type="text" id="text-input" class="form-control" placeholder="Enter new value">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="saveTextChange()">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const subscriptionSelects = document.querySelectorAll('.subscription-select');
+
+    subscriptionSelects.forEach(select => {
+        select.addEventListener('change', async function() {
+            const userId = this.getAttribute('data-user-id');
+            const days = this.value;
+
+            if (!days) return;
+            
+            try {
+                const response = await fetch('/article/subscription/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        days: parseInt(days)
+                    })
+                });
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Subscription updated successfully'
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                    
+                } else {
+                    throw new Error('Failed to update subscription');
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to update subscription'
+                });
+            }
+        });
+    });
+});
+
+        function openTextModal(title, fieldId) {
+          const modalEl = document.getElementById('modal_text');
+          const modal = new bootstrap.Modal(modalEl, {
+              backdrop: false,
+              keyboard: true
+          });
+    
+    // Clean up any existing backdrop
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) {
+        backdrop.remove();
+    }
+    
+    modal.show();
+}
+        async function saveTextChange() {
+            const newValue = document.getElementById('text-input').value.trim();
+            
+            if (!newValue) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Please enter a value'
+                });
+                return;
+            }        
+        }
+
+</script>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>

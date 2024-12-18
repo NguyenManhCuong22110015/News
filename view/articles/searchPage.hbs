@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nav Menu</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/css/searchPage.css">
+  <style>
+    .main-container {
+    width: 100%;
+    max-width: 1400px;  
+    margin: 0 auto;    
+    padding-right: 15px; /* Standard Bootstrap padding */
+    padding-left: 15px;
+    box-sizing: border-box;}
+    .related-articles {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .article {
+    display: flex;
+    margin-bottom: 30px;
+    width: 100%;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.article-image {
+    flex: 0 0 200px; /* Don't grow, don't shrink, fixed width */
+}
+
+.article-image img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.article-info {
+    flex: 1; /* Take remaining space */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0; 
+    width: 800px;
+}
+  .article-title {
+   margin: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .article-date {
+    font-size: 12px;
+    color: #868383;
+    margin-bottom: 15px;
+  }
+  
+  .article-description {
+    font-size: 16px;
+    color: #777;
+    max-width: 600px;
+    line-height: 1.6;
+  }
+  @media screen and (max-width: 960px) {
+    .article-description {
+        display: none;
+    }
+
+    .article-image {
+        flex: 0 0 100px; /* Reduce from 200px to 100px */
+    }
+
+    .article-image img {
+        width: 100%;
+        height: 100px;
+    }
+
+    .article-title {
+        font-size: 1rem;
+    }
+    .article-title:hover {
+        font-size: 1rem;
+        text-decoration: underline;
+
+    }
+
+
+    .article-date {
+        font-size: 12px;
+        margin-bottom: 8px;
+    }
+
+    .article {
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .search-input {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .search-btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+    
+}
+  </style>
+</head>
+<body>
+
+<div class="main-container ">
+    <div class="search-section mt-5">
+  <div class="container">
+    <h2 class="search-heading">Search for related articles</h2>
+    <form class="search-form">
+      <input type="text" class="form-control search-input" placeholder="Nhập từ khóa tìm kiếm...">
+      <button class="btn btn-outline-danger rounded-pill" type="submit">
+        <i class="fas fa-search"></i> Search
+      </button>
+    </form>
+    <div class="search-results">
+      <ul class="search-results-list">
+        <!-- Các kết quả tìm kiếm sẽ được hiển thị ở đây -->
+      </ul>
+    </div>
+  </div>
+
+  
+</div>
+ 
+<div class="search-info">
+  <div class="results-count">
+    <span>Display results for <b>"{{this.keyword}}"</b></span>
+  </div>
+  <div class="sorting">
+    <span>Sorting by: </span>
+    <select class="sort-select">
+      <option value="newest">Newest</option>
+      <option value="relevancy">Relevancy</option>
+    </select>
+  </div>
+</div>
+  
+{{#if empty}}
+  <div><h2 class="text-center mt-5">No search results available</h2></div>
+  {{else}}
+  {{#each this.articles}}
+  <a href="/read?id={{id}}" style="color: inherit;text-decoration: none;">
+    <div class="related-articles" >
+    <div class="article">
+      <div class="article-image">
+        <img src="{{extractFirstImage content}}" alt="Article Image">
+      </div>
+      <div class="article-info">
+        <h3 class="article-title">{{title}}</h3><br/>
+        <p class="article-date">{{formatLongDate update_at}}</p>
+        <p class="article-description">{{summary}}</p>
+      </div>
+    </div>
+    </div>
+  </div>
+  </a>
+  {{/each}}
+<div class="d-flex justify-content-center mt-5 mb-5"> 
+    <ul class="pagination">
+      <li class="page-item disabled">
+        <a class="page-link">Previous</a>
+      </li>
+      {{#each this.pageNumbers}}
+      {{#if active}}
+      <li class="page-item active">
+        <a class="page-link" href="#">{{value}}</a>
+      </li>
+      {{else}}
+      <li class="page-item">
+        <a class="page-link" href="?q={{../keyword}}&page={{value}}">{{value}}</a>
+      </li>
+      {{/if}}
+      {{/each}}
+      <li class="page-item">
+        <a class="page-link" href="#">Next</a>
+      </li>
+    </ul>
+  </div>
+{{/if}}
+
+</div>
+
+
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="/js/searchPage.js"></script>
+
+</body>
+</html>

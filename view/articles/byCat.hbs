@@ -19,7 +19,8 @@
           
       {{#each this.articles }}
         <div class="col-md-4">
-          <div class="card mb-4">
+         <a href="/read?id={{id}}" style="color:black;">
+           <div class="card mb-4">
             <div class="card-header">
               
             </div>
@@ -29,9 +30,9 @@
                 <h6 class="card-title">{{title}}</h6>
                 <p class="card-text">{{summary}}</p>
                   <p class="updated-time">Updated {{formatDate updated_at}}</p>
-                <a href="/articles/{{id}}" class="btn btn-primary">Read More</a>
             </div>
           </div>
+         </a>
         </div>
       {{/each}}
     </div>

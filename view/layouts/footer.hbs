@@ -55,14 +55,17 @@
     </ul>
 
     <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      
-      <button id="search-icon" class="btn btn-outline-dark my-2 my-sm-0 ml-2" type="button">
+    <input 
+        id="searchInput" 
+        class="form-control mr-sm-2" 
+        style="border: 1px solid #000000 !important;"
+        type="search" 
+        placeholder="Search" 
+        aria-label="Search">
+    <button id="search-icon" class="btn btn-outline-dark my-2 my-sm-0 ml-2" type="button">
         <i class="fas fa-search"></i>
-      </button>
-
-      
-      </div>
+    </button>
+</form>
 
     {{#if auth}}
         
@@ -71,6 +74,16 @@
           </a>
           <div class="dropdown-menu dropdown-menu-right">
             <a class="dropdown-item" href="/account/profile"> <i class="bi bi-person"></i> Profile</a>
+            {{#if (eq authUser.role 'admin')}}
+               <a class="dropdown-item" href="/admin/categories"> <i class="bi bi-gear"></i> Admin</a>
+            {{/if}}
+            {{#if (eq authUser.role 'editor')}}
+               <a class="dropdown-item" href="/editor"> <i class="bi bi-gear"></i> Editor</a>
+            {{/if}}
+            {{#if (eq authUser.role 'writer')}}
+               <a class="dropdown-item" href="/writer/articles"> <i class="bi bi-pencil"></i></i>Writer</a>
+            {{/if}}
+            
             <a class="dropdown-item" href="/logout"> <i class="bi bi-box-arrow-right"></i> Log out</a>
           </div>
         
@@ -79,7 +92,7 @@
           <a href="/login" style="color:black"  >Log in</a>
       </button>
         {{/if}}
-    </form>
+    
     
   </div>
 </nav>
@@ -87,7 +100,7 @@
 
 {{{body}}}
 
-<div class="footer">
+<div class="footer ">
   <div class="navbar">
     <a href="https://edition.cnn.com" class="logo-link">
       <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/CNN.svg" alt="CNN Logo">
@@ -115,7 +128,7 @@
     </div>
   </div>
 
-  <div class="footer-bottom">
+  <div class="footer-bottom mt-5">
     <div class="policy-links">
       <a href="https://www.cnn.com/terms" class="footer-link">Terms of Use</a>
       <a href="https://www.cnn.com/privacy" class="footer-link">Privacy Policy</a>
@@ -141,9 +154,53 @@
  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="/js/index.js"></script>
 <script>
+  
+
   $(document).ready(function() {
     $('.dropdown-toggle').dropdown();
     
 });
+
+ document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.querySelector('.form-inline');
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('search-icon');
+
+    function handleSearch(e) {
+        e.preventDefault();
+        
+        const searchTerm = searchInput?.value?.trim();
+        
+        if (!searchTerm || searchTerm.length < 2) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Search Error',
+                text: 'Please enter at least 2 characters to search'
+            });
+            return;
+        }
+
+        try {
+            window.location.href = `/article/search?q=${encodeURIComponent(searchTerm)}`;
+        } catch (error) {
+            console.error('Search error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while searching. Please try again.'
+            });
+        }
+    }
+
+    searchForm?.addEventListener('submit', handleSearch);
+    searchButton?.addEventListener('click', handleSearch);
+    searchInput?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSearch(e);
+        }
+    });
+});
+
 </script>
 </html>

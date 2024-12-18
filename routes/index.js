@@ -143,6 +143,11 @@ router.get('/get-article/:id', (req, res) => {
 });
 
 
+router.get('/error', (req, res) => {
+  res.render('error', {layout: false});
+});
+
+
 
 
 

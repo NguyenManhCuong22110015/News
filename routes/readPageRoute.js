@@ -42,16 +42,9 @@ router.get('/', async (req, res) => {
             num_cmt: comments.length || 0,
             layout: "footer"
         });
-
-
-
-
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).render('error', { 
-            message: 'Internal server error',
-            layout: "footer"
-        });
+        res.redirect('/error');
     }
 });
 

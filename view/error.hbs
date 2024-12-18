@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Page Not Found</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Đặt nền và căn giữa nội dung */
+        body {
+            background-color: #f3f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Container chính */
+        .error-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            width: 100%;
+            padding: 30px;
+        }
+
+        /* Phần hình ảnh */
+        .error-image {
+            flex: 1;
+            text-align: center;
+        }
+
+        .error-image img {
+            max-width: 80%;
+            height: auto;
+        }
+
+        /* Phần văn bản */
+        .error-message {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .error-message h1 {
+            font-size: 3rem;
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+
+        .error-message p {
+            font-size: 1.2rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .error-message ul {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .error-message li {
+            font-size: 1rem;
+            color: #495057;
+        }
+
+        /* Nút bấm */
+        .btn-custom {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+        .btn-outline-secondary {
+            color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #6c757d;
+            color: #fff;
+        }
+        @media screen and (max-width: 768px) {
+            .error-container {
+                flex-direction: column-reverse;
+                padding: 20px;
+                margin: 15px;
+            }
+
+            .error-image {
+                margin-bottom: 20px;
+            }
+
+            .error-image img {
+                max-width: 60%;
+            }
+
+            .error-message h1 {
+                font-size: 2rem;
+            }
+
+            .error-message p {
+                font-size: 1rem;
+            }
+
+            .error-message li {
+                font-size: 0.9rem;
+            }
+
+            .btn-custom {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .error-container {
+                padding: 15px;
+            }
+
+            .error-image img {
+                max-width: 50%;
+            }
+
+            .error-message h1 {
+                font-size: 1.5rem;
+            }
+
+            .error-message p {
+                font-size: 0.9rem;
+            }
+
+            .error-message li {
+                font-size: 0.8rem;
+            }
+
+            .btn-custom {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+                margin-top: 5px;
+            }
+        }
+    </style>
+    </style>
+</head>
+<body>
+
+    <div class="error-container">
+        <div class="error-message">
+            <h1>So Sorry!</h1>
+            <p>The page you are looking for cannot be found.</p>
+            <p>Possible Reasons:</p>
+            <ul>
+                <li>The address may have been typed incorrectly.</li>
+                <li>It may be a broken or outdated link.</li>
+            </ul>
+            <a href="/" class="btn btn-outline-primary btn-custom">Go to Home page</a>
+            <a class="btn btn-outline-secondary btn-custom">Help</a>
+        </div>
+        <div class="error-image">
+            <img src="/imgs/404.png" alt="Error Illustration">
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

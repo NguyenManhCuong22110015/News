@@ -28,9 +28,12 @@ router.get(
       req.session.role = user.role;
 
       // Set role cookie
-      res.cookie('userRole', user.role, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day
+       // 1 day
       req.session.auth = true;
     req.session.authUser = user;
+    const currentDate = new Date();
+      const expiryDate = new Date(user.subscription_expiry);
+      req.session.is_premium = expiryDate > currentDate;
     const retUrl = req.session.retUrl || '/';
       res.redirect(retUrl);
     } catch (error) {
@@ -42,39 +45,42 @@ router.get(
 
 
 router.get('/login', (req, res) => {
-  // Store the referring URL unless it's the login page itself
-  const referer = req.headers.referer;
-  if (referer && !referer.includes('/login')) {
-      req.session.returnTo = referer;
+  if (req.headers.referer && !req.headers.referer.includes('/login')) {
+      req.session.returnTo = req.headers.referer;
   }
   res.render('login');
 });
-
 router.post('/login', async (req, res) => {
   const email = req.body.login_email || '';
   const password = req.body.login_password || '';
+
   try {
       const user = await authService.login(email, password); 
       if (!user) {
           req.flash('error', 'Invalid email or password');
           return res.redirect('/login');
       }
+      
       req.user = user;
       req.session.userId = user.id;
       req.session.role = user.role;
       
-      res.cookie('userRole', user.role, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
       req.session.auth = true;
       req.session.authUser = user;
+      
+      const currentDate = new Date();
+      const expiryDate = new Date(user.subscription_expiry);
+      req.session.is_premium = expiryDate > currentDate;
 
-      // Redirect to stored URL or homepage
+
+      // Get return URL from session and redirect
       const returnTo = req.session.returnTo || '/';
-      delete req.session.returnTo;
-      res.redirect(returnTo);
+      delete req.session.returnTo; // Clear stored URL
+      return res.redirect(returnTo);
   } catch (error) {
       console.error('Error logging in:', error);
-      req.session.errorMessage = 'Internal server error';
-      res.redirect('/login');
+      req.flash('error', 'Internal server error');
+      return res.redirect('/login');
   }
 });
 
@@ -111,9 +117,12 @@ async (req, res) => {
     req.session.role = user.role;
     
     // Set role cookie
-    res.cookie('userRole', user.role, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day
+     // 1 day
     req.session.auth = true;
     req.session.authUser = user;
+    const currentDate = new Date();
+      const expiryDate = new Date(user.subscription_expiry);
+      req.session.is_premium = expiryDate > currentDate;
     const retUrl = req.session.retUrl || '/';
       res.redirect(retUrl);
   } catch (error) {
@@ -138,9 +147,12 @@ router.get( '/github/callback', githubPassport.authenticate('github', { failureR
     req.session.role = user.role;
 
     // Set role cookie
-    res.cookie('userRole', user.role, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day
+     // 1 day
     req.session.auth = true;
     req.session.authUser = user;
+    const currentDate = new Date();
+      const expiryDate = new Date(user.subscription_expiry);
+      req.session.is_premium = expiryDate > currentDate;
     const retUrl = req.session.retUrl || '/';
       res.redirect(retUrl);
     } catch (error) {

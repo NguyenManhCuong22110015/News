@@ -1,0 +1,68 @@
+<h1>Article Management</h1>
+
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Title</th>
+      <th scope="col">Summary</th>
+      <th scope="col">Created/Updated Date</th>
+      <th scope="col">Status</th>
+      <th scope="col">Update</th>
+      <th scope="col">Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#if this.list.length}}
+      {{#each this.list}}
+        <tr>
+          <th scope="row">{{id}}</th>
+          <td>{{title}}</td>
+          <td>{{summary}}</td>
+          <td>
+            Created: {{created_at}}<br>
+            Updated: {{updated_at}}
+          </td>
+          <!-- Status Dropdown -->
+          <td>
+            <form action="/editor/article/status/{{id}}" method="post">
+              <select name="status" class="form-control">
+              {{#if (eq status 'pending')}}
+                <option value="pending" selected>Pending</option>
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+              {{/if}}
+              {{#if (eq status 'published')}}
+                <option value="published" selected>Published</option>
+                <option value="draft">Draft</option>
+              {{/if}}
+              {{#if (eq status 'draft')}}
+                <option value="draft" selected>Draft</option>
+              {{/if}}
+            </select>
+            <button type="submit" class="btn btn-primary mt-2">Change Status</button>
+            </form>
+          </td>
+          <!-- Update Article Button -->
+          <td>
+            <a class="btn btn-success" href="/admin/articles/edit/{{id}}" aria-label="Edit">
+              <i class='bx bxs-edit'></i>
+            </a>
+          </td>
+          <!-- Delete Article Button -->
+          <td>
+            <form action="/editor/article/delete/{{id}}" method="post" style="display: inline;">
+              <button class="btn btn-danger" type="submit" aria-label="Delete">
+                <i class='bx bxs-trash-alt'></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+      {{/each}}
+    {{else}}
+      <tr>
+        <td colspan="7" class="text-center">No articles available</td>
+      </tr>
+    {{/if}}
+  </tbody>
+</table>

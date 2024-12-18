@@ -144,21 +144,19 @@
   </div>
 
   {{#if auth}}
-        <div class="main-container d-flex align-items-center mt-4">
+        <div class="main-container d-flex align-items-center mt-4 mb-5">
             <input type="text" id="noteInput" name="text" placeholder="Write a comment..." class="form-control addtxt me-2 rounded-pill">
             <button id="postButton" class="btn btn-primary rounded-pill">Post</button>
         </div>
     {{else}}
-        <div class="text-center mt-4">
+        <div class="text-center mt-5 mb-5">
             <p>Please login to comment</p>
             <a href="/login" class="btn btn-primary rounded-pill">Login to Comment</a>
         </div>
     {{/if}}
 </div>
 <!-- Footer -->
-<footer class="bg-dark text-white text-center py-4 mt-5">
-  <p>&copy; 2024 News Website | All Rights Reserved</p>
-</footer>
+
 
 
 <script>

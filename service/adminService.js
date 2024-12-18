@@ -16,11 +16,11 @@ export default {
             })
         },
     async addUser(user) {
-              return db('userinfo').insert(user). then(() => {return db("userinfo").select("UserID").orderBy("UserID", "desc").limit(1);});
+              return db('users').insert(user). then(() => {return db("users").select("UserID").orderBy("UserID", "desc").limit(1);});
             },
     async getUserById(userId) {
         try {
-            const user = await db('userinfo').where('UserID', userId).first(); // Adjust table name if necessary
+            const user = await db('users').where('UserID', userId).first(); // Adjust table name if necessary
             return user; // Returns a single user object
         } catch (error) {
             console.error('Database error:', error);
@@ -28,7 +28,7 @@ export default {
         }
     },
     async getAllUsers() {
-        return db('userinfo')
+        return db('users').orderBy('id', 'desc'); 
     },
     async getTags() {
         return db('tag')
@@ -43,9 +43,9 @@ export default {
         return db("tag").where("id", id).update(tag);
     },
     async delUser(id){
-        return db("userinfo").where("UserID", id).del();
+        return db("users").where("UserID", id).del();
     }, 
     async patchUser(id,category){
-        return db("userinfo").where("UserID", id).update(category);
+        return db("users").where("UserID", id).update(category);
     }
 }

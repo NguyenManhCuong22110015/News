@@ -422,12 +422,13 @@ body {
 
 .carousel-control-prev,
 .carousel-control-next {
+  background-color: rgba(54, 54, 54, 0.7);
   width: 5%; /* Adjust the width of the control area */
 }
 
 .carousel-control-prev:hover,
 .carousel-control-next:hover {
-  background-color: rgba(255, 255, 255, 0.7); /* Darker background on hover */
+  background-color: rgba(0, 0, 0, 0.7); /* Darker background on hover */
 }
 .dropdown-menu {
   max-width: 300px; /* Adjust the max-width as needed */

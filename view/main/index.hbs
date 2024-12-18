@@ -22,6 +22,16 @@
         padding-left: 30px;
     }
 }
+@media (max-width: 768px) {
+    .carousel-item .col-md-4:not(:first-child) {
+        display: none;
+    }
+    .carousel-item .col-md-4:first-child {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
   </style>
 <body>
 
@@ -116,7 +126,8 @@
           <div class="carousel-item {{#if @first}}active{{/if}}">
             <div class="row">
               {{#each articleGroup}}
-                <div class="col-md-4">
+                <div class="col-md-4 col-sm-12">
+                  <a href="/read?id={{id}}" style="text-decoration:none">
                   <div class="card mb-4">
                     <img class="card-img-top custom-img" src="{{extractFirstImage content}}" alt="Card image cap">
                     <div class="card-body">
@@ -126,6 +137,7 @@
                         <p class="updated-time" style="color: red; font-size:15px" >{{category_name}}</p>
                     </div>
                   </div>
+                  </a>
                 </div>
               {{/each}}
             </div>
@@ -155,17 +167,20 @@
         <div class="row">
       {{#each this.topCategoriesByViews as |category|}}
         <div class="col-md-4">
+          
           <div class="card mb-4">
             <div class="card-header">
               <h4 class="card-title " style="color:red" >| {{category.category}}</h4>
             </div>
             <div class="card-body">
               {{#if category.article}}
-                <img class="card-img-top custom-img" src="{{extractFirstImage category.article.content}}" alt="Card image cap">
+               <div>
+                 <img class="card-img-top custom-img" src="{{extractFirstImage category.article.content}}" alt="Card image cap">
                 <h6 class="card-title">{{category.article.title}}</h6>
                 <p class="card-text">{{category.article.summary}}</p>
                   <p class="updated-time">Updated {{formatDate updated_at}}</p>
-                <a href="/articles/{{category.article.id}}" class="btn btn-primary">Read More</a>
+                <a href="/article/byCat?id={{category.article.category_id}}" class="btn btn-outline-primary">Read More</a>
+               </div>
               {{else}}
                 <p>No articles available</p>
               {{/if}}

@@ -59,6 +59,32 @@ const app = express()
        toUpperCase: function(text) {
         return text ? text.toUpperCase() : '';
     },
+    isSubscriptionActive : function(expiryDate) {
+      if (!expiryDate) return false;
+      const today = new Date();
+      const expiry = new Date(expiryDate);
+      
+      return expiry > today;
+  },
+  getRemainingDays: function(expiryDate) {
+    if (!expiryDate) return 'No subscription';
+    
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    
+    // Reset time part for accurate day calculation
+    today.setHours(0, 0, 0, 0);
+    expiry.setHours(0, 0, 0, 0);
+    
+    const diffTime = expiry - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) return 'Expired';
+    if (diffDays === 0) return 'Expires today';
+    if (diffDays === 1) return '1 day remaining';
+    return `${diffDays} days remaining`;
+}
+    
     }
   }));
   app.set('view engine', 'hbs');
@@ -72,6 +98,11 @@ const app = express()
       secret: 'Q2VNTVN3QklsQXZTRmFhRHV6ZEtKcHhDdFNldG4xTHdGSzRCWkunSmJ5UT8',
       resave: false,
       saveUninitialized: true,
+      cookie: { 
+        secure: process.env.NODE_ENV === 'production', // true in production
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
+    }
   }));
   router.use((req, res, next) => {
     if (req.session.user) {
@@ -96,7 +127,11 @@ const app = express()
     next();
   });
 
- 
+  app.use(async function (req, res, next) {
+    res.locals.is_premium = req.session.is_premium;
+    next();
+  });
+
   
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json()); 
@@ -131,6 +166,8 @@ app.use('/payment', payment);
 app.use('/read', readPageRoute);
 
 app.use('/account', accountRoute);
+
+
 
 
 app.get("/", (req, res) => {

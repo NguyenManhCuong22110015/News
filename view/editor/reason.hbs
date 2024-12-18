@@ -1,0 +1,29 @@
+<form method="post" action="/editor/reason/{{this.id}}">
+    <div class="card">
+        <div class="card-header">
+            Reason for Status Change
+        </div>
+        <div class="card-body">
+            <!-- Locked Article ID -->
+            <div class="form-group">
+                <label for="article-id">Article ID</label>
+                <input type="text" name="article_id" id="article-id" class="form-control" value="{{this.id}}" readonly />
+            </div>
+            <!-- Reason for status change -->
+            <div class="form-group">
+                <label for="reason">Reason</label>
+                <textarea name="reason" id="reason" class="form-control" rows="5" placeholder="Enter reason for the status change" required></textarea>
+            </div>
+        </div>
+        <div class="card-footer">
+            <!-- Return Button -->
+            <a href="/editor" class="btn btn-outline-secondary" role="button">
+                <i class="bi bi-skip-backward-fill"></i> Return
+            </a>
+            <!-- Save Button -->
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-check2"></i> Save
+            </button>
+        </div>
+    </div>
+</form>
