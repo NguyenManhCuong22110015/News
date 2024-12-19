@@ -22,8 +22,8 @@ router.post('/update-article', async (req, res) => {
   
     const {id, title, content, summary, category, tags } = req.body;
 
-
-    const ret = await newsPaperService.update(id,title, content, summary, category, tags, userId)
+    const category_id = await categoryService.findByName(category);
+    const ret = await newsPaperService.update(id,title, content, summary, category_id.id, tags, userId)
     if(ret!== undefined) {
       res.send('Bài viết đã được lưu thành công!');
     }
@@ -38,16 +38,9 @@ router.post('/save-article', async (req, res) => {
   const userId = req.session.userId || 6;
 
   const { title, content, summary, category, tags } = req.body;
-
-  
-
-  const category_id = await categoryService.findByName(category);
-
-  const ret = await newsPaperService.add(title, content, summary, category_id.id, tags, userId)
-
  
-
-
+  
+  const ret = await newsPaperService.add(title, content, summary, category, tags, userId)
   if(ret!== undefined) {
     res.send('Bài viết đã được lưu thành công!');
   }
@@ -55,7 +48,6 @@ router.post('/save-article', async (req, res) => {
     return res.status(500).send('Lỗi khi lưu bài viết!');
   }
 });
-
 
 
 
@@ -67,6 +59,16 @@ router.get('/add-article', async (req,res) => {
 });
 
 
+router.delete('/delete-article', async (req, res) => {
+    const id = +req.query.id ;
+    const ret = await articleService.deleteArticle(id);
+    if(ret!== undefined) {
+      res.send('Bài viết đã được xóa thành công!');
+    }
+    else {
+      return res.status(500).send('Lỗi khi xóa bài viết!');
+    }
+});
 
 router.get('/edit-article', async (req,res) => {
 
@@ -74,7 +76,9 @@ router.get('/edit-article', async (req,res) => {
   
     const article = await articleService.getArticleByID(id);
   
-    res.render('writer/edit-article', {data: {
+    res.render('writer/edit-article', 
+      {data: 
+      {
       id: article.id,
       title: article.title,
       summary: article.summary,

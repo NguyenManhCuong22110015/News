@@ -171,5 +171,35 @@ export default {
                 is_premium: article.is_premium ? 0 : 1 
             });
     },
+    approveArticle(articleId,categoryId,publishDate,tags){
+        return db('articles')
+            .where('id', articleId)
+            .update({
+                category_id: categoryId,
+                status: 'Approved',
+                updated_at: new Date(publishDate).toISOString().slice(0, 19).replace('T', ' ')
+            })
+            .then(() => {
+                return db('article_tags')
+                    .where('article_id', articleId)
+                    .del()
+                    .then(() => {
+                        return db('article_tags')
+                            .insert(tags.map(tagId => ({ article_id: articleId, tag_id: tagId })));
+                    });
+            });
+    },
+    rejectArticle(articleId, text, writer_id) {
+        return db('messages')
+            .insert({
+                article_id: articleId,
+                editor_id: writer_id,
+                message: text,
+                create_at: new Date().toISOString().slice(0, 19).replace('T', ' ')
+            })
+    },
+    deleteArticle(id) {
+        return db('articles').where('id', id).del();
+    }
     
 }

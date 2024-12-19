@@ -1,3 +1,11 @@
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
 <style>
   .custom-modal {
     background: rgba(0,0,0,0.5);
@@ -18,7 +26,7 @@ body.modal-open {
 }
 </style>
 
-<h1>Users Management</h1>
+<h1>Management</h1>
 
 <table class="table">
   <thead class="thead-dark">
@@ -28,6 +36,9 @@ body.modal-open {
       <th scope="col">Summary</th>
       <th scope="col">Update at</th>
       <th scope="col">Status</th>
+      <th scope="col">View</th>
+      <th scope="col">Approve</th>
+      <th scope="col">Reject</th>
       <th scope="col">&nbsp;</th>
       
     </tr>
@@ -41,13 +52,17 @@ body.modal-open {
         <td>{{summary}}</td>
          <td>{{formatLongDate update_at}}</td>
           <td>{{status}}</td>
-
-        
+          <td><a href="/editor/view?id={{id}}" class="btn btn-primary">View</a></td>
+          <td>
+                <button class="btn btn-success" onClick="openTextModal({{id}})">Approve</button>
+          </td>
+           <td>
+              <button class="btn btn-danger" onClick="openTextModalRejected({{id}})">Reject</button>
+          </td>
       </tr>
       {{/each}}
     {{else}}
       <tr>
-
         <td colspan="6" class="text-center">No data available</td>
       </tr>
     {{/if}}
@@ -57,15 +72,222 @@ body.modal-open {
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="text-modal-title"></h5>
+                <h5 class="modal-title">Approve Article</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="codes-container">
-                <!-- Codes will be inserted here -->
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Select Category</label>
+                    <select class="form-select" id="categorySelect">
+                        <option value="">Choose category...</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Schedule Publication</label>
+                    <input type="text" class="form-control" id="datetimePicker">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Tags</label>
+                    <div id="tagsContainer"></div>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveArticle()">Save & Approve</button>
             </div>
         </div>
     </div>
 </div>
+<div class="modal fade custom-modal" id="modal_rejected" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="text-modal-title">The reason for rejected</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">                  
+                        <textarea id="text-input" class="form-control" rows="7" placeholder="Enter reason for rejection"></textarea>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" onclick="saveTextRejectedChange()">Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<script>
+ async function openTextModal(id) {
+    const modalEl = document.getElementById('modal_text');
+    const modal = new bootstrap.Modal(modalEl);
+     modalEl.dataset.articleId = id;
+    // Initialize datetime picker
+    flatpickr("#datetimePicker", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        minDate: "today",
+        defaultDate: new Date(),
+        time_24hr: true
+    });
+
+    try {
+        const articleResponse = await fetch(`/editor/article/${id}`);
+        const article = await articleResponse.json();
+        
+        // Ensure article and tags exist
+        if (!article) throw new Error('Article not found');
+        
+        
+        // Load categories
+        const response = await fetch(`/editor/categories`);
+        const categories = await response.json();
+        
+        const select = document.getElementById('categorySelect');
+        select.innerHTML = '<option value="">Select category...</option>';
+        categories.forEach(cat => {
+            const option = new Option(cat.name, cat.id, 
+                false, cat.id === article.category_id);
+            select.add(option);
+        });
+
+        // Load tags
+        const articleTagsResponse = await fetch(`/editor/article-tags?id=${id}`);
+        const articleTags = await articleTagsResponse.json() || [];
+
+        // Load all available tags
+        const tagsContainer = document.getElementById('tagsContainer');
+        const tagsResponse = await fetch(`/editor/tags`);
+        const tags = await tagsResponse.json();
+
+        tagsContainer.innerHTML = '';
+        tags.forEach(tag => {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-outline-secondary m-1';
+            btn.textContent = tag.name;
+            btn.setAttribute('data-tag-id', tag.id);
+            // Check if tag is already assigned to article
+            const isSelected = articleTags.some(t => t.id === tag.id);
+            if (isSelected) {
+                btn.classList.add('active');
+            }
+            
+            btn.onclick = () => btn.classList.toggle('active');
+            tagsContainer.appendChild(btn);
+        });
+
+        modal.show();
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire('Error', 'Failed to load article data', 'error');
+    }
+}
+
+async function saveArticle() {
+    const modal = document.getElementById('modal_text');
+    const articleId = modal.dataset.articleId;
+    const categoryId = document.getElementById('categorySelect').value;
+    const publishDate = document.getElementById('datetimePicker').value;
+    const selectedTags = Array.from(document.querySelectorAll('#tagsContainer .btn.active'))
+    .map(btn => btn.getAttribute('data-tag-id'));
+
+
+    if (!categoryId || !publishDate) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Please select category and publish date'
+        });
+        return;
+    }
+
+    try {
+        const response = await fetch('/editor/approve', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({ 
+                articleId,
+                categoryId,
+                publishDate,
+                tags: selectedTags
+            })
+        });
+
+        if (response.ok) {
+            await Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Article approved successfully'
+            });
+            window.location.reload();
+        } else {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to approve article');
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Failed to approve article'
+        });
+    }
+}
+
+async function openTextModalRejected(id){
+    const modalEl = document.getElementById('modal_rejected');
+    const modal = new bootstrap.Modal(modalEl);
+    modalEl.dataset.articleId = id;
+    modal.show();
+}
+
+async function saveTextRejectedChange() {
+    const modal = document.getElementById('modal_rejected');
+    const articleId = modal.dataset.articleId;
+    const reason = document.getElementById('text-input').value.trim();
+
+    if (!reason) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Please enter rejection reason'
+        });
+        return;
+    }
+
+    try {
+        const response = await fetch('/editor/reject', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({ 
+                articleId,
+                reason
+            })
+        });
+
+        if (response.ok) {
+            await Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Article rejected successfully'
+            });
+            window.location.reload();
+        } else {
+            throw new Error('Failed to reject article');
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Failed to reject article'
+        });
+    }
+}
+
+
+</script>

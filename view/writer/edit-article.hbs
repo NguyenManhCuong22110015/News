@@ -65,8 +65,12 @@
             <option value="Technology">Technology</option>
             <option value="Health">Health</option>
         </select>
-         <label  >Tags</label>
-        <input type="text" id="tags" class="form-control mb-3" placeholder="Enter tags (comma-separated)" value="news, updates">
+         
+        
+        <div class="mb-4">
+                    <label class="form-label">Tags</label>
+                    <div id="tagsContainer"></div>
+        </div>
         <button id="update-button" class="btn btn-primary mt-3 mb-5">Save Article</button>
     </div>
 <div class="footer">
@@ -126,5 +130,33 @@
     </script>
     <script src="../js/scripts.js"></script>
      <script src="../js/loading.js"></script>
+     <script>
+       async function loadTags() {
+        const articleTagsResponse = await fetch(`/editor/article-tags?id={{data.id}}`);
+        const articleTags = await articleTagsResponse.json() || [];
+        
+        // Load all available tags
+        const tagsContainer = document.getElementById('tagsContainer');
+        const tagsResponse = await fetch(`/editor/tags`);
+        const tags = await tagsResponse.json();
+
+        tagsContainer.innerHTML = '';
+            tags.forEach(tag => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-outline-secondary m-1';
+                btn.textContent = tag.name;
+                btn.setAttribute('data-tag-id', tag.id);
+                // Check if tag is already assigned to article
+                const isSelected = articleTags.some(t => t.id === tag.id);
+                if (isSelected) {
+                    btn.classList.add('active');
+                }
+                
+                btn.onclick = () => btn.classList.toggle('active');
+                tagsContainer.appendChild(btn);
+            });
+            }
+        document.addEventListener('DOMContentLoaded', loadTags);
+     </script>
 </body>
 </html>

@@ -34,8 +34,17 @@ $('#summernote').summernote({
 $('#save-button').on('click', function() {
   const title = $('#title').val().trim();
   const summary = $('#summary').val().trim();
-  const category = $('#category').val().trim();
-  const tags = $('#tags').val().trim();
+  const category = $('#category').val();
+  const selectedTags = Array.from(document.querySelectorAll('#tagsContainer .btn.active'))
+    .map(btn => btn.getAttribute('data-tag-id'));
+  const tags = selectedTags;
+
+  console.log(category)
+
+  if (!category) {
+    Swal.fire('Error', 'Please select a category', 'error');
+    return;
+}
 
   let content = $('#summernote').summernote('code');
 
@@ -85,7 +94,9 @@ $('#update-button').on('click', function() {
   const title = $('#title').val().trim() || "";
   const summary = $('#summary').val().trim() || "";
   const category = $('#category').val().trim() || "";
-  const tags = $('#tags').val().trim() || "";
+  const selectedTags = Array.from(document.querySelectorAll('#tagsContainer .btn.active'))
+    .map(btn => btn.getAttribute('data-tag-id'));
+  const tags = selectedTags;
   let content = $('#summernote').summernote('code');
 
   toggleLoading(true); // Show loading overlay

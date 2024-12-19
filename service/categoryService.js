@@ -77,7 +77,8 @@ export default {
                 user_id: userId,
                 category_id: categoryId
             })
-    }
+    },
+    
 
 
 
