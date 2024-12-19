@@ -18,7 +18,7 @@ import mainPageRoute from './routes/mainPageRoute.js';
 import moment from 'moment-timezone';
 import readPageRoute from './routes/readPageRoute.js';
 import accountRoute from './routes/accountRoute.js';
-
+import editorRoute from './routes/editorRoute.js';
 
 const app = express()
 
@@ -167,7 +167,7 @@ app.use('/read', readPageRoute);
 
 app.use('/account', accountRoute);
 
-
+app.use('/editor', editorRoute);
 
 
 app.get("/", (req, res) => {

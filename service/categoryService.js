@@ -49,7 +49,36 @@ export default {
 
     findByName(name){
         return db("category").where("name", name).first();
+    },
+    getCategory(id) {
+        return db("editor_category")
+            .join("category", "editor_category.category_id", "=", "category.id")
+            .select("editor_category.*", "category.name as category_name")
+            .where("editor_category.user_id", id);
+    },
+    getUnassignedCate(id) {
+        return db("category")
+            .whereNotIn("id", function() {
+                this.select("category_id")
+                    .from("editor_category")
+                    .where("user_id", id);
+            })
+            .select("*");
+    },
+    delCatForEditor(id) {
+        return db("editor_category")
+            .where("id", id)
+            
+            .del();
+    },
+    addCat(userId, categoryId) {
+        return db("editor_category")
+            .insert({
+                user_id: userId,
+                category_id: categoryId
+            })
     }
+
 
 
 }

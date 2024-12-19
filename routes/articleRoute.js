@@ -136,7 +136,19 @@ router.post('/subscription/update', async function (req, res) {
       res.json({ success: false });
     }
   }
+});
 
+
+router.put('/:id/premium', async function (req, res) {
+  const { id } = req.params;
+  
+  try {
+    await articleService.updatePremium(id);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error updating status:', error);
+    res.json({ success: false });
+  }
 });
 
 

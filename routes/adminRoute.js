@@ -39,7 +39,7 @@ router.get('/categories/add', (req, res) => {
 
 router.post('/categories/delete/:id', async (req, res) => {
     const { id } = req.params;
-    console.log(id)
+    
     try {
         const ret = await categoryService.del(id);
         if (ret) {

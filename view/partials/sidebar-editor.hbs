@@ -1,0 +1,38 @@
+
+
+
+<div class="">
+        <div class="logo-details">
+          <i class='bx bxl-c-plus-plus icon'></i>
+            <div class="logo_name">Writer</div>
+            <i class='bx bx-menu' id="btn"></i>
+        </div>
+        <ul class="nav-list">
+          <li>
+            <a href="/editor/articles" >
+              <i class='bx bx-grid-alt'></i>
+              <span class="links_name">Dashboard</span>
+            </a>
+            <span class="tooltip">Dashboard</span>
+          </li>
+          
+        </ul>
+    </div>
+<script>
+     let sidebar = document.querySelector(".sidebar");
+      let closeBtn = document.querySelector("#btn");
+      
+
+      closeBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+        menuBtnChange();
+      });
+
+      function menuBtnChange() {
+        if (sidebar.classList.contains("open")) {
+          closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");
+        } else {
+          closeBtn.classList.replace("bx-menu-alt-right", "bx-menu");
+        }
+      }
+</script>

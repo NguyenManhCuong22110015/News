@@ -158,5 +158,18 @@ export default {
                 subscription_expiry: new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ')
             });
     },
+    async updatePremium(id) {
+        // Get current value
+        const article = await db('articles')
+            .where('id', id)
+            .first('is_premium');
+        
+        // Toggle value
+        return db('articles')
+            .where('id', id)
+            .update({ 
+                is_premium: article.is_premium ? 0 : 1 
+            });
+    },
     
 }

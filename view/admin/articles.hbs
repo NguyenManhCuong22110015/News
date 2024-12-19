@@ -178,11 +178,12 @@
                         <th>Title</th>
                         
                         <th>Summary</th>
-                        
+                        <th>Premium Status</th>
                         <th>Update At</th>
                         <th>Status</th>
+                        
                         <th scope="col">&nbsp</th>
-                        <th scope="col">&nbsp</th>
+                        
                         
                     </tr>
                 </thead>
@@ -192,7 +193,12 @@
                         <td>{{id}}</td>
                         <td>{{title}}</td>
                         <td>{{summary}}</td>
-                        
+                        <td>
+                            <select class="status-dropdown-premium form-control parent-select" data-id="{{id}}">
+                                <option value="Yes" {{#if is_premium}}selected{{/if}}>Yes</option>
+                                <option value="No" {{#unless is_premium}}selected{{/unless}}>No</option>
+                            </select>
+                        </td>
                         <td>{{formatLongDate updated_at}}</td>
                          <td>
                             <select class="status-dropdown form-control parent-select" data-id="{{id}}">
@@ -207,9 +213,7 @@
                             </a>
                         </td>
                         <td>
-                            <a>
-                                <i class="bi bi-archive-fill"></i>
-                            </a>
+                           
                         </td>
                     </tr>
                     {{/each}}
@@ -242,6 +246,33 @@
       .catch(error => {
         console.error('Error:', error);
         alert('An error occurred while updating the status');
+      });
+    });
+  });
+  document.querySelectorAll('.status-dropdown-premium').forEach(dropdown => {
+    dropdown.addEventListener('change', function() {
+      const articleId = this.getAttribute('data-id');
+      
+      fetch(`/article/${articleId}/premium`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify()
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          
+          Swal.fire('Success!', 'Article updated successfully!', 'success');
+        } else {
+          
+          Swal.fire('Failed!', 'Failed to update article!', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        Swal.fire('Failed!', 'An error occurred while updating the status', 'error');
       });
     });
   });

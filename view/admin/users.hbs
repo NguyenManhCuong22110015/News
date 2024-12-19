@@ -64,7 +64,7 @@ body.modal-open {
         {{/if}}
          {{#if (eq this.role 'editer')}}
         <td>
-          <button class="btn btn-outline-dark" onClick="openTextModal()">Update</button>
+          <button class="btn btn-outline-dark" onClick="openTextModal({{id}})">Update</button>
         </td>
         {{/if}}
         
@@ -85,90 +85,208 @@ body.modal-open {
                 <h5 class="modal-title" id="text-modal-title"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">                  
-                <input type="text" id="text-input" class="form-control" placeholder="Enter new value">
+            <div class="modal-body" id="codes-container">
+                <!-- Codes will be inserted here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success" onclick="saveTextChange()">Update</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
+    // Subscription select handlers
     const subscriptionSelects = document.querySelectorAll('.subscription-select');
-
     subscriptionSelects.forEach(select => {
-        select.addEventListener('change', async function() {
-            const userId = this.getAttribute('data-user-id');
-            const days = this.value;
+        select.addEventListener('change', handleSubscriptionChange);
+    });
+});
 
-            if (!days) return;
+async function handleSubscriptionChange() {
+    const userId = this.getAttribute('data-user-id');
+    const days = this.value;
+    if (!days) return;
+    
+    try {
+        const response = await fetch('/article/subscription/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: userId,
+                days: parseInt(days)
+            })
+        });
+
+        if (response.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Subscription updated successfully'
+            }).then(() => {
+                window.location.reload();
+            });
+        } else {
+            throw new Error('Failed to update subscription');
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to update subscription'
+        });
+    }
+}
+
+async function openTextModal(id) {
+    const modalEl = document.getElementById('modal_text');
+    const modal = new bootstrap.Modal(modalEl);
+    const codesContainer = document.getElementById('codes-container');
+    
+    try {
+        // Get assigned categories
+        const response = await fetch(`/editor/getCate?id=${id}`);
+        const codes = await response.json();
+        
+        // Get unassigned categories
+        const unassignedResponse = await fetch(`/editor/getUnassignedCate?id=${id}`);
+        const unassignedCodes = await unassignedResponse.json();
+        
+        codesContainer.innerHTML = `
+            <div>
+                <h5 class="text-success mb-2">Assigned Categories</h5>
+                <div class="assigned-categories mb-3"></div>
+            </div>
+            <hr>
+            <div>
+                <h5 class="text-secondary mb-2">Available Categories</h5>
+                <div class="unassigned-categories"></div>
+            </div>
+        `;
+        
+        const assignedContainer = codesContainer.querySelector('.assigned-categories');
+        const unassignedContainer = codesContainer.querySelector('.unassigned-categories');
+        
+        // Render assigned categories
+        codes.forEach(code => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'btn btn-success m-1';
+            button.textContent = code.category_name;
+            button.setAttribute('data-code', code.category_id);
             
+            button.addEventListener('click', async () => {
+        // Get userId from URL or data attribute
+        const userId = new URLSearchParams(window.location.search).get('id');
+        console.log('userId:', userId, 'categoryId:', code.category_id);
+
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: `Do you want to remove category "${code.category_name}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        });
+
+        if (result.isConfirmed) {
             try {
-                const response = await fetch('/article/subscription/update', {
+                const response = await fetch('/editor/removeCate', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        userId: userId,
-                        days: parseInt(days)
+                       id:code.id
                     })
                 });
 
-                if (response.ok) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Subscription updated successfully'
-                    }).then(() => {
-                        window.location.reload();
-                    });
-                    
-                } else {
-                    throw new Error('Failed to update subscription');
-                }
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                Swal.fire('Deleted!', 'Category has been removed.', 'success')
+                    .then(() => button.remove());
             } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Failed to update subscription'
-                });
+                console.error('Error:', error);
+                Swal.fire('Error!', 'Failed to remove category.', 'error');
             }
-        });
-    });
-});
-
-        function openTextModal(title, fieldId) {
-          const modalEl = document.getElementById('modal_text');
-          const modal = new bootstrap.Modal(modalEl, {
-              backdrop: false,
-              keyboard: true
-          });
-    
-    // Clean up any existing backdrop
-    const backdrop = document.querySelector('.modal-backdrop');
-    if (backdrop) {
-        backdrop.remove();
-    }
-    
-    modal.show();
-}
-        async function saveTextChange() {
-            const newValue = document.getElementById('text-input').value.trim();
-            
-            if (!newValue) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Please enter a value'
-                });
-                return;
-            }        
         }
+    });
+            
+            assignedContainer.appendChild(button);
+        });
+        
+        // Render unassigned categories
+        unassignedCodes.forEach(code => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'btn btn-secondary m-1';
+            button.textContent = code.name;
+            button.setAttribute('data-code', code.id);
+            
+            // Add handler
+            button.addEventListener('click', async () => {
+                const result = await Swal.fire({
+                    title: 'Add Category',
+                    text: `Do you want to add "${code.name}" category?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#dc3545',
+                    confirmButtonText: 'Yes, add it!'
+                });
+                
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch('/editor/addCate', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                userId: id,
+                                categoryId: code.id
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            Swal.fire('Added!', 'Category has been added.', 'success')
+                                .then(() => {
+                                    button.remove();
+                                    openTextModal(id); // Refresh modal
+                                });
+                        }
+                    } catch (error) {
+                        Swal.fire('Error!', 'Failed to add category.', 'error');
+                    }
+                }
+            });
+            
+            unassignedContainer.appendChild(button);
+        });
+        
+        modal.show();
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire('Error!', 'Failed to load categories.', 'error');
+    }
+}
+        
 
+
+async function saveTextChange() {
+    const newValue = document.getElementById('text-input').value.trim();
+    if (!newValue) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Please enter a value'
+        });
+        return;
+    }        
+}
 </script>
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
