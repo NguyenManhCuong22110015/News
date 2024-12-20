@@ -88,5 +88,17 @@ router.get('/edit-article', async (req,res) => {
   
 
 
+router.get('/get-rejected-message', async (req, res) => {
+    const id = +req.query.id;
+    const ret = await articleService.getRejectedMessage(id);
+    if(ret!== undefined) {
+      res.send(ret);
+    }
+    else {
+      return res.status(500).send('Lỗi khi lấy thông báo từ chối!');
+    }
+})
+
+
    export default router;
 

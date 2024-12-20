@@ -109,24 +109,19 @@ router.post('/approve', async (req, res) => {
 
 router.post('/reject', async (req, res) => {
     try {
-        const { articleId,reason } = req.body;
-        const writer_id =2;
-        try {
-            writer_id = req.session.authUser.id|| 2 ;
-        }
-        catch (err) {
-            res.redirect('/error');
-        }
+        const { articleId, reason } = req.body;
+        let writer_id = req.session.authUser?.id || 2;
 
-        await articleService.rejectArticle(articleId,reason, writer_id);
-        res.status(200).json({ 
+        const result = await articleService.rejectArticle(articleId, reason, writer_id);
+        
+        return res.status(200).json({ 
             success: true,
             message: 'Article rejected successfully'
         });
     }
     catch (err) {
         console.error('Error rejecting article:', err);
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: 'Failed to reject article'
         });

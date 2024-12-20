@@ -2,21 +2,20 @@ import { Router } from 'express';
 import bcrypt from 'bcrypt';
 import accountService from '../service/accountService.js';
 import moment from 'moment';
+import check from '../middlewares/auth.mdw.js';
+
+
 const router = Router();
 
 
-router.get('/profile', (req, res) => {
-    
-    
-
+    router.get('/profile',check, (req, res) => {
     res.render('account/profile',
          {       
         user: req.session.authUser,
         layout:false
      });
     });
-
-    router.post('/update-birthday', async (req, res) => {
+    router.post('/update-birthday',check, async (req, res) => {
         try {
             const { birthday } = req.body;
             const formattedDate = moment(birthday, 'DD/MM/YYYY')
@@ -40,8 +39,7 @@ router.get('/profile', (req, res) => {
             res.status(500).json({ success: false, message: error.message });
         }
     });
-
-    router.post('/update-field', async (req, res) => {
+    router.post('/update-field', check, async (req, res) => {
         try {
             const { field, value } = req.body;
             const ret = await accountService.updateField(req.session.authUser.id, field, value);
@@ -59,7 +57,7 @@ router.get('/profile', (req, res) => {
     })
 
     
-router.post('/update-password', async (req, res) => {
+router.post('/update-password',check, async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
         const user = req.session.authUser;

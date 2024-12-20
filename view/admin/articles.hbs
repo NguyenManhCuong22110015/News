@@ -202,13 +202,12 @@
                         <td>{{formatLongDate updated_at}}</td>
                          <td>
                             <select class="status-dropdown form-control parent-select" data-id="{{id}}">
-                            <option value="Draft" {{#if (eq status 'draft')}}selected{{/if}}>Draft</option>
-                            
-                            <option value="Approved" {{#if (eq status 'Approved')}}selected{{/if}}>Approved</option>
+                            <option value="Approved" {{#if (eq status 'Approved')}}selected{{/if}}>Draft</option>            
+                            <option value="Published" {{#if (eq status 'Published')}}selected{{/if}}>Publish</option>
                             </select>
                         </td>
                         <td  >
-                            <a href="/writer/edit-article?id={{id}}" >
+                            <a href="/admin/view?id={{id}}" >
                                 <i class="bi bi-pencil-square"></i>
                             </a>
                         </td>

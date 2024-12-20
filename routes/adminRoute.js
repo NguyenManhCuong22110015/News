@@ -135,6 +135,16 @@ router.post('/tags/add', async (req, res) => {
     }
   });
 
+
+router.get('/view', async (req, res) => {
+    const id = +req.query.id || 0;
+     const article = await articleService.getArticleById(id);
+    res.render('admin/view', {
+        article: article,
+        layout: 'nav-bar-admin'
+    });
+});
+
 router.post('/tags/delete/:id', async (req, res) => {
     const { id } = req.params;
 

@@ -190,16 +190,38 @@ export default {
             });
     },
     rejectArticle(articleId, text, writer_id) {
-        return db('messages')
-            .insert({
-                article_id: articleId,
-                editor_id: writer_id,
-                message: text,
-                create_at: new Date().toISOString().slice(0, 19).replace('T', ' ')
-            })
+        return db.transaction(async trx => {
+            await trx('messages')
+                .insert({
+                    article_id: articleId,
+                    editor_id: writer_id,
+                    message: text,
+                    create_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
+                });
+    
+            await trx('articles')
+                .where('id', articleId)
+                .update({
+                    status: 'Rejected'
+                });
+    
+            return { success: true };
+        });
     },
     deleteArticle(id) {
         return db('articles').where('id', id).del();
-    }
+    },
+    getRejectedMessage(id) {
+        return db('messages')
+            .join('users', 'messages.editor_id', '=', 'users.id')
+            .where('article_id', id)
+            .orderBy('messages.id', 'desc')
+            .first({
+                message: 'messages.message',
+                editor_id: 'messages.editor_id',
+                editor_name: 'users.name',
+                created_at: 'messages.create_at'
+            });
+    },
     
 }
