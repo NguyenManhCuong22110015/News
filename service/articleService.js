@@ -1,6 +1,8 @@
 import { subscribe } from 'diagnostics_channel';
 import db from '../utils/db.js';
-
+import pdf from 'html-pdf';
+import htmlPdfNode from 'html-pdf-node';
+import fs from 'fs';
 export default {
     async getArticlesByWriterID(userID){
 
@@ -15,8 +17,85 @@ export default {
             .first();
     },
 
+    async getArticleByPre(pre) {
+        return db('articles').where('is_premium',pre);
+    },
+    async getArticleContentById(id) {
+        try {
+            const article = await db('articles')
+                .join('category', 'articles.category_id', '=', 'category.id')
+                .leftJoin('article_tags', 'articles.id', '=', 'article_tags.article_id')
+                .leftJoin('tag', 'article_tags.tag_id', '=', 'tag.id')
+                .select(
+                    'articles.*',
+                    'category.name as category_name',
+                    db.raw('GROUP_CONCAT(tag.name) as tag_names')
+                )
+                .where('articles.id', id)
+                .groupBy('articles.id')
+                .first();
+                
+            if (!article) {
+                throw new Error('Article not found');
+            }
+    
+            const htmlTemplate = `
+                <h1 style="text-align: center; margin-bottom: 30px;">${article.title}</h1>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <span style="color: #666; margin-right: 15px;color:red"> ${article.category_name}</span>
+                    ${article.tag ? `<span style="color: #666;">Tags: ${article.tag.split(',').join(', ')}</span>` : ''}
+                </div>
+                <div class="content">
+                    ${article.content}
+                </div>
+            `;
+    
+            return htmlTemplate;
+        } catch (error) {
+            console.error('Error fetching article:', error);
+            throw error;
+        }
+    },
+    async generatePdfFromHtml(htmlContent, outputPath) {
+        try {
+            const file = { content: htmlContent };
+            const options = { format: 'A4' };
 
+            await htmlPdfNode.generatePdf(file, options).then((pdfBuffer) => {
+                fs.writeFileSync(outputPath, pdfBuffer);
+            });
 
+            return outputPath;
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            throw error;
+        }},
+        async getOrderedArticles() {
+            return db('articles').orderBy('is_premium', 'desc'); // Orders by is_premium (1 first, 0 after)
+        },
+        async getArticlesBasedOnUserSubscription(userID) {
+            try {
+                // Check if user is premium
+                const user = await db('users').where('id', userID).first();
+                if (!user) {
+                    throw new Error('User not found');
+                }
+    
+                // Determine if the user is premium
+                const isPremiumUser = user.subscription_expiry && new Date(user.subscription_expiry) > new Date();
+    
+                if (isPremiumUser) {
+                    // Premium user: return all articles with premium ones on top
+                    return db('articles').orderBy('is_premium', 'desc');
+                } else {
+                    // Non-premium user: return only non-premium articles
+                    return db('articles').where('is_premium', 0);
+                }
+            } catch (error) {
+                console.error('Error fetching articles based on user subscription:', error);
+                throw error;
+            }
+        },
     async searchArticles(keyword, limit, offset, isPremiumUser = false) {
         try {
             let query = db('articles')
@@ -38,11 +117,15 @@ export default {
                 .where('status', 'Published');
 
             if (!isPremiumUser) {
-                query = query.where('is_premium', false);
+                query = query.where('is_premium', false).orderBy('score', 'desc');
+            }
+            else {
+                query = query
+                    .orderByRaw('articles.is_premium DESC, articles.updated_at DESC');
             }
 
             const results = await query
-                .orderBy('score', 'desc')
+                
                 .limit(limit)
                 .offset(offset);
 
@@ -192,7 +275,11 @@ export default {
             .first();
     },
     getArticleById(id) {
-        return db('articles').where('id', id).first();
+        return db('articles')
+            .join('category', 'articles.category_id', '=', 'category.id')
+            .select('articles.*', 'category.name as category_name')
+            .where('articles.id', id)
+            .first();
     },
     getAuthorById(id) {
         return db('users').where('id', id).first();

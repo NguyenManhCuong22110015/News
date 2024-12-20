@@ -12,7 +12,7 @@ export default  function (req, res,next) {
           req.session.retUrl = req.originalUrl;
           return res.redirect('/login');
       }
-      if (!req.session.authUser || req.session.authUser.role === 'user') {
+      if (!req.session.authUser || req.session.authUser.role !== 'admin') {
           return res.redirect('/error');
       }
       next();
@@ -34,7 +34,7 @@ export default  function (req, res,next) {
           req.session.retUrl = req.originalUrl;
           return res.redirect('/login');
       }
-      if (!req.session.authUser || req.session.authUser.role === 'user') {
+      if (!req.session.authUser || req.session.authUser.role !== 'editor') {
           return res.redirect('/error');
       }
       next();

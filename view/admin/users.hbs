@@ -150,11 +150,11 @@ async function openTextModal(id) {
     
     try {
         // Get assigned categories
-        const response = await fetch(`/editor/getCate?id=${id}`);
+        const response = await fetch(`/admin/getCate?id=${id}`);
         const codes = await response.json();
         
         // Get unassigned categories
-        const unassignedResponse = await fetch(`/editor/getUnassignedCate?id=${id}`);
+        const unassignedResponse = await fetch(`/admin/getUnassignedCate?id=${id}`);
         const unassignedCodes = await unassignedResponse.json();
         
         codesContainer.innerHTML = `
@@ -197,7 +197,7 @@ async function openTextModal(id) {
 
         if (result.isConfirmed) {
             try {
-                const response = await fetch('/editor/removeCate', {
+                const response = await fetch('/admin/removeCate', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -243,7 +243,7 @@ async function openTextModal(id) {
                 
                 if (result.isConfirmed) {
                     try {
-                        const response = await fetch('/editor/addCate', {
+                        const response = await fetch('/admin/addCate', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'

@@ -19,6 +19,7 @@ import moment from 'moment-timezone';
 import readPageRoute from './routes/readPageRoute.js';
 import accountRoute from './routes/accountRoute.js';
 import editorRoute from './routes/editorRoute.js';
+import subRoute from './routes/subRoute.js';
 import {authAdmin, authWriter, authEditor} from './middlewares/auth.mdw.js';
 const app = express()
 
@@ -172,7 +173,7 @@ app.use('/account', accountRoute);
 
 app.use('/editor',authEditor, editorRoute);
 
-
+app.use('/subscriber', subRoute);
 app.get("/", (req, res) => {
     res.send("Hello word")
 })

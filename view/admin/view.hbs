@@ -54,6 +54,14 @@
     <!-- Article Main Section on the left (occupy 8 columns) -->
     <div class="col-lg-9">
       <h1>{{this.article.title}}</h1>
+      <h4 style="color:red">{{this.article.category_name}}</h4>
+      {{#if this.tags}}
+      <div class="tags">
+        {{#each this.tags}}
+        <a class="" href="/article/byTag?tag={{id}}" >#{{name}}</a>
+        {{/each}}
+      </div>
+      {{/if}}
       <p class="d-flex align-items-center"> <span class="ms-2 mt-5" style="text-decoration:underline" >{{#if author.name}}{{ author.name}}{{else}}  Anonymous{{/if}}</span></p>      
       <div class="article-info">
         
