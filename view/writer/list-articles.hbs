@@ -245,7 +245,7 @@
                 </thead>
                 <tbody>
                     {{#each this.list}}
-                    <tr>
+                    <tr class="{{#if (eq status 'Published')}}table-warning{{/if}}">
                         <td>{{id}}</td>
                         <td>{{title}}</td>
                         <td>{{summary}}</td>

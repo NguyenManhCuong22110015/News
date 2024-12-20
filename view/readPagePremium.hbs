@@ -91,7 +91,19 @@
     <!-- Article Main Section on the left (occupy 8 columns) -->
     <div class="col-lg-9">
       <h1>{{this.article.title}}</h1>
-      {{#if this.tags}}
+       {{#if this.article.is_premium}}
+           <div class="premium-container">
+              <div class="premium-wrapper d-flex justify-content-between align-items-center">
+                <span class="badge bg-warning text-dark premium-badge">
+                  <i class="fas fa-crown"></i> Premium
+                </span>
+                <button class="btn btn-primary download-btn">
+                  <i class="bi bi-download"></i>
+                </button>
+              </div>
+            </div>
+       {{/if}}
+       {{#if this.tags}}
       <div class="tags">
         {{#each this.tags}}
         <a class="" href="/article/byTag?tag={{id}}" >#{{name}}</a>
@@ -128,7 +140,7 @@
           <li class="list-group-item">Không có dữ liệu.</li>
           {{else}}
           {{#each this.articlesSameCate}}
-        <a href="{{#if is_premium}}/read/premium{{else}}/read{{/if}}?id={{id}}" style="text-decoration-thickness: 2px;color: inherit;">      
+          <a href="/read?id={{id}}">
           <li class="list-group-item ">
             <div class="d-flex align-items-center" >
               <img src={{extractFirstImage content}} class="mr-3" alt="Story 1">

@@ -175,21 +175,18 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Title</th>
-                        
+                        <th>Title</th>              
                         <th>Summary</th>
                         <th>Premium Status</th>
                         <th>Update At</th>
-                        <th>Status</th>
-                        
+                        <th>Status</th>            
                         <th scope="col">&nbsp</th>
-                        
-                        
                     </tr>
                 </thead>
                 <tbody>
                     {{#each this.list}}
-                    <tr>
+                    <tr class="{{#if (eq status 'Published')}}table-warning{{/if}}">
+
                         <td>{{id}}</td>
                         <td>{{title}}</td>
                         <td>{{summary}}</td>

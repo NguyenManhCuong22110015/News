@@ -53,12 +53,21 @@ body.modal-open {
          <td>{{formatLongDate update_at}}</td>
           <td>{{status}}</td>
           <td><a href="/editor/view?id={{id}}" class="btn btn-primary">View</a></td>
+          {{#if (noteq status 'Approved')}}
           <td>
                 <button class="btn btn-success" onClick="openTextModal({{id}})">Approve</button>
           </td>
-           <td>
+          {{else}}
+            <td></td>
+            {{/if}}
+            {{#if (noteq status 'Rejected')}}
+            <td>
               <button class="btn btn-danger" onClick="openTextModalRejected({{id}})">Reject</button>
           </td>
+
+            {{else}}
+            <td></td>
+            {{/if}}
       </tr>
       {{/each}}
     {{else}}

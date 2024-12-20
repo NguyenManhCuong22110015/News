@@ -1,10 +1,13 @@
-<h1>Tags Management</h1>
-<button 
-  class="btn btn-primary"
-  onclick="window.location.href='/admin/tags/add'"
->
-  Add
-</button>
+<div class="container-fluid mt-2 ">
+  <div class="d-flex justify-content-between mb-2">
+    <h2>Tags Management</h2>
+  <button 
+    class="btn btn-success"
+    onclick="window.location.href='/admin/tags/add'"
+  ><i class="bi bi-plus"></i>
+    Add
+  </button>
+</div>
 <table class="table">
   <thead class="thead-dark">
     <tr>
@@ -45,6 +48,7 @@
     {{/if}}
   </tbody>
 </table>
+</div>
 <script>
   document.querySelectorAll('.delete-button').forEach(button => {
     button.addEventListener('click', function() {

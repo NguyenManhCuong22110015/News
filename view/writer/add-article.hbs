@@ -64,7 +64,6 @@
         </div>
         <a id="" href="http://localhost:3000/writer/articles" class="btn btn-secondary mt-3 mb-5">Back</a>
         <button id="save-button" class="btn btn-primary mt-3 mb-5">Save Article</button>
-        
     </div>
     <div class="footer">
   <div class="navbar">
@@ -118,7 +117,7 @@
         
         // Load all available tags
         const tagsContainer = document.getElementById('tagsContainer');
-        const tagsResponse = await fetch(`/editor/tags`);
+        const tagsResponse = await fetch(`/writer/tags`);
         const tags = await tagsResponse.json();
 
         tagsContainer.innerHTML = '';

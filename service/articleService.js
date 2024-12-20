@@ -8,22 +8,26 @@ export default {
     },
 
     getArticleByID(id) {
-        return db('articles').where('id', id).first();
+        return db('articles')
+            .join('category', 'articles.category_id', '=', 'category.id')
+            .select('articles.*', 'category.name as category_name')
+            .where('articles.id', id)
+            .first();
     },
 
 
-    async searchArticles(keyword, limit, offset) {
+
+    async searchArticles(keyword, limit, offset, isPremiumUser = false) {
         try {
-            // Updated query with correct column names
-            const results = await db('articles')
+            let query = db('articles')
                 .select(
                     'id',
                     'title',
-                    // Replaced 'abstract' with 'summary'
                     'content',
                     'summary', 
+                    'is_premium',
                     db.raw(
-                        `MATCH (title, content,summary) AGAINST (? IN NATURAL LANGUAGE MODE) AS score`,
+                        `MATCH (title, content, summary) AGAINST (? IN NATURAL LANGUAGE MODE) AS score`,
                         [keyword]
                     )
                 )
@@ -31,24 +35,30 @@ export default {
                     `MATCH (title, content, summary) AGAINST (? IN NATURAL LANGUAGE MODE)`,
                     [keyword]
                 )
+                .where('status', 'Published');
+
+            if (!isPremiumUser) {
+                query = query.where('is_premium', false);
+            }
+
+            const results = await query
                 .orderBy('score', 'desc')
                 .limit(limit)
-                .offset(offset);;
-    
+                .offset(offset);
+
             return results;
         } catch (error) {
             console.error('Error searching articles:', error);
             throw error;
         }
     },
-    async searchAndCountArticles(keyword) {
+    async searchAndCountArticles(keyword, isPremiumUser ) {
         try {
-            // Lấy danh sách bài viết
-            const articles = await db('articles')
+            let query = db('articles')
                 .select(
                     'id',
                     'title',
-                    'content',
+                    'content', 
                     'summary',
                     db.raw(
                         `MATCH (title, content, summary) AGAINST (? IN NATURAL LANGUAGE MODE) AS score`,
@@ -59,16 +69,26 @@ export default {
                     `MATCH (title, content, summary) AGAINST (? IN NATURAL LANGUAGE MODE)`,
                     [keyword]
                 )
-                .orderBy('score', 'desc');
+                .where('status', 'Published');
     
-            // Đếm tổng số bài viết
-            const totalResults = await db('articles')
+            if (!isPremiumUser) {
+                query = query.where('is_premium', false);
+            }
+    
+            const articles = await query.orderBy('score', 'desc');
+    
+            const totalQuery = db('articles')
                 .whereRaw(
                     `MATCH (title, content, summary) AGAINST (? IN NATURAL LANGUAGE MODE)`,
                     [keyword]
                 )
-                .count('id as total')
-                .first();
+                .where('status', 'Published');
+    
+            if (!isPremiumUser) {
+                totalQuery.where('is_premium', false);
+            }
+    
+            const totalResults = await totalQuery.count('id as total').first();
     
             return {
                 articles,
@@ -81,7 +101,7 @@ export default {
     },
     
     async getArticle() {
-        return db('articles').orderBy('id', 'desc');
+        return db('articles').orderBy('id', 'desc').whereIn('status', ['Published', 'Approved']);
     },
     async updateStatus(id, status) {
         return db('articles')
@@ -89,20 +109,85 @@ export default {
           .update({ status: status, updated_at: new Date().toISOString().slice(0, 19).replace('T', ' ') });
       },
 
-      async countByCatId(id) {
-        return db('articles').count('id as total').where('category_id', id).first();
-      },
-      async findPageByCatId(id, limit, offset) {
-        return db('articles').where('category_id', id).limit(limit).offset(offset);
-      },
+      async countByCatId(id, isPremiumUser) {
+        let query = db('articles')
+            .count('id as total')
+            .where('category_id', id)
+            .where('status', 'Published');
+    
+        if (!isPremiumUser) {
+            query = query.where('is_premium', false);
+        }
+    
+        return query.first();
+    },
+    async countByTagId(id, isPremiumUser) {
+        let query = db('article_tags')
+            .join('articles', 'article_tags.article_id', '=', 'articles.id')
+            .where('article_tags.tag_id', id)
+            .where('articles.status', 'Published')
+            .count('article_tags.id as total');
+    
+        if (!isPremiumUser) {
+            query = query.where('articles.is_premium', false);
+        }
+    
+        return query.first();
+    },
+    async findPageByCatId(id, limit, offset, isPremiumUser) {
+        let query = db('articles')
+            .join('category', 'articles.category_id', '=', 'category.id')
+            .select('articles.*', 'category.name as category_name')
+            .where('articles.category_id', id)
+            .where('articles.status', 'Published');
+    
+        if (!isPremiumUser) {
+            query = query
+                .where('articles.is_premium', false)
+                .orderBy('articles.updated_at', 'desc');
+        } else {
+            query = query
+                .orderByRaw('articles.is_premium DESC, articles.updated_at DESC');
+        }
+    
+        return query
+            .limit(limit)
+            .offset(offset);
+    },
+    async findPageByTagId(id, limit, offset, isPremiumUser) {
+        let query = db('articles')
+            .join('article_tags', 'articles.id', '=', 'article_tags.article_id')
+            .join('tag', 'article_tags.tag_id', '=', 'tag.id')
+            .select('articles.*', 'tag.name as tag_name')
+            .where('article_tags.tag_id', id)
+            .where('articles.status', 'Published');
+    
+            if (!isPremiumUser) {
+                query = query
+                    .where('articles.is_premium', false)
+                    .orderBy('articles.updated_at', 'desc');
+            } else {
+                query = query
+                    .orderByRaw('articles.is_premium DESC, articles.updated_at DESC');
+            }
+        
+            return query
+                .limit(limit)
+                .offset(offset);
+    },
       async findChildCatById(id) {
         return db('category as child')
           .select('child.*', 'parent.name as parent_name')
           .leftJoin('category as parent', 'child.parent_id', 'parent.id')
           .where('child.parent_id', id);
       },
-      async findCatById(id) {
+    async findCatById(id) {
         return db('category')
+            .where('id', id)
+            .first();
+    },
+    async findTagById(id) {
+        return db('tag')
             .where('id', id)
             .first();
     },
@@ -112,11 +197,18 @@ export default {
     getAuthorById(id) {
         return db('users').where('id', id).first();
     },
-    getArticleSameCate(category_id, article_id) {
-        return db('articles')
+    getArticleSameCate(category_id, article_id, isPremiumUser ) {
+        let query = db('articles')
             .where('category_id', category_id)
-            .whereNot('id', article_id) 
-            .orderByRaw('RAND()') 
+            .whereNot('id', article_id)
+            .where('status', 'Published');
+    
+        if (!isPremiumUser) {
+            query = query.where('is_premium', false);
+        }
+    
+        return query
+            .orderByRaw('RAND()')
             .limit(5);
     },
     getCommentByArticleId(id) {
@@ -222,6 +314,12 @@ export default {
                 editor_name: 'users.name',
                 created_at: 'messages.create_at'
             });
+    },
+    getTagsByArticleId(id) {
+        return db('article_tags')
+            .join('tag', 'article_tags.tag_id', '=', 'tag.id')
+            .where('article_id', id)
+            .select('tag.*');
     },
     
 }

@@ -1,7 +1,10 @@
-<h1>Categories Management</h1>
+<div class="container-fluid mt-2">
+<div class="d-flex justify-content-between mb-2">
+    <h2>Categories Management</h2>
 <!-- Add Category Button -->
-<a class="btn btn-primary" href="/admin/categories/add">Add</a>
+<a class="btn btn-success" href="/admin/categories/add"><i class="bi bi-plus"></i>Add</a>
 
+</div>
 <table class="table">
   <thead class="thead-dark">
     <tr>
@@ -61,6 +64,7 @@
     {{/if}}
   </tbody>
 </table>
+</div>
 
 <script>
   document.querySelectorAll('.delete-button').forEach(button => {

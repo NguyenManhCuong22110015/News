@@ -35,6 +35,7 @@ router.get(
       const expiryDate = new Date(user.subscription_expiry);
       req.session.is_premium = expiryDate > currentDate;
     const retUrl = req.session.retUrl || '/';
+    delete req.session.retUrl;
       res.redirect(retUrl);
     } catch (error) {
       res.redirect('/login');
@@ -46,7 +47,7 @@ router.get(
 
 router.get('/login', (req, res) => {
   if (req.headers.referer && !req.headers.referer.includes('/login')) {
-      req.session.returnTo = req.headers.referer;
+      req.session.retUrl = req.headers.referer;
   }
   res.render('login');
 });
@@ -68,14 +69,15 @@ router.post('/login', async (req, res) => {
       req.session.auth = true;
       req.session.authUser = user;
       
+
       const currentDate = new Date();
       const expiryDate = new Date(user.subscription_expiry);
       req.session.is_premium = expiryDate > currentDate;
 
 
       // Get return URL from session and redirect
-      const returnTo = req.session.returnTo || '/';
-      delete req.session.returnTo; // Clear stored URL
+      const returnTo = req.session.retUrl || '/';
+      delete req.session.retUrl; // Clear stored URL
       return res.redirect(returnTo);
   } catch (error) {
       console.error('Error logging in:', error);
@@ -124,7 +126,8 @@ async (req, res) => {
       const expiryDate = new Date(user.subscription_expiry);
       req.session.is_premium = expiryDate > currentDate;
     const retUrl = req.session.retUrl || '/';
-      res.redirect(retUrl);
+    delete req.session.retUrl;
+     return res.redirect(retUrl);
   } catch (error) {
     res.redirect('/login');
   }
@@ -154,6 +157,7 @@ router.get( '/github/callback', githubPassport.authenticate('github', { failureR
       const expiryDate = new Date(user.subscription_expiry);
       req.session.is_premium = expiryDate > currentDate;
     const retUrl = req.session.retUrl || '/';
+    delete req.session.retUrl;
       res.redirect(retUrl);
     } catch (error) {
     res.redirect('/login');

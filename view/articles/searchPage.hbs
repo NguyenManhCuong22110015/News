@@ -125,10 +125,7 @@
   <div class="container">
     <h2 class="search-heading">Search for related articles</h2>
     <form class="search-form">
-      <input type="text" class="form-control search-input" placeholder="Nhập từ khóa tìm kiếm...">
-      <button class="btn btn-outline-danger rounded-pill" type="submit">
-        <i class="fas fa-search"></i> Search
-      </button>
+      
     </form>
     <div class="search-results">
       <ul class="search-results-list">
@@ -157,7 +154,7 @@
   <div><h2 class="text-center mt-5">No search results available</h2></div>
   {{else}}
   {{#each this.articles}}
-  <a href="/read?id={{id}}" style="color: inherit;text-decoration: none;">
+        <a href="{{#if is_premium}}/read/premium{{else}}/read{{/if}}?id={{id}}" style="text-decoration-thickness: 1px;color: inherit;">      
     <div class="related-articles" >
     <div class="article">
       <div class="article-image">
@@ -165,8 +162,14 @@
       </div>
       <div class="article-info">
         <h3 class="article-title">{{title}}</h3><br/>
-        <p class="article-date">{{formatLongDate update_at}}</p>
+       
         <p class="article-description">{{summary}}</p>
+         <p class="article-date">{{formatLongDate update_at}}</p>
+         {{#if is_premium}}
+            <span class="badge bg-warning text-dark" style="font-size: 12px;">
+              <i class="fas fa-crown"></i> Premium
+            </span>
+       {{/if}}
       </div>
     </div>
     </div>

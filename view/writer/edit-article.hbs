@@ -80,8 +80,10 @@ body.modal-open {
          <label class="mt-5" >Category</label>
         <select id="category" class="form-control mb-3">
             <option value="">Choice category</option>
-                {{#each this.categories}}
-                    <option value="{{id}}">{{name}}</option>
+                {{#each data.categories}}
+                    <option value="{{id}}" {{#if (eq id ../data.category_id)}}selected{{/if}}>
+                        {{name}}
+                    </option>
                 {{/each}}
         </select>
          
@@ -159,11 +161,8 @@ body.modal-open {
 
     <script>
         $(document).ready(function() {
-            // Khởi tạo Summernote với dữ liệu mặc định
-           
 
-            // Thiết lập nội dung HTML mặc định cho Summernote
-           const content = {{{data.content}}}; // This will be the JSON-encoded string in the template
+           const content = {{{data.content}}}; 
         $('#summernote').summernote('code', content);
         });
     </script>
@@ -171,12 +170,12 @@ body.modal-open {
      <script src="../js/loading.js"></script>
      <script>
        async function loadTags() {
-        const articleTagsResponse = await fetch(`/editor/article-tags?id={{data.id}}`);
+        const articleTagsResponse = await fetch(`/writer/article-tags?id={{data.id}}`);
         const articleTags = await articleTagsResponse.json() || [];
         
         // Load all available tags
         const tagsContainer = document.getElementById('tagsContainer');
-        const tagsResponse = await fetch(`/editor/tags`);
+        const tagsResponse = await fetch(`/writer/tags`);
         const tags = await tagsResponse.json();
 
         tagsContainer.innerHTML = '';

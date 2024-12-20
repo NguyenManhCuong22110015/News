@@ -6,7 +6,7 @@ export default {
             .join('articles as a', 'ec.category_id', 'a.category_id')
             .select('a.*')
             .where('ec.user_id', userId)
-            .andWhere('status', 'draft')
+            .whereIn('status', ['draft', 'Approved', 'Rejected'])
             .orderBy('a.created_at', 'desc');
     },
 }

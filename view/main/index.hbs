@@ -41,8 +41,14 @@
   <div class="row">
     
     <div class="col-lg-8">
-      <a href="/read?id={{this.topArticle.id}}" style="text-decoration-thickness: 2px;color: inherit;">
+        <a href="{{#if this.topArticle.is_premium}}/read/premium{{else}}/read{{/if}}?id={{this.topArticle.id}}" style="text-decoration-thickness: 2px;color: inherit;">      
+       {{#if this.topArticle.is_premium}}
+                    <span class="badge bg-warning text-dark" style="font-size: 12px;">
+                      <i class="fas fa-crown"></i> Premium
+                    </span>
+       {{/if}}
       <h1>{{this.topArticle.title}}</h1>
+     
       <img class="card-img-top" style="max-width:100%; max-height:60%"  src={{extractFirstImage this.topArticle.content}} alt="Card image cap">
       <div class="article-info">
         <p class="read-time">
@@ -64,21 +70,28 @@
       </div>
       {{else}}
       <div class="row">
-        {{#each this.articles}}
-        <div class="col-md-6 col-sm-6 col-xs-6">
-          <a href="/read?id={{id}}" style="color: inherit;">
-          <div class="card mb-4">
-            <img class="card-img-top custom-img" src={{extractFirstImage content}} alt="Card image cap">
-            <div class="card-body">
-              <h5 class="card-title">{{title}}</h5>
-              <p class="card-text">{{summary}}</p>
-                 <p class="updated-time">Updated {{formatDate updated_at}}</p>
-               <p class="updated-time" style="color: red; font-size:15px" >{{category_name}}</p>
+            {{#each this.articles}}
+            <div class="col-md-6 col-sm-6 col-xs-6">
+        <a href="{{#if is_premium}}/read/premium{{else}}/read{{/if}}?id={{id}}" style="text-decoration-thickness: 1px;color: inherit;">      
+              <div class="card mb-4">
+                <img class="card-img-top custom-img" src={{extractFirstImage content}} alt="Card image cap">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    {{title}}
+                    {{#if is_premium}}
+                    <span class="badge bg-warning text-dark" style="font-size: 12px;">
+                      <i class="fas fa-crown"></i> Premium
+                    </span>
+                    {{/if}}
+                  </h5>
+                  <p class="card-text">{{summary}}</p>
+                  <p class="updated-time">Updated {{formatDate updated_at}}</p>
+                  <p class="updated-time" style="color: red; font-size:15px">{{category_name}}</p>
+                </div>
+              </div>
+              </a>
             </div>
-          </div>
-          </a>
-        </div>
-        {{/each}}
+    {{/each}}
       </div>
       {{/if}}
     </div>
@@ -94,14 +107,21 @@
           <li class="list-group-item">Không có dữ liệu.</li>
           {{else}}
           {{#each this.mostViewedArticles}}
-          <a href="/read?id={{id}}">
+        <a href="{{#if is_premium}}/read/premium{{else}}/read{{/if}}?id={{id}}" style="text-decoration-thickness: 1px;color: inherit;">      
           <li class="list-group-item ">
             <div class="d-flex align-items-center" >
               <img src={{extractFirstImage content}} class="mr-3" alt="Story 1">
               <p href="#" class="short-description">{{title}}</p>
             </div>
             <p class="updated-time">  Updated {{formatDate updated_at}}</p>
-             <p class="updated-time" style="color: red; font-size:15px" >{{category_name}}</p>
+            <div class="d-flex align-items-center justify-content-between">
+               <p class="updated-time" style="color: red; font-size:15px" >{{category_name}}</p>
+              {{#if is_premium}}
+                    <span class="badge bg-warning text-dark" style="font-size: 12px;">
+                      <i class="fas fa-crown"></i> Premium
+                    </span>
+              {{/if}}
+            </div>
           </li>
           </a>
           {{/each}}
@@ -127,7 +147,7 @@
             <div class="row">
               {{#each articleGroup}}
                 <div class="col-md-4 col-sm-12">
-                  <a href="/read?id={{id}}" style="text-decoration:none">
+        <a href="{{#if is_premium}}/read/premium{{else}}/read{{/if}}?id={{id}}" style="text-decoration-thickness: 1px;color: inherit;">      
                   <div class="card mb-4">
                     <img class="card-img-top custom-img" src="{{extractFirstImage content}}" alt="Card image cap">
                     <div class="card-body">
@@ -174,6 +194,8 @@
             </div>
             <div class="card-body">
               {{#if category.article}}
+                <a href="{{#if category.article.is_premium}}/read/premium{{else}}/read{{/if}}?id={{category.article.id}}" style="text-decoration-thickness: 1px;color: inherit;">      
+
                <div>
                  <img class="card-img-top custom-img" src="{{extractFirstImage category.article.content}}" alt="Card image cap">
                 <h6 class="card-title">{{category.article.title}}</h6>
@@ -181,6 +203,7 @@
                   <p class="updated-time">Updated {{formatDate updated_at}}</p>
                 <a href="/article/byCat?id={{category.article.category_id}}" class="btn btn-outline-primary">Read More</a>
                </div>
+               </a>
               {{else}}
                 <p>No articles available</p>
               {{/if}}

@@ -19,7 +19,7 @@ import moment from 'moment-timezone';
 import readPageRoute from './routes/readPageRoute.js';
 import accountRoute from './routes/accountRoute.js';
 import editorRoute from './routes/editorRoute.js';
-
+import {authAdmin, authWriter, authEditor} from './middlewares/auth.mdw.js';
 const app = express()
 
 
@@ -42,6 +42,9 @@ const app = express()
       },
       eq: function (a, b) {
         return a === b;
+      },
+      noteq: function (a, b) {
+        return a !== b;
       },
       formatDate: function (dateString) {
         return moment(dateString)
@@ -150,9 +153,9 @@ const app = express()
 
 app.use('/auth', authLogin);
 
-app.use('/writer', writerRoute);
+app.use('/writer',authWriter, writerRoute);
 
-app.use('/admin', adminRoute);
+app.use('/admin',authAdmin, adminRoute);
 app.use('/', mainPageRoute);
 
 import vnpay from "./routes/payment/vnpay.js"
@@ -167,7 +170,7 @@ app.use('/read', readPageRoute);
 
 app.use('/account', accountRoute);
 
-app.use('/editor', editorRoute);
+app.use('/editor',authEditor, editorRoute);
 
 
 app.get("/", (req, res) => {
