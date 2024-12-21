@@ -44,8 +44,13 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      
-      
+
+        {{#if this.main_cat}}
+        <li class="nav-item">
+          <a class="nav-link" style="color:red !important" >{{this.main_cat}}</a>
+        </li>
+        {{/if}}
+
        {{#each this.categories}}
       
       <li class="nav-item"><a class="nav-link" href="/article/byCat?id={{id}}">{{name}}</a></li>

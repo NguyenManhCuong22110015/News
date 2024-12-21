@@ -47,12 +47,14 @@ router.get('/', async (req, res) => {
 
         const tags = await articleService.getTagsByArticleId(id);
 
+        
 
         res.render('readPage', {
             article,
             author,
             articlesSameCate,
             categories: child_cat,
+            main_cat:parent_cat,
             parent_cat,
             comments,
             tags,
@@ -107,6 +109,7 @@ router.get('/premium', premiumPage,async (req, res) => {
             author,
             articlesSameCate,
             categories: child_cat,
+            main_cat:parent_cat,
             parent_cat,
             comments,
             tags,

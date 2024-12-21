@@ -195,7 +195,12 @@
 
         .status-button:hover {
             transform: translateY(-5px);
-  }
+  }.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+.modal {
+    background-color: rgba(0, 0, 0, 0.5);
+}
     </style>
 </head>
 <body>
@@ -263,16 +268,27 @@
                             
                         </td>
                         {{/if}}
-                        <td  >
+                        {{#if (or (eq status "Published") (eq status "Approved"))}}
+
+                        <td ></td>
+                        {{else}}
+                          <td  >
                             <a class="btn btn-success" href="/writer/edit-article?id={{id}}" >
                                 <i class='bx bxs-edit'></i>
                             </a>
                         </td>
-                        <td>
+                        {{/if}}
+                        {{#if (or (eq status "Published") (eq status "Approved"))}}
+
+                        <td ></td>
+                        {{else}}
+                          <td>
                             <button class="btn btn-danger delete-button" onclick="deleteArticle({{id}})">
                                 <i class='bx bxs-trash-alt'></i>
                             </button>
                         </td>
+                        {{/if}}
+                        
                     </tr>
                     {{/each}}
                 </tbody>

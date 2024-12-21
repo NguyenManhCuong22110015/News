@@ -122,12 +122,13 @@ router.put('/:id/status', async (req, res) => {
     }else {
       list = await articleService.findPageByCatId(id, limit, offset, false);
     }
-
+main_cat:parent_cat,
     res.render('articles/byCat', {
         is_parent: !cat.parent_id,
         categories: child_cat,
         parent_cat: parent_cat,
         layout: "footer",
+        main_cat:parent_cat,
         articles: list,
         empty: list.length === 0,
         pageNumbers: pageNumbers,

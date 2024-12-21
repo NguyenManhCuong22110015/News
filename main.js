@@ -63,6 +63,11 @@ const app = express()
        toUpperCase: function(text) {
         return text ? text.toUpperCase() : '';
     },
+    or: function() {
+      // Remove the last argument (Handlebars options)
+      const args = Array.prototype.slice.call(arguments, 0, -1);
+      return args.some(Boolean);
+  },
     isSubscriptionActive : function(expiryDate) {
       if (!expiryDate) return false;
       const today = new Date();

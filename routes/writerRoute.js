@@ -77,6 +77,11 @@ router.get('/edit-article', async (req,res) => {
   const article = await articleService.getArticleByID(id);
   const categories = await categoryService.getAll();
 
+  if(article.status === 'Published' || article.status === 'Approved') 
+  {
+    return res.render('error')
+  }
+
   res.render('writer/edit-article', {
       data: {
           id: article.id,

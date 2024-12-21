@@ -39,7 +39,7 @@ body.modal-open {
       {{#each list}}
       <tr>
         <th scope="row">{{this.id}}</th>
-        <td>{{this.name}}</td>
+        <td>{{this.name}} {{#if (eq this.role 'writer')}} <span style="color:rgb(101, 78, 10)">( {{this.pen_name}} )</span>{{/if}}</td>
         <td>{{this.role}}</td>
         
        
