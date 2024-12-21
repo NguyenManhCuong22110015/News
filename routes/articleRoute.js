@@ -78,65 +78,67 @@ router.put('/:id/status', async (req, res) => {
     const limit = 6;
     const current_page = req.query.page || 1;
     const offset = (current_page - 1) * limit;
-  
+    const isPremium = req.session.is_premium ? true : false;
+
     try {
-      let isPremium = req.session.is_premium ? true : false;
+        const cat = await articleService.findCatById(id);
+        let child_cat;
+        let parent_cat;
+        let list = [];
+        let nRows = 0;
 
-      let nRows = 0;
+        if (cat.parent_id) {
+            // Child category - normal behavior
+            child_cat = await articleService.findChildCatById(cat.parent_id);
+            parent_cat = child_cat.find(c => c.id === parseInt(id))?.name || '';
+            nRows = await articleService.countByCatId(id, isPremium);
+            list = await articleService.findPageByCatId(id, limit, offset, isPremium);
+        } else {
+            // Parent category - get all child categories and their articles
+            child_cat = await articleService.findChildCatById(id);
+            parent_cat = cat.name;
+            
+            // Get parent category articles
+            const parentRows = await articleService.countByCatId(id, isPremium);
+            const parentArticles = await articleService.findPageByCatId(id, limit, offset, isPremium);
+            
+            // Get all child categories articles
+            const childIds = child_cat.map(c => c.id);
+            const childPromises = childIds.map(async childId => {
+                const childArticles = await articleService.findPageByCatId(childId, limit, offset, isPremium);
+                return childArticles;
+            });
+            
+            const childArticles = await Promise.all(childPromises);
+            list = [...parentArticles, ...childArticles.flat()];
+            
+            // Get total count from parent and children
+            const childCounts = await Promise.all(
+                childIds.map(childId => articleService.countByCatId(childId, isPremium))
+            );
+            nRows = childCounts.reduce((sum, curr) => sum + curr.total, parentRows.total);
+        }
 
-      if(isPremium){
-        nRows = await articleService.countByCatId(id, true);
-      }else {
-        nRows = await articleService.countByCatId(id, false);
-      }
-    const nPages = Math.ceil(nRows.total / limit);
-    const pageNumbers = [];
-    for (let i = 0; i < nPages; i++) {
-      pageNumbers.push({
-        value: i + 1,
-        active: (i + 1) === +current_page
-      });
-    }
-    
-    // Check current category type
-    const cat = await articleService.findCatById(id); 
-    let child_cat;
-    let parent_cat; // Declare variable here
+        const nPages = Math.ceil(nRows / limit);
+        const pageNumbers = Array.from({length: nPages}, (_, i) => ({
+            value: i + 1,
+            active: (i + 1) === +current_page
+        }));
 
-    if (cat.parent_id) {
-        // Get sibling categories if this is a child
-        child_cat = await articleService.findChildCatById(cat.parent_id);
-        // For child category, use its own name
-        parent_cat = child_cat.find(c => c.id === parseInt(id))?.name || '';
-    } else {
-        // Get child categories if this is a parent
-        child_cat = await articleService.findChildCatById(id);
-        // For parent category, use its name
-        parent_cat = cat.name;
-    }
-
-    let list = [];
-
-    if(isPremium){
-        list = await articleService.findPageByCatId(id, limit, offset, true);
-    }else {
-      list = await articleService.findPageByCatId(id, limit, offset, false);
-    }
-main_cat:parent_cat,
-    res.render('articles/byCat', {
-        is_parent: !cat.parent_id,
-        categories: child_cat,
-        parent_cat: parent_cat,
-        layout: "footer",
-        main_cat:parent_cat,
-        articles: list,
-        empty: list.length === 0,
-        pageNumbers: pageNumbers,
-        catId: id
-    });
-    }
-    catch (error) {
-      res.render('error')
+        res.render('articles/byCat', {
+            is_parent: !cat.parent_id,
+            categories: child_cat,
+            parent_cat: parent_cat,
+            layout: "footer",
+            main_cat: parent_cat,
+            articles: list.slice(offset, offset + limit),
+            empty: list.length === 0,
+            pageNumbers: pageNumbers,
+            catId: id
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        res.render('error');
     }
 });
 
@@ -178,7 +180,7 @@ router.get('/byTag', async function (req, res) {
   
 
   res.render('articles/byTag', {
-
+      tagId: tag,
       layout: "footer",
       articles: list,
       empty: list.length === 0,
