@@ -339,6 +339,18 @@ body {
   width: calc(100% - 60px);
 }
 
+
+.long-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;  /* Show 3 lines */
+  max-height: 5.4em;      /* Increase height: line-height * number of lines */
+  line-height: 1.8em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: calc(100% - 60px);
+}
+
 .list-group-item img {
   width: 200px;   
   height: 90px;  

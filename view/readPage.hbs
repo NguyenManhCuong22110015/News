@@ -136,11 +136,11 @@
           <li class="list-group-item">Không có dữ liệu.</li>
           {{else}}
           {{#each this.articlesSameCate}}
-        <a href="{{#if is_premium}}/read/premium{{else}}/read{{/if}}?id={{id}}" style="text-decoration-thickness: 2px;color: inherit;">      
+        <a href="{{#if is_premium}}/read/premium{{else}}/read{{/if}}?id={{id}}" style="text-decoration-thickness: 1px;color: inherit;">      
           <li class="list-group-item ">
             <div class="d-flex align-items-center" >
               <img src={{extractFirstImage content}} class="mr-3" alt="Story 1">
-              <p href="#" class="short-description">{{title}}</p>
+              <p style="font-size:12px" class="short-description">{{title}}</p>
             </div>
             <p class="updated-time">  Updated {{formatDate updated_at}}</p>
              <p class="updated-time" style="color: red; font-size:15px" >{{category_name}}</p>

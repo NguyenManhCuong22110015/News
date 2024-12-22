@@ -98,25 +98,19 @@ router.put('/:id/status', async (req, res) => {
             child_cat = await articleService.findChildCatById(id);
             parent_cat = cat.name;
             
-            // Get parent category articles
-            const parentRows = await articleService.countByCatId(id, isPremium);
-            const parentArticles = await articleService.findPageByCatId(id, limit, offset, isPremium);
+            // Get parent category articles without pagination
+            const parentArticles = await articleService.findPageByCatId(id, null, 0, isPremium);
             
-            // Get all child categories articles
+            // Get all child categories articles without pagination
             const childIds = child_cat.map(c => c.id);
             const childPromises = childIds.map(async childId => {
-                const childArticles = await articleService.findPageByCatId(childId, limit, offset, isPremium);
+                const childArticles = await articleService.findPageByCatId(childId, null, 0, isPremium);
                 return childArticles;
             });
             
             const childArticles = await Promise.all(childPromises);
             list = [...parentArticles, ...childArticles.flat()];
-            
-            // Get total count from parent and children
-            const childCounts = await Promise.all(
-                childIds.map(childId => articleService.countByCatId(childId, isPremium))
-            );
-            nRows = childCounts.reduce((sum, curr) => sum + curr.total, parentRows.total);
+            nRows = list.length;
         }
 
         const nPages = Math.ceil(nRows / limit);
@@ -125,14 +119,17 @@ router.put('/:id/status', async (req, res) => {
             active: (i + 1) === +current_page
         }));
 
+        // Apply pagination after combining all articles
+        const paginatedList = list.slice(offset, offset + limit);
+
         res.render('articles/byCat', {
             is_parent: !cat.parent_id,
             categories: child_cat,
             parent_cat: parent_cat,
             layout: "footer",
             main_cat: parent_cat,
-            articles: list.slice(offset, offset + limit),
-            empty: list.length === 0,
+            articles: paginatedList,
+            empty: paginatedList.length === 0,
             pageNumbers: pageNumbers,
             catId: id
         });
@@ -141,7 +138,6 @@ router.put('/:id/status', async (req, res) => {
         res.render('error');
     }
 });
-
 
 
 router.get('/byTag', async function (req, res) {

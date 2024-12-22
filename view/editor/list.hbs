@@ -14,6 +14,9 @@
 .custom-modal .modal-dialog {
     z-index: 1055;
     position: relative;
+    max-width: 80%; /* Wider modal */
+    width: 1000px; /* Fixed width */
+    margin: 1.75rem auto;
 }
 
 body.modal-open {
@@ -81,24 +84,24 @@ body.modal-open {
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Approve Article</h5>
+                <h5 class="modal-title" >Approve Article</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label class="form-label">Select Category</label>
+                    <label class="form-label" style="color:red" >Select Category</label>
                     <select class="form-select" id="categorySelect">
                         <option value="">Choose category...</option>
                     </select>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Schedule Publication</label>
+                    <label class="form-label"  style="color:red">Schedule Publication</label>
                     <input type="text" class="form-control" id="datetimePicker">
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label">Tags</label>
+                    <label class="form-label" style="color:red">Tags</label>
                     <div id="tagsContainer"></div>
                 </div>
             </div>

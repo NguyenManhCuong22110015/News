@@ -84,7 +84,7 @@
                     </span>
                     {{/if}}
                   </h5>
-                  <p class="card-text">{{summary}}</p>
+                  <p class="card-text long-description"  >{{summary}}</p>
                   <p class="updated-time">Updated {{formatDate updated_at}}</p>
                   <p class="updated-time" style="color: red; font-size:15px">{{category_name}}</p>
                 </div>
@@ -155,6 +155,11 @@
                       <p class="card-text">{{summary}}</p>
                         <p class="updated-time">Updated {{formatDate updated_at}}</p>
                         <p class="updated-time" style="color: red; font-size:15px" >{{category_name}}</p>
+                        {{#if is_premium}}
+                    <span class="badge bg-warning text-dark" style="font-size: 12px;">
+                      <i class="fas fa-crown"></i> Premium
+                    </span>
+              {{/if}}
                     </div>
                   </div>
                   </a>
@@ -199,8 +204,13 @@
                <div>
                  <img class="card-img-top custom-img" src="{{extractFirstImage category.article.content}}" alt="Card image cap">
                 <h6 class="card-title">{{category.article.title}}</h6>
-                <p class="card-text">{{category.article.summary}}</p>
+                <p class="card-text long-description">{{category.article.summary}}</p>
                   <p class="updated-time">Updated {{formatDate updated_at}}</p>
+                  {{#if is_premium}}
+                    <span class="badge bg-warning text-dark" style="font-size: 12px;">
+                      <i class="fas fa-crown"></i> Premium
+                    </span>
+              {{/if}}
                 <a href="/article/byCat?id={{category.article.category_id}}" class="btn btn-outline-primary">Read More</a>
                </div>
                </a>
