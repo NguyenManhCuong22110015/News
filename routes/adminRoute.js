@@ -270,6 +270,21 @@ router.get('/users/add', (req, res) => {
     });
 });
 
+
+router.post('/updateRole', async (req, res) => {
+    try {
+        const {userId, role} = req.body;
+         await adminService.updateRole(userId, role);
+         res.status(200).json({ 
+            success: true,
+            message: 'Role updated successfully'
+        });
+    }
+    catch(error){
+        res.redirect('/error');
+    }
+});
+
 router.post('/users/add', async (req, res) => {
     const { Firstname, LastName, Email } = req.body;
   

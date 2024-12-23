@@ -49,14 +49,14 @@ body.modal-open {
   <tbody>
     {{#if list}}
       {{#each this.list}}
-      <tr>
+      <tr class="{{#if (eq status 'Published')}}table-warning{{/if}}">
         <th scope="row">{{id}}</th>
         <td>{{title}}</td>
         <td>{{summary}}</td>
          <td>{{formatLongDate update_at}}</td>
           <td>{{status}}</td>
           <td><a href="/editor/view?id={{id}}" class="btn btn-primary">View</a></td>
-          {{#if (noteq status 'Approved')}}
+          {{#if (noteq status 'Published')}}
           <td>
                 <button class="btn btn-success" onClick="openTextModal({{id}})">Approve</button>
           </td>

@@ -136,13 +136,14 @@ export default {
             throw error;
         }
     },
-    async searchAndCountArticles(keyword, isPremiumUser ) {
+    async searchAndCountArticles(keyword, isPremiumUser) {
         try {
-            let query = db('articles')
+            // Full-Text Search Query
+            let fullTextQuery = db('articles')
                 .select(
                     'id',
                     'title',
-                    'content', 
+                    'content',
                     'summary',
                     db.raw(
                         `MATCH (title, content, summary) AGAINST (? IN NATURAL LANGUAGE MODE) AS score`,
@@ -156,17 +157,45 @@ export default {
                 .where('status', 'Published');
     
             if (!isPremiumUser) {
-                query = query.where('is_premium', false);
+                fullTextQuery = fullTextQuery.where('is_premium', false);
             }
     
-            const articles = await query.orderBy('score', 'desc');
-    
-            const totalQuery = db('articles')
-                .whereRaw(
-                    `MATCH (title, content, summary) AGAINST (? IN NATURAL LANGUAGE MODE)`,
-                    [keyword]
+            // SQL LIKE Query
+            let likeQuery = db('articles')
+                .select(
+                    'id',
+                    'title',
+                    'content',
+                    'summary',
+                    db.raw('0 AS score') // LIKE không có điểm số, mặc định là 0
                 )
-                .where('status', 'Published');
+                .where('status', 'Published')
+                .andWhere(function () {
+                    this.where('title', 'LIKE', `%${keyword}%`)
+                        .orWhere('content', 'LIKE', `%${keyword}%`)
+                        .orWhere('summary', 'LIKE', `%${keyword}%`);
+                });
+    
+            if (!isPremiumUser) {
+                likeQuery = likeQuery.where('is_premium', false);
+            }
+    
+            // Kết hợp Full-Text và LIKE
+            const articles = await db
+                .union([fullTextQuery, likeQuery], true)
+                .orderBy('score', 'desc');
+    
+            // Đếm tổng số kết quả
+            const totalQuery = db('articles')
+                .where('status', 'Published')
+                .andWhere(function () {
+                    this.whereRaw(
+                        `MATCH (title, content, summary) AGAINST (? IN NATURAL LANGUAGE MODE)`,
+                        [keyword]
+                    ).orWhere('title', 'LIKE', `%${keyword}%`)
+                     .orWhere('content', 'LIKE', `%${keyword}%`)
+                     .orWhere('summary', 'LIKE', `%${keyword}%`);
+                });
     
             if (!isPremiumUser) {
                 totalQuery.where('is_premium', false);
@@ -183,6 +212,7 @@ export default {
             throw error;
         }
     },
+    
     
     async getArticle() {
         return db('articles').orderBy('id', 'desc').whereIn('status', ['Published', 'draft']);

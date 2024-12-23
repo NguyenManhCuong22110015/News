@@ -27,6 +27,7 @@ body.modal-open {
       <th scope="col">#</th>
       <th scope="col">Name</th>
       <th scope="col">Role</th>
+      <th>Change Role</th>
       <th scope="col">Status</th>
       <th scope="col">Request</th>
       <th scope="col">Renew Subscription</th>
@@ -43,7 +44,16 @@ body.modal-open {
         <td>{{this.name}} {{#if (eq this.role 'writer')}} <span style="color:rgb(101, 78, 10)">( {{this.pen_name}} )</span>{{/if}}</td>
         <td>{{this.role}}</td>
         
-       
+       <td>
+        <select class="form-select form-control" onchange="updateRole({{this.id}}, this.value)">
+            <option value="">Select role</option>
+            <option value="admin" {{#if (eq this.role 'admin')}}selected{{/if}}>Admin</option>
+            <option value="writer" {{#if (eq this.role 'writer')}}selected{{/if}}>Writer</option>
+            <option value="editor" {{#if (eq this.role 'editor')}}selected{{/if}}>Editor</option>
+            <option value="user" {{#if (eq this.role 'user')}}selected{{/if}}>User</option>
+        </select>
+    </td>
+
         {{#if (isSubscriptionActive this.subscription_expiry)}}
             <td class="text-success">Active ({{getRemainingDays this.subscription_expiry }}) </td>
         {{else}}
@@ -284,7 +294,29 @@ async function openTextModal(id) {
     }
 }
         
+async function updateRole(userId, newRole) {
+    try {
+        const response = await fetch('/admin/updateRole', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: userId,
+                role: newRole
+            })
+        });
 
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert('Failed to update role');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error updating role');
+    }
+}
 
 async function saveTextChange() {
     const newValue = document.getElementById('text-input').value.trim();

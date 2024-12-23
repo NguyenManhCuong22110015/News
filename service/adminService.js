@@ -55,6 +55,9 @@ export default {
             console.error('Error requesting payment:', error);
             throw error;
         }
+    },
+    updateRole(id, role){
+        return db("users").where("id", id).update({role: role});
     }
 
 }
