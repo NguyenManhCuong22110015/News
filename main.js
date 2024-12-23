@@ -21,6 +21,7 @@ import accountRoute from './routes/accountRoute.js';
 import editorRoute from './routes/editorRoute.js';
 import subRoute from './routes/subRoute.js';
 import {authAdmin, authWriter, authEditor} from './middlewares/auth.mdw.js';
+import captchaRoute from './routes/captchaRoute.js'
 const app = express()
 
 
@@ -183,7 +184,7 @@ app.get("/", (req, res) => {
     res.send("Hello word")
 })
 
-
+app.use('/captchane', captchaRoute);
 app.listen(3000, ()  => {
     console.log("App is running")
 })

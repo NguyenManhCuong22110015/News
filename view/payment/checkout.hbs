@@ -123,11 +123,11 @@
                 <!-- Input thay thế -->
                 <input 
                 type="text" 
-                value="22110015@student.hcmute.edu.vn" 
+                value="{{authUser.email}}" 
                 class="custom-input" 
                  
                 />
-                <a href="#" class="text-decoration-none">Edit</a>
+                
             </div>
             <hr>
             </div>
@@ -154,6 +154,11 @@
               <div class="card mb-2" data-method="Cash on Delivery">
                 <div class="card-body">
                   Cash on Delivery
+                </div>
+              </div>
+               <div class="card mb-2" data-method="request">
+                <div class="card-body">
+                  Send request to admin
                 </div>
               </div>
             </form>
@@ -236,7 +241,36 @@
           return; // Stop if the email is invalid
         }
 
-        if (method === 'VNPay') {
+       if (method === 'request') {
+            try {
+                const response = await fetch('/payment/request', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire('Success', result.message, 'success')
+                        .then(() => {
+                            window.location.href = '/'; 
+                        });
+                } else {
+                    Swal.fire('Success', result.message, 'error');
+                }
+            } catch (error) {
+                Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+            }
+        }
+
+      else  
+
+      if (method === 'VNPay') {
           // Create payload only for VNPay method
           const payload = {
             amount: 10000,

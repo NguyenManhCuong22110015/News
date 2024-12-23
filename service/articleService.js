@@ -3,6 +3,7 @@ import db from '../utils/db.js';
 import pdf from 'html-pdf';
 import htmlPdfNode from 'html-pdf-node';
 import fs from 'fs';
+import { request } from 'http';
 export default {
     async getArticlesByWriterID(userID){
 
@@ -184,7 +185,7 @@ export default {
     },
     
     async getArticle() {
-        return db('articles').orderBy('id', 'desc').whereIn('status', ['Published', 'Approved']);
+        return db('articles').orderBy('id', 'desc').whereIn('status', ['Published', 'draft']);
     },
     async updateStatus(id, status) {
         return db('articles')
@@ -327,14 +328,16 @@ export default {
         return db('users')
             .where('id', userId)
             .update({
-                subscription_expiry: new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ')
+                subscription_expiry: new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' '),
+                request : false
             });
     },
     cancelSubscription(userId) {
         return db('users')
             .where('id', userId)
             .update({
-                subscription_expiry: new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ')
+                subscription_expiry: new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' '),
+                request : false
             });
     },
     async updatePremium(id) {
@@ -351,12 +354,15 @@ export default {
             });
     },
     approveArticle(articleId,categoryId,publishDate,tags){
+        const date = new Date(publishDate);
+        const offset = date.getTimezoneOffset();
+        date.setMinutes(date.getMinutes() - offset);
         return db('articles')
             .where('id', articleId)
             .update({
                 category_id: categoryId,
-                status: 'Approved',
-                updated_at: new Date(publishDate).toISOString().slice(0, 19).replace('T', ' ')
+                status: 'Published',
+                updated_at: date.toISOString().slice(0, 19).replace('T', ' ')
             })
             .then(() => {
                 return db('article_tags')

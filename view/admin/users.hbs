@@ -28,6 +28,7 @@ body.modal-open {
       <th scope="col">Name</th>
       <th scope="col">Role</th>
       <th scope="col">Status</th>
+      <th scope="col">Request</th>
       <th scope="col">Renew Subscription</th>
       <th scope="col">Assign Categories</th>
       <th scope="col">&nbsp;</th>
@@ -37,7 +38,7 @@ body.modal-open {
   <tbody>
     {{#if list}}
       {{#each list}}
-      <tr>
+        <tr class="{{#if request}}table-warning{{/if}}">
         <th scope="row">{{this.id}}</th>
         <td>{{this.name}} {{#if (eq this.role 'writer')}} <span style="color:rgb(101, 78, 10)">( {{this.pen_name}} )</span>{{/if}}</td>
         <td>{{this.role}}</td>
@@ -48,6 +49,12 @@ body.modal-open {
         {{else}}
             <td class="text-danger">Expired</td>
             
+        {{/if}}
+
+        {{#if request}}
+        <td style="color:red">Requesting</td>
+        {{else}}
+        <td></td>
         {{/if}}
         {{#if (eq this.role 'user')}}
         <td>

@@ -39,10 +39,12 @@ export default {
         }
     },
     async getMostViewedArticles(limit = 10, isPremiumUser ) {
+        const now = new Date();
         try {
             let query = db('articles')
                 .join('category', 'articles.category_id', '=', 'category.id')
                 .where('articles.status', 'Published')
+                .andWhere('articles.updated_at', '<=', now)
                 .select('articles.*', 'category.name as category_name');
     
             if (!isPremiumUser) {
@@ -64,10 +66,12 @@ export default {
         }
     },
     async getLatestArticles(limit = 10, isPremiumUser ) {
+        const now = new Date();
         try {
             let query = db('articles')
                 .join('category', 'articles.category_id', '=', 'category.id')
                 .where('articles.status', 'Published')
+                .andWhere('articles.updated_at', '<=', now)
                 .select('articles.*', 'category.name as category_name');
     
             if (!isPremiumUser) {
@@ -75,7 +79,6 @@ export default {
             } else {
                 query = query.orderBy('articles.is_premium', 'desc');
             }
-    
             const latestArticles = await query
                 .orderBy('articles.updated_at', 'desc')
                 .limit(limit);
@@ -87,6 +90,7 @@ export default {
         }
     },
     async getTopCategoriesByViews(limit = 10, isPremiumUser ) {
+        const now = new Date();
         try {
             const categories = await db('category')
                 .select('id', 'name')
@@ -102,7 +106,9 @@ export default {
                 try {
                     let articlesQuery = db('articles')
                         .where('category_id', category.id)
+                        .andWhere('updated_at', '<=', now)
                         .andWhere('status', 'Published');
+                        
     
                     if (!isPremiumUser) {
                         articlesQuery = articlesQuery.where('is_premium', false);

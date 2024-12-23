@@ -35,6 +35,7 @@ $('#save-button').on('click', function() {
   const title = $('#title').val().trim();
   const summary = $('#summary').val().trim();
   const category = $('#category').val();
+  const isPremium = $('#isPremium').is(':checked');
   const selectedTags = Array.from(document.querySelectorAll('#tagsContainer .btn.active'))
     .map(btn => btn.getAttribute('data-tag-id'));
   const tags = selectedTags;
@@ -61,7 +62,7 @@ $('#save-button').on('click', function() {
       results.forEach(({ placeholder, url }) => {
         content = content.replace(new RegExp(placeholder, "g"), url);
       });
-      return saveArticle({ title, content, summary, category, tags });
+      return saveArticle({ title, content, summary, category, tags, isPremium });
     })
     .then(() => {
       // SweetAlert2 success message

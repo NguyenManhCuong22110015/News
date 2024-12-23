@@ -55,10 +55,10 @@ router.post('/login', async (req, res) => {
   const email = req.body.login_email || '';
   const password = req.body.login_password || '';
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  // if (!emailRegex.test(email)) {
-  //   req.flash('error', 'Invalid email format');
-  //   return res.redirect('/login');
-  // }
+  if (!emailRegex.test(email)) {
+    req.flash('error', 'Invalid email format');
+    return res.redirect('/login');
+  }
   try {
       const user = await authService.login(email, password); 
       if (!user) {
@@ -92,6 +92,9 @@ router.post('/login', async (req, res) => {
 
 
 router.post('/signup', async (req, res) => {
+
+
+
   const email = req.body.reg_email || '';
   const password = req.body.reg_password || '';
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -99,6 +102,14 @@ router.post('/signup', async (req, res) => {
     req.flash('error', 'Invalid email format');
     return res.redirect('/login');
   }
+
+
+  const token = req.body['h-captcha-response'];
+  if (!token) {
+      req.flash('error', 'Please complete the captcha');
+      return res.redirect('/login');
+  }
+
   try {
     const existingUser = await authService.checkAccountOrCreateAccount(email, password);
 

@@ -227,7 +227,7 @@
                         
                         <th>Summary</th>
                         <th>Create At</th>
-                        <th>Update At</th>
+                        <th>Premium status</th>
                         <th>Status</th>
                         <th scope="col">&nbsp</th>
                         <th scope="col">&nbsp</th>
@@ -241,8 +241,13 @@
                         <td>{{id}}</td>
                         <td>{{title}}</td>
                         <td>{{summary}}</td>
-                        <td>{{created_at}}</td>
-                        <td>{{updated_at}}</td>
+                        <td>{{formatLongDate created_at}}</td>
+                        <td class="text-center">
+                            {{#if is_premium}}
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                            
+                            {{/if}}
+                        </td>
                         <td>{{status}}</td>
                        {{#if (eq status "Rejected")}}
                          <td >

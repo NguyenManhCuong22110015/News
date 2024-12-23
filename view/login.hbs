@@ -6,8 +6,9 @@
     <title>Document</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="css/login.css"/>
-    
+    <link rel="stylesheet" href="/css/login.css"/>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
     
@@ -57,11 +58,33 @@
     </form>
 </div> 
 
-       
+       <div class="modal fade" id="captchaModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Please verify you're human</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                 <form id="captcha-form" action="/verify-captcha" method="POST">
+                     <div class="h-captcha" 
+                     data-sitekey="f2aacc22-14fa-4572-bc96-0028525e7082"
+                     data-callback="onCaptchaVerified">
+                </div>
+                </form>
+               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
        
         
 
-        <form class="form-signup"  method="post" >
+       <form id="signupForm" class="form-signup" method="post" onsubmit="return validateCaptcha(event)">
+
             <div class="content">
                 <div class="data">
                     <h4 class="text-center" > Logo </h4>
@@ -109,6 +132,27 @@
 
 
    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const signupForm = document.getElementById('signupForm');
+    const captchaModal = new bootstrap.Modal(document.getElementById('captchaModal'));
+
+    if (signupForm) {
+        signupForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            captchaModal.show();
+        });
+    }
+
+    window.onCaptchaSuccess = function(token) {
+        const form = document.getElementById('signupForm');
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'h-captcha-response';
+        input.value = token;
+        form.appendChild(input);
+        form.submit();
+    };
+});
     function togglePassword() {
       const passwordField = document.getElementById("password");
       const toggleIcon = document.getElementById("toggle-password");
@@ -133,9 +177,7 @@
           toggleIcon.textContent = "👁️";  // Trở lại icon mắt khi ẩn mật khẩu
         }
       }
-
-      
-    
+   
       function showFormLogIn() {
         document.querySelector(".form-login").style.display = "block";
         
@@ -147,7 +189,26 @@
         
         document.querySelector(".form-signup").style.display = "block";
       }
+window.onCaptchaVerified = function(token) {
+    const form = document.getElementById('signupForm');
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'h-captcha-response';
+    input.value = token;
+    form.appendChild(input);
+     form.action = '/auth/signup';
+    form.submit();
+}
 
+function validateCaptcha(event) {
+    event.preventDefault();
+    const modal = new bootstrap.Modal(document.getElementById('captchaModal'));
+    hcaptcha.render('h-captcha', {
+        sitekey: 'f2aacc22-14fa-4572-bc96-0028525e7082'
+    });
+    modal.show();
+    return false;
+}
 
         document.getElementById("getCodeButton").addEventListener("click", function () {
         const emailInput = document.getElementById("emailInput");

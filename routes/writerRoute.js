@@ -39,10 +39,10 @@ router.post('/save-article', async (req, res) => {
 
   const userId = req.session.userId || 6;
 
-  const { title, content, summary, category, tags } = req.body;
+  const { title, content, summary, category, tags, isPremium } = req.body;
  
   
-  const ret = await newsPaperService.add(title, content, summary, category, tags, userId)
+  const ret = await newsPaperService.add(title, content, summary, category, tags, userId, isPremium)
   if(ret!== undefined) {
     res.send('Bài viết đã được lưu thành công!');
   }

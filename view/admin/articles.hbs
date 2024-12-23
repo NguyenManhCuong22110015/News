@@ -199,7 +199,7 @@
                         <td>{{formatLongDate updated_at}}</td>
                          <td>
                             <select class="status-dropdown form-control parent-select" data-id="{{id}}">
-                            <option value="Approved" {{#if (eq status 'Approved')}}selected{{/if}}>Draft</option>            
+                            <option value="draft" {{#if (eq status 'draft')}}selected{{/if}}>Draft</option>            
                             <option value="Published" {{#if (eq status 'Published')}}selected{{/if}}>Publish</option>
                             </select>
                         </td>

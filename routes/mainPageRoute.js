@@ -22,8 +22,8 @@ router.get('/', async (req, res) => {
 
     }
     else {
-         approvedArticles = await indexService.getApprovedArticlesEachWeek(7,false);
-         mostViewedArticles = await indexService.getMostViewedArticles(10,false);
+         approvedArticles = await indexService.getApprovedArticlesEachWeek(7,true);
+         mostViewedArticles = await indexService.getMostViewedArticles(10,true);
          latestArticles = await indexService.getLatestArticles(10,false);
          topCategoriesByViews = await indexService.getTopCategoriesByViews(10,false);
          

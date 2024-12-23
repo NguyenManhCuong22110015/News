@@ -47,5 +47,14 @@ export default {
     }, 
     async patchUser(id,category){
         return db("users").where("UserID", id).update(category);
+    },
+    async request(id) {
+        try {
+            return db("users").where("id", id).update({request: true});
+        } catch (error) {
+            console.error('Error requesting payment:', error);
+            throw error;
+        }
     }
+
 }

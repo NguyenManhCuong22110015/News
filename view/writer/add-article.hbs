@@ -48,7 +48,14 @@
          <textarea id="summary" class="form-control mb-3" rows="2" placeholder="Enter article summary"></textarea>
         <label  >Content</label>
         <div id="summernote"></div>
-        <label class="mt-5" >Category</label>
+
+        <div class="form-check mb-3 mt-5">
+          <input class="form-check-input" type="checkbox" id="isPremium" name="isPremium">
+          <label class="form-check-label" for="isPremium" >
+              Premium Article
+          </label>
+      </div>
+              <label class="mt-5" >Category</label>
          <select id="category" class="form-control mb-3">
                 <option value="">Choice category</option>
                 {{#each this.categories}}
@@ -65,6 +72,12 @@
         <a id="" href="http://localhost:3000/writer/articles" class="btn btn-secondary mt-3 mb-5">Back</a>
         <button id="save-button" class="btn btn-primary mt-3 mb-5">Save Article</button>
     </div>
+
+
+
+
+
+
     <div class="footer">
   <div class="navbar">
     <a href="https://edition.cnn.com" class="logo-link">

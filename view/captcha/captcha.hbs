@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hCaptcha Integration</title>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+</head>
+<body>
+    <h1>hCaptcha Verification</h1>
+    
+    <!-- Form with hCaptcha -->
+        <form id="captcha-form" action="/verify-captcha" method="POST">
+            <div class="h-captcha" data-sitekey="{{siteKey}}"></div>
+            <button type="submit">Submit</button>
+        </form>
+
+    <script>
+        // Optionally add client-side validation here if needed
+        document.getElementById('captcha-form').addEventListener('submit', (event) => {
+            // Example client-side logic
+            console.log('Form submitted!');
+        });
+    </script>
+</body>
+</html>
