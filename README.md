@@ -10,6 +10,11 @@
 # Hướng Dẫn Triển Khai Ứng Dụng Node.js Kết Nối Cơ Sở Dữ Liệu
 ### 1. Tải Mã Nguồn
 
+- Chúng ta sẽ có 1 folder `22110015-22110009-221110071 ` như sau
+
+  ![image](https://github.com/user-attachments/assets/882264ef-ebad-4951-8016-758c50ecde6a)
+
+
 - Giải nén file `src.zip` từ thư mục `22110015-22110009-221110071 `
 
 - Mỡ mã nguồn trên `vscode`
