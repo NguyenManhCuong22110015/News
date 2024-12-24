@@ -48,7 +48,7 @@ npm install
 
 ### 3. Thiết Lập Cơ Sở Dữ Liệu
 
-- Giải nén file `db.zip` từ thư mục `22110015-22110009-221110071 ` sẽ nhận được 1 file là `script.sql` chưa sql query để tạo bảng và insert các dữ liệu có sẵn
+- Giải nén file `db.zip` từ thư mục `22110015-22110009-221110071 ` sẽ nhận được 1 file là `script.sql` chứa sql query để tạo bảng và insert các dữ liệu có sẵn
 
 
 ![image](https://github.com/user-attachments/assets/f5247a20-a2c0-474a-92cf-9a40375a9c2e)
@@ -121,7 +121,7 @@ nếu sử dụng đường dẫn  `https://hostwebproject.onrender.com` trong f
 để đăng nhập 
 
 
-- Sau khi đăng nhập nhấn vào biểu tưởng user trên góc phải màn hình và nhấn vào biểu tượng + tên chức năng của mình để trang điều hướng bạn đến trang làm việc của role đã được thiết lập ( các url đã ngắn chặn role khác truy cập kể cả khi có url của nó )
+- Sau khi đăng nhập nhấn vào biểu tưởng user trên góc phải màn hình và nhấn vào biểu tượng + tên chức năng của mình để trang điều hướng bạn đến trang làm việc của role đã được thiết lập ( các url đã ngăn chặn role khác truy cập kể cả khi có `url` của nó )
 
 ![image](https://github.com/user-attachments/assets/3d418827-e966-459d-9814-1d102aa4ac5b)
 
