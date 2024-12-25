@@ -8,7 +8,7 @@
 
 
 # Hướng Dẫn Triển Khai Ứng Dụng Node.js Kết Nối Cơ Sở Dữ Liệu
-### 1. Tải Mã Nguồn
+### 1. Tải Mã Nguồn từ [đây](https://drive.google.com/drive/folders/1VDRYa4dEEIoTijl2G-pOGqwb26S_l-uS?usp=sharing)
 
 - Chúng ta sẽ có 1 folder `22110015-22110009-221110071 ` như sau
 
