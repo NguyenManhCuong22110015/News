@@ -109,11 +109,11 @@ const app = express()
   app.use(express.static(path.join(__dirname, 'public')));
   
   app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { 
-        secure: false, // Only true if HTTPS
+      secret: 'Q2VNTVN3QklsQXZTRmFhRHV6ZEtKcHhDdFNldG4xTHdGSzRCWkunSmJ5UT8',
+      resave: false,
+      saveUninitialized: true,
+      cookie: { 
+        secure: false, // true in production
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
      //   domain:'hostwebproject.onrender.com',
@@ -190,5 +190,6 @@ app.get("/", (req, res) => {
 })
 
 app.use('/captchane', captchaRoute);
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(3000, ()  => {
+    console.log("App is running")
+})
