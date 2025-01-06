@@ -10,8 +10,97 @@
 
 <!-- SweetAlert2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.2/dist/sweetalert2.min.js"></script>
-   
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
   <style>
+    
+    /* Chatbot button */
+    .chat-button {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background-color: #055a1b;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      padding: 15px;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    /* Chatbot container */
+    .chat-container {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 300px;
+      height: auto;
+      background-color: white;
+      border: 2px solid #007bff;
+      border-radius: 10px;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+      margin-bottom: 5px;
+    }
+
+    /* Chat messages */
+    .chat-messages {
+      padding: 10px;
+      overflow-y: auto;
+      flex-grow: 1;
+      height: 65vh;
+      
+      
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      font-size: 14px;
+    }
+
+    /* Chat input container */
+    .chat-input-container {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+    }
+
+    .chat-input {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    .chat-send {
+      background-color: #b74508;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .chat-send:hover {
+      background-color: #0056b3;
+    }
+
+    /* Add some style to distinguish user and bot messages */
+    .user-message {
+        
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    .bot-message {
+      margin-bottom: 10px;
+      font-weight: normal;
+      color: #333;
+    }
+
 .main-container {
     width: 100%;
     max-width: 1400px;  /* Add max-width for container behavior */
@@ -154,10 +243,6 @@
     </div>
 
 
-
-
-  </div>
-</div>
   
 <div class="container comment-container mt-5 p-4 border rounded bg-light">
   <div class="d-flex justify-content-between align-items-center pb-3 border-bottom">
@@ -212,7 +297,23 @@
 <button id="scrollToTop" class="scroll-to-top d-none">
   <i class="fas fa-arrow-up"></i>
 </button>
+   <button class="chat-button" id="chatButton">
+    <i class="bi bi-robot"></i>
+  </button>
 
+  <!-- Chatbot container -->
+  <div class="chat-container" id="chatContainer">
+    <div class="chat-messages" id="chatMessages">
+      <!-- Messages will appear here -->
+    </div>
+    <div class="chat-input-container">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Type a message..." />
+      <button class="chat-send" id="sendMessage">Send</button>
+    </div>
+  </div>
+
+  </div>
+</div>
 
 <script>
 
@@ -354,7 +455,42 @@ document.getElementById('postButton').addEventListener('click', async function()
     }
 });
 
+ const chatButton = document.getElementById('chatButton');
+    const chatContainer = document.getElementById('chatContainer');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendMessageButton = document.getElementById('sendMessage');
 
+    // Initialize chatbot data
+    async function initializeChatbot() {
+        try {
+            const response = await fetch('/chatbot/loadArticle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: 197 }) // Your article ID
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to load article data');
+            }
+
+            // Enable chat interface after data is loaded
+            chatButton.disabled = false;
+            chatInput.disabled = false;
+            sendMessageButton.disabled = false;
+        } catch (error) {
+            console.error('Initialization error:', error);
+            const errorMessage = document.createElement('div');
+            errorMessage.classList.add('bot-message', 'error');
+            errorMessage.textContent = 'Failed to initialize chatbot. Please refresh the page.';
+            chatMessages.appendChild(errorMessage);
+        }
+    }
+
+    // Call initialization on page load
+    window.addEventListener('load', initializeChatbot);
 
 </script>
 

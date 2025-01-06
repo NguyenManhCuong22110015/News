@@ -39,6 +39,7 @@ body.modal-open {
       <th scope="col">Summary</th>
       <th scope="col">Update at</th>
       <th scope="col">Status</th>
+      <th>Premium status</th>
       <th scope="col">View</th>
       <th scope="col">Approve</th>
       <th scope="col">Reject</th>
@@ -55,6 +56,12 @@ body.modal-open {
         <td>{{summary}}</td>
          <td>{{formatLongDate update_at}}</td>
           <td>{{status}}</td>
+           <td class="text-center">
+                            {{#if is_premium}}
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                            
+                            {{/if}}
+                        </td>
           <td><a href="/editor/view?id={{id}}" class="btn btn-primary">View</a></td>
           {{#if (noteq status 'Published')}}
           <td>

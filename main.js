@@ -22,6 +22,10 @@ import editorRoute from './routes/editorRoute.js';
 import subRoute from './routes/subRoute.js';
 import {authAdmin, authWriter, authEditor} from './middlewares/auth.mdw.js';
 import captchaRoute from './routes/captchaRoute.js'
+import ChatbotRoute from './routes/chatbotRoute.js'
+import vnpay from "./routes/payment/vnpay.js"
+import payment from "./routes/payment/payment.js"
+
 const app = express()
 
 
@@ -105,15 +109,17 @@ const app = express()
   app.use(express.static(path.join(__dirname, 'public')));
   
   app.use(session({
-      secret: 'Q2VNTVN3QklsQXZTRmFhRHV6ZEtKcHhDdFNldG4xTHdGSzRCWkunSmJ5UT8',
-      resave: false,
-      saveUninitialized: true,
-      cookie: { 
-        secure: process.env.NODE_ENV === 'production', // true in production
+    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        secure: false, // Only true if HTTPS
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
+        maxAge: 24 * 60 * 60 * 1000,
+     //   domain:'hostwebproject.onrender.com',
+      
     }
-  }));
+}));
   router.use((req, res, next) => {
     if (req.session.user) {
       req.user = req.session.user;
@@ -165,11 +171,10 @@ app.use('/writer',authWriter, writerRoute);
 app.use('/admin',authAdmin, adminRoute);
 app.use('/', mainPageRoute);
 
-import vnpay from "./routes/payment/vnpay.js"
+app.use('/chatbot', ChatbotRoute);
+
 
 app.use('/api/payment', vnpay);
-
-import payment from "./routes/payment/payment.js"
 
 app.use('/payment', payment);
 
@@ -185,6 +190,5 @@ app.get("/", (req, res) => {
 })
 
 app.use('/captchane', captchaRoute);
-app.listen(3000, ()  => {
-    console.log("App is running")
-})
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

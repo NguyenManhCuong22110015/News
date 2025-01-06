@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@langchain/community": "^0.3.22",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
@@ -14,7 +15,9 @@
     "html-pdf": "^3.0.1",
     "html-pdf-node": "^1.0.7",
     "install": "^0.13.0",
+    "jsdom": "^25.0.1",
     "knex": "^3.1.0",
+    "langchain": "^0.3.9",
     "moment-timezone": "^0.5.46",
     "multer": "^1.4.5-lts.1",
     "multer-storage-cloudinary": "^4.0.0",
