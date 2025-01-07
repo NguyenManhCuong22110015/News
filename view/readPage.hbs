@@ -33,7 +33,7 @@
     .chat-container {
       position: fixed;
       bottom: 80px;
-      right: 20px;
+      right: 100px;
       width: 300px;
       height: auto;
       background-color: white;
@@ -393,7 +393,111 @@ document.addEventListener('DOMContentLoaded', function () {
         createPagination();
         showCommentsPage(1); // Hiển thị trang đầu tiên
     }
+
+
+  const chatButton = document.getElementById('chatButton');
+    const chatContainer = document.getElementById('chatContainer');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendMessageButton = document.getElementById('sendMessage');
+    const aricle_Id = '{{this.article.id}}'; 
+        async function initializeChatbot() {
+        try {
+            const response = await fetch('/chatbot/loadArticle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: aricle_Id }) // Your article ID
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to load article data');
+            }
+
+            // Enable chat interface after data is loaded
+            chatButton.disabled = false;
+            chatInput.disabled = false;
+            sendMessageButton.disabled = false;
+        } catch (error) {
+            console.error('Initialization error:', error);
+            const errorMessage = document.createElement('div');
+            errorMessage.classList.add('bot-message', 'error');
+            errorMessage.textContent = 'Failed to initialize chatbot. Please refresh the page.';
+            chatMessages.appendChild(errorMessage);
+        }
+    }
+
+    // Call initialization on page load
+    window.addEventListener('load', initializeChatbot);
+
+  // Create reusable send message function
+  async function sendMessage() {
+    const message = chatInput.value.trim();
+
+    if (message) {
+      // Display user message
+      const userMessage = document.createElement('div');
+      userMessage.classList.add('user-message');
+      userMessage.textContent = `You: ${message}`;
+      chatMessages.appendChild(userMessage);
+
+      try {
+        // Show loading state
+        const loadingMessage = document.createElement('div');
+        loadingMessage.classList.add('bot-message', 'loading');
+        loadingMessage.textContent = 'Bot is typing...';
+        chatMessages.appendChild(loadingMessage);
+
+        // Call API
+        const response = await fetch('/chatbot/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: message }),
+        });
+
+        const data = await response.json();
+
+        // Remove loading message
+        chatMessages.removeChild(loadingMessage);
+
+        // Display bot response
+        const botMessage = document.createElement('div');
+        botMessage.classList.add('bot-message');
+        botMessage.textContent = `Bot: ${data.answer || 'Sorry, I could not understand that.'}`;
+        chatMessages.appendChild(botMessage);
+      } catch (error) {
+        // Display error message
+        const errorMessage = document.createElement('div');
+        errorMessage.classList.add('bot-message', 'error');
+        errorMessage.textContent = 'Bot: Sorry, an error occurred. Please try again later.';
+        chatMessages.appendChild(errorMessage);
+      }
+
+      // Clear input and scroll
+      chatInput.value = '';
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+  }
+
+  // Add event listeners
+  chatButton.addEventListener('click', () => {
+    chatContainer.style.display = 
+      chatContainer.style.display === 'none' || chatContainer.style.display === '' 
+        ? 'flex' 
+        : 'none';
+  });
+
+  sendMessageButton.addEventListener('click', sendMessage);
+
+  chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
 });
+
 document.getElementById('postButton').addEventListener('click', async function() {
 
   const content = document.getElementById('noteInput').value.trim();
@@ -455,49 +559,15 @@ document.getElementById('postButton').addEventListener('click', async function()
     }
 });
 
- const chatButton = document.getElementById('chatButton');
-    const chatContainer = document.getElementById('chatContainer');
-    const chatMessages = document.getElementById('chatMessages');
-    const chatInput = document.getElementById('chatInput');
-    const sendMessageButton = document.getElementById('sendMessage');
 
     // Initialize chatbot data
-    async function initializeChatbot() {
-        try {
-            const response = await fetch('/chatbot/loadArticle', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id: 197 }) // Your article ID
-            });
-            
-            if (!response.ok) {
-                throw new Error('Failed to load article data');
-            }
-
-            // Enable chat interface after data is loaded
-            chatButton.disabled = false;
-            chatInput.disabled = false;
-            sendMessageButton.disabled = false;
-        } catch (error) {
-            console.error('Initialization error:', error);
-            const errorMessage = document.createElement('div');
-            errorMessage.classList.add('bot-message', 'error');
-            errorMessage.textContent = 'Failed to initialize chatbot. Please refresh the page.';
-            chatMessages.appendChild(errorMessage);
-        }
-    }
-
-    // Call initialization on page load
-    window.addEventListener('load', initializeChatbot);
 
 </script>
 
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-<script src="script.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 </body>
 </html>

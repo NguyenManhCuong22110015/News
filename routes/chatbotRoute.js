@@ -156,7 +156,7 @@ router.get('/chatbot', (req, res) => {
 // Initialize data into JSON
 router.post('/loadArticle', async (req, res) => {
     try {
-        const { id } = req.body;
+        const { id } = req.body || 197;
         if (!id) {
             return res.status(400).json({ error: 'Article ID is required' });
         }
@@ -167,7 +167,8 @@ router.post('/loadArticle', async (req, res) => {
         }
 
         const content = extractTextFromHTML(data.content);
-        const text = `The article titled "${data.title}" was written by ${data.writer_name} on ${data.created_at} and published on ${data.updated_at}. It is ${
+        const fre = 'Hi. I am a assistant, I can help you with your question. Please ask me anything.';
+        const text = fre+ `The article titled "${data.title}" was written by ${data.writer_name} on ${data.created_at} and published on ${data.updated_at}. It is ${
             data.is_premium ? '' : 'not '
         }a premium article in the category "${data.category_name}". The main content is: ${content}.`;
 

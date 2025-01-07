@@ -27,7 +27,7 @@
     .chat-container {
       position: fixed;
       bottom: 80px;
-      right: 20px;
+      right: 100px;
       width: 300px;
       height: auto;
       background-color: white;
@@ -157,8 +157,76 @@
     // Call initialization on page load
     window.addEventListener('load', initializeChatbot);
 
-    // ...existing sendMessage function and event listeners...
+  // Create reusable send message function
+  async function sendMessage() {
+    const message = chatInput.value.trim();
+
+    if (message) {
+      // Display user message
+      const userMessage = document.createElement('div');
+      userMessage.classList.add('user-message');
+      userMessage.textContent = `You: ${message}`;
+      chatMessages.appendChild(userMessage);
+
+      try {
+        // Show loading state
+        const loadingMessage = document.createElement('div');
+        loadingMessage.classList.add('bot-message', 'loading');
+        loadingMessage.textContent = 'Bot is typing...';
+        chatMessages.appendChild(loadingMessage);
+
+        // Call API
+        const response = await fetch('/chatbot/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: message }),
+        });
+
+        const data = await response.json();
+
+        // Remove loading message
+        chatMessages.removeChild(loadingMessage);
+
+        // Display bot response
+        const botMessage = document.createElement('div');
+        botMessage.classList.add('bot-message');
+        botMessage.textContent = `Bot: ${data.answer || 'Sorry, I could not understand that.'}`;
+        chatMessages.appendChild(botMessage);
+      } catch (error) {
+        // Display error message
+        const errorMessage = document.createElement('div');
+        errorMessage.classList.add('bot-message', 'error');
+        errorMessage.textContent = 'Bot: Sorry, an error occurred. Please try again later.';
+        chatMessages.appendChild(errorMessage);
+      }
+
+      // Clear input and scroll
+      chatInput.value = '';
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+  }
+
+  // Add event listeners
+  chatButton.addEventListener('click', () => {
+    chatContainer.style.display = 
+      chatContainer.style.display === 'none' || chatContainer.style.display === '' 
+        ? 'flex' 
+        : 'none';
+  });
+
+  sendMessageButton.addEventListener('click', sendMessage);
+
+  chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
 </script>
+
+
+
+
 
 </body>
 </html>
