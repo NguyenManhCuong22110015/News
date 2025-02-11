@@ -18,8 +18,8 @@ export default {
             let query = db('articles')
                 .join('category', 'articles.category_id', '=', 'category.id')
                 .where('articles.status', 'Published')
-                .andWhere('articles.updated_at', '>=', lastWeek)
-                .andWhere('articles.updated_at', '<=', now)
+                
+                
                 .select('articles.*', 'category.name as category_name');
     
             if (!isPremiumUser) {
@@ -44,7 +44,7 @@ export default {
             let query = db('articles')
                 .join('category', 'articles.category_id', '=', 'category.id')
                 .where('articles.status', 'Published')
-                .andWhere('articles.updated_at', '<=', now)
+                
                 .select('articles.*', 'category.name as category_name');
     
             if (!isPremiumUser) {
@@ -71,7 +71,7 @@ export default {
             let query = db('articles')
                 .join('category', 'articles.category_id', '=', 'category.id')
                 .where('articles.status', 'Published')
-                .andWhere('articles.updated_at', '<=', now)
+                
                 .select('articles.*', 'category.name as category_name');
     
             if (!isPremiumUser) {

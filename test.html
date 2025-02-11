@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.2/dist/sweetalert2.min.css">
+    <!-- Thêm Prism.js CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+<!-- Thêm Prism.js JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+
+    <title>Document</title>
+    <style>
+        .content{
+            background-image: url('https://res.cloudinary.com/dj9r2qksh/image/upload/v1736436335/tf-hero-desktop_am42nh.svg');
+            width: auto;
+            height: 500px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat
+        }
+        @media (max-width: 768px){
+            .content{
+                background-image:none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 content">
+        <div class="container ms-5 me-5">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2 class="">Bắt đầu với TensorFlow</h2>
+                    <p>TensorFlow giúp dễ dàng tạo các mô hình ML có thể chạy trong mọi môi trường. Tìm hiểu cách sử dụng API trực quan thông qua các mẫu mã tương tác.</p>
+                    </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="">Mẫu mã TensorFlow</h5>
+                        </div>
+                        <div class="card-body">
+                            <pre class="language-python">
+import tensorflow as tf
+mnist = tf.keras.datasets.mnist
+
+(x_train, y_train),(x_test, y_test) = mnist.load_data()
+x_train, x_test = x_train / 255.0, x_test / 255.0
+
+model = tf.keras.models.Sequential([
+    tf.keras.layers.Flatten(input_shape=(28, 28)),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dropout(0.2),
+    tf.keras.layers.Dense(10, activation='softmax')
+])
+
+model.compile(optimizer='adam',
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy'])
+
+model.fit(x_train, y_train, epochs=5)
+model.evaluate(x_test, y_test)
+</pre>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+               
+        </div>
+        <div class="container ms-5 me-5">
+            <div class=" ms-5 me-5 text-center mt-5 mb-5">
+                <h3>Giải quyết các vấn đề trong thế giới thực với ML</h3>
+                <p>Khám phá các ví dụ về cách TensorFlow được sử dụng để thúc đẩy nghiên cứu và xây dựng các ứng dụng hỗ trợ AI.</p>
+            </div>
+               
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="">Phân tích dữ liệu quan hệ bằng cách sử dụng mạng lưới thần kinh đồ thị</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="">GNN có thể xử lý các mối quan hệ phức tạp giữa các đối tượng, biến chúng thành một kỹ thuật mạnh mẽ để dự báo lưu lượng truy cập, khám phá y tế, v.v.</p>
+                        </div>
+                    </div>
+                </div>   
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="">Cải thiện khả năng tiếp cận sức khỏe bà mẹ với ML trên thiết bị</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="">Tìm hiểu cách LiteRT (trước đây là TensorFlow Lite) cho phép tiếp cận đánh giá siêu âm thai nhi, cải thiện kết quả sức khỏe cho phụ nữ và gia đình trên khắp Kenya và thế giới.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="">Xây dựng hệ thống khuyến nghị với học tập tăng cường</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="">Tìm hiểu cách Spotify sử dụng hệ sinh thái TensorFlow để thiết kế trình mô phỏng ngoại tuyến có thể mở rộng và đào tạo Đại lý RL cách tạo danh sách phát.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

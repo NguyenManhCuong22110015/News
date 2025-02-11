@@ -10,7 +10,8 @@
 
 <!-- SweetAlert2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.2/dist/sweetalert2.min.js"></script>
-   
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
   <style>
 .main-container {
     width: 100%;
@@ -79,6 +80,92 @@
   background: #0056b3;
   transform: translateY(-3px);
 }
+ .chat-button {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background-color: #055a1b;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      padding: 15px;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    /* Chatbot container */
+    .chat-container {
+      position: fixed;
+      bottom: 80px;
+      right: 100px;
+      width: 300px;
+      height: auto;
+      background-color: white;
+      border: 2px solid #007bff;
+      border-radius: 10px;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+      margin-bottom: 5px;
+    }
+
+    /* Chat messages */
+    .chat-messages {
+      padding: 10px;
+      overflow-y: auto;
+      flex-grow: 1;
+      height: 65vh;
+      
+      
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      font-size: 14px;
+    }
+
+    /* Chat input container */
+    .chat-input-container {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+    }
+
+    .chat-input {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    .chat-send {
+      background-color: #b74508;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .chat-send:hover {
+      background-color: #0056b3;
+    }
+
+    /* Add some style to distinguish user and bot messages */
+    .user-message {
+        
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    .bot-message {
+      margin-bottom: 10px;
+      font-weight: normal;
+      color: #333;
+    }
+
 </style>
 </head>
 <body>
@@ -87,6 +174,11 @@
 
 
 <div class="main-container mt-5 ">
+  <div class=" mt-5 mb-3">
+    <b><a href="/">Home</a></b> / 
+     <b><a href="/article/byCat?id={{this.article.category_id}}">{{this.main_cat}}</a></b> /
+    
+  </div>
   <div class="row">
     <!-- Article Main Section on the left (occupy 8 columns) -->
     <div class="col-lg-9">
@@ -216,7 +308,23 @@
 <button id="scrollToTop" class="scroll-to-top d-none">
   <i class="fas fa-arrow-up"></i>
 </button>
+   <button class="chat-button" id="chatButton">
+    <i class="bi bi-robot"></i>
+  </button>
 
+  <!-- Chatbot container -->
+  <div class="chat-container" id="chatContainer">
+    <div class="chat-messages" id="chatMessages">
+      <!-- Messages will appear here -->
+    </div>
+    <div class="chat-input-container">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Type a message..." />
+      <button class="chat-send" id="sendMessage">Send</button>
+    </div>
+  </div>
+
+  </div>
+</div>
 
 <script>
 
@@ -296,6 +404,109 @@ document.addEventListener('DOMContentLoaded', function () {
         createPagination();
         showCommentsPage(1); // Hiển thị trang đầu tiên
     }
+    
+  const chatButton = document.getElementById('chatButton');
+    const chatContainer = document.getElementById('chatContainer');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendMessageButton = document.getElementById('sendMessage');
+    const aricle_Id = '{{this.article.id}}'; 
+        async function initializeChatbot() {
+        try {
+            const response = await fetch('/chatbot/loadArticle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: aricle_Id }) // Your article ID
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to load article data');
+            }
+
+            // Enable chat interface after data is loaded
+            chatButton.disabled = false;
+            chatInput.disabled = false;
+            sendMessageButton.disabled = false;
+        } catch (error) {
+            console.error('Initialization error:', error);
+            const errorMessage = document.createElement('div');
+            errorMessage.classList.add('bot-message', 'error');
+            errorMessage.textContent = 'Failed to initialize chatbot. Please refresh the page.';
+            chatMessages.appendChild(errorMessage);
+        }
+    }
+
+    // Call initialization on page load
+    window.addEventListener('load', initializeChatbot);
+
+  // Create reusable send message function
+  async function sendMessage() {
+    const message = chatInput.value.trim();
+
+    if (message) {
+      // Display user message
+      const userMessage = document.createElement('div');
+      userMessage.classList.add('user-message');
+      userMessage.textContent = `You: ${message}`;
+      chatMessages.appendChild(userMessage);
+
+      try {
+        // Show loading state
+        const loadingMessage = document.createElement('div');
+        loadingMessage.classList.add('bot-message', 'loading');
+        loadingMessage.textContent = 'Bot is typing...';
+        chatMessages.appendChild(loadingMessage);
+
+        // Call API
+        const response = await fetch('/chatbot/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: message }),
+        });
+
+        const data = await response.json();
+
+        // Remove loading message
+        chatMessages.removeChild(loadingMessage);
+
+        // Display bot response
+        const botMessage = document.createElement('div');
+        botMessage.classList.add('bot-message');
+        botMessage.textContent = `Bot: ${data.answer || 'Sorry, I could not understand that.'}`;
+        chatMessages.appendChild(botMessage);
+      } catch (error) {
+        // Display error message
+        const errorMessage = document.createElement('div');
+        errorMessage.classList.add('bot-message', 'error');
+        errorMessage.textContent = 'Bot: Sorry, an error occurred. Please try again later.';
+        chatMessages.appendChild(errorMessage);
+      }
+
+      // Clear input and scroll
+      chatInput.value = '';
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+  }
+
+  // Add event listeners
+  chatButton.addEventListener('click', () => {
+    chatContainer.style.display = 
+      chatContainer.style.display === 'none' || chatContainer.style.display === '' 
+        ? 'flex' 
+        : 'none';
+  });
+
+  sendMessageButton.addEventListener('click', sendMessage);
+
+  chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
 });
 document.getElementById('postButton').addEventListener('click', async function() {
 
