@@ -2,4 +2,6 @@ docker run -d --name elasticsearch -p 9200:9200 -e "discovery.type=single-node" 
 
 
 - Redis : docker run -d --name redis -p 6379:6379 redis
+- redis-cli ping  # Nếu thấy "PONG" là OK
+
 
