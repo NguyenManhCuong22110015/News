@@ -49,7 +49,11 @@
 
 7. Trang Writer quản lý
 
+- Quản lý thông tin bảo báo nháp ( Thêm xóa sửa )
 
+![image](https://github.com/user-attachments/assets/19281f30-43d4-4d12-91fc-a2bc3f857ad9)
+
+![image](https://github.com/user-attachments/assets/10c28cd9-e388-476a-a728-2fdc6c04cddd)
 
 
 
