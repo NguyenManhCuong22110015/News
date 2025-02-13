@@ -6,6 +6,54 @@
 |Lê Trường Thịnh|22110071|
 |Lê Công Bảo|22110009|
 
+# Mô tả website 
+
+1. Trang chính
+
+- Giao diện hiển thị các bài báo theo nhiều tiêu chí ( lượi xem, mới nhất, nổi bật của tuần, ... ) + tìm kiếm bài báo
+- Danh sách các chuyên mục 
+
+![image](https://github.com/user-attachments/assets/75e05210-20eb-4b63-a985-8d313ddd2a62)
+
+2. Trang đăng nhập
+
+- Đăng nhập vào ứng dụng bằng tài khoản cá nhân và có hỗ trợ đăng nhập bằng các phường thức khác
+
+![image](https://github.com/user-attachments/assets/eafe1f04-ba8b-494d-b889-315fa51435d1)
+
+3. Trang đọc báo
+
+- Đọc thông tin bài báo và các thứ liên quan đến nó ( category + tags + bình luận + tác giả + ngày giờ đăng)
+- Danh sách các bài báo cùng chuyên mục bên phải
+
+![image](https://github.com/user-attachments/assets/1cb58d9d-85b0-4223-9712-f1d9c0b8358a)
+
+4. Trang thông tin các nhân
+
+- Chỉnh sửa các thông tin liên quan đến người dùng 
+
+![image](https://github.com/user-attachments/assets/6079294f-a1a3-488d-b2e0-6a58e65a94fc)
+
+5. Trang admin quản lý
+
+- Admin quản lý các thông tin liên quan đến Categores, tags, Aricles, và User ( cấp quyển + phần loại hoặc gia hạn độc giả )
+
+![image](https://github.com/user-attachments/assets/0ca4cc5a-1c83-4239-897b-72b9eda6f79d)
+
+
+6. Trang Editer quản lý
+
+- Quản lý các bài báo mà Writer đăng vào chuyên mục của mình ( xem, duyệt đăng bài hoặc reject )
+
+![image](https://github.com/user-attachments/assets/052249af-30f0-4fe1-aa58-c45be225ff76)
+
+7. Trang Writer quản lý
+
+
+
+
+
+
 
 # Hướng Dẫn Triển Khai Ứng Dụng Node.js Kết Nối Cơ Sở Dữ Liệu
 ### 1. Tải Mã Nguồn từ [đây](https://drive.google.com/drive/folders/1VDRYa4dEEIoTijl2G-pOGqwb26S_l-uS?usp=sharing)
