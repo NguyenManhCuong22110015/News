@@ -124,6 +124,7 @@ const app = express()
     if (req.session.user) {
       req.user = req.session.user;
     }
+    
     next();
     });
     app.use(flash());
@@ -138,8 +139,10 @@ const app = express()
     if(req.session.auth === null || req.session.auth === undefined){
       req.session.auth = false;
     }
+    
     res.locals.auth = req.session.auth;
     res.locals.authUser = req.session.authUser || null;
+    console.log(res.locals.auth);
     next();
   });
 

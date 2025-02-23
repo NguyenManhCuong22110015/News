@@ -5,6 +5,7 @@ import fs from 'fs';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import { OllamaEmbeddings } from "@langchain/community/embeddings/ollama";
+import articleService from '../service/articleService.js';
 
 dotenv.config(); // Load environment variables
 
@@ -181,5 +182,54 @@ router.post('/loadArticle', async (req, res) => {
         res.status(500).json({ error: 'Failed to load article data' });
     }
 });
+
+
+
+
+async function extractEntities(query) {
+    try {
+        const response = await axios.post('http://localhost:11434/api/generate', {
+            model: "deepseek-r1", 
+            prompt: query,
+            stream: false
+        });
+        
+        if (response.data && response.data.response) {
+            // Process the response from local model
+            return [{
+                word: response.data.response,
+                score: 1.0
+            }];
+        }
+        return [];
+    } catch (error) {
+        console.error("Error calling local model:", error);
+        return [];
+    }
+}
+
+
+const products = await articleService.getArticle();
+
+router.get('/search', async (req, res) => {
+    const query = req.body.query || req.query.q;
+    if (!query) {
+        return res.status(400).json({ error: 'Thiếu tham số truy vấn "q"' });
+    }
+
+    const entities = await extractEntities(query);
+    console.log('Extracted entities:', entities);
+
+    const results = products.filter(product => {
+        return entities.some(entity => product.title.toLowerCase().includes(entity.word.toLowerCase()));
+    });
+
+    res.json({ query, entities, results });
+});
+
+
+
+
+
 
 export default router;
