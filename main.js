@@ -25,7 +25,8 @@ import captchaRoute from './routes/captchaRoute.js'
 import ChatbotRoute from './routes/chatbotRoute.js'
 import vnpay from "./routes/payment/vnpay.js"
 import payment from "./routes/payment/payment.js"
-
+import dotenv from 'dotenv'; 
+dotenv.config(); 
 const app = express()
 
 
