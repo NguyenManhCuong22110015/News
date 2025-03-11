@@ -223,7 +223,11 @@
 
  <div class="sidebar" id="sidebar">
     <div class="d-flex justify-content-center">
-      <i class="bi bi-heart"></i>
+     {{#if this.isLiked}}
+        <i style="color:#d32710" class="bi bi-heart-fill"></i>
+      {{else}}
+        <i class="bi bi-heart"></i>
+      {{/if}}
     </div>
      <div class="d-flex justify-content-center mb-3">
       <span>{{article.likes}}</span>
@@ -396,6 +400,115 @@ document.getElementById('sidebarToggle')?.addEventListener('click', function() {
     document.getElementById('sidebar').classList.toggle('active');
 });
 document.addEventListener('DOMContentLoaded', function () {
+   const likeIcon = document.querySelector('#sidebar .bi-heart');
+  const likeCount = document.querySelector('#sidebar span:first-of-type');
+
+  likeIcon.addEventListener('click', async function() {
+    try {
+      const articleId = '{{article.id}}';
+      const response = await fetch('/article/like', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ articleId })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        likeCount.textContent = data.likes;
+      if (this.classList.contains('bi-heart-fill')) {
+          this.classList.replace('bi-heart-fill', 'bi-heart');
+        } else {
+          this.classList.replace('bi-heart', 'bi-heart-fill');
+          this.style.color = '#d32710';
+        }
+      }
+      else {
+        Swal.fire({
+        title: 'Authentication Required',
+        text: 'Please log in to like this article',
+        icon: 'warning',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: true,
+        confirmButtonText: 'Log In',
+        timer: 5000
+      }).then((result) => {
+          if (result.isConfirmed) {
+            // Redirect to login page
+            window.location.href = '/login';
+          }
+        });
+      }
+    } catch (error) {
+      
+      console.error('Error updating like:', error);
+    }
+  });
+
+  // Comment scroll functionality
+  const commentIcon = document.querySelector('#sidebar .bi-chat');
+  commentIcon.addEventListener('click', function() {
+    const commentSection = document.querySelector('.comment-container');
+    if (commentSection) {
+      commentSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+  // Save to clipboard functionality
+  const bookmarkIcon = document.querySelector('#sidebar .bi-bookmark');
+  bookmarkIcon.addEventListener('click', function() {
+    const currentUrl = window.location.href;
+    navigator.clipboard.writeText(currentUrl).then(() => {
+      // Show notification
+      Swal.fire({
+        title: 'Link Copied!',
+        text: 'Article link has been copied to clipboard',
+        icon: 'success',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      });
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+    });
+  });
+
+  // Share functionality
+  const shareIcon = document.querySelector('#sidebar .bi-three-dots');
+  shareIcon.addEventListener('click', function() {
+    const url = window.location.href;
+    const title = document.querySelector('h1').textContent;
+    
+    // Try to use Web Share API if available
+    if (navigator.share) {
+      navigator.share({
+        title: title,
+        url: url
+      }).catch(err => {
+        console.error('Error sharing:', err);
+      });
+    } else {
+      // Fallback to custom share menu
+      Swal.fire({
+        title: 'Share this article',
+        html: `
+          <div class="d-flex justify-content-center">
+            <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}" target="_blank" class="mx-2">
+              <i class="fab fa-facebook-f fa-2x"></i>
+            </a>
+            <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}" target="_blank" class="mx-2">
+              <i class="fab fa-twitter fa-2x"></i>
+            </a>
+            <a href="mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(url)}" class="mx-2">
+              <i class="fas fa-envelope fa-2x"></i>
+            </a>
+          </div>
+        `,
+        showConfirmButton: false
+      });
+    }
+  });
     const COMMENTS_PER_PAGE = 5; // Số lượng bình luận mỗi trang
     const comments = document.querySelectorAll('.comment-item'); // Tất cả bình luận
     const pagination = document.getElementById('pagination'); // Container của phân trang
@@ -574,6 +687,9 @@ document.addEventListener('DOMContentLoaded', function () {
       sendMessage();
     }
   });
+
+
+
 });
 
 document.getElementById('postButton').addEventListener('click', async function() {

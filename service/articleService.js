@@ -444,5 +444,76 @@ export default {
             .where('article_id', id)
             .select('tag.*');
     },
+    async checkUserLike (userId, articleId) {
+        const result = await db('user_likes')
+          .where({
+            user_id: userId,
+            article_id: articleId
+          })
+          .first();
+        return result;
+      },
+      
+      async addLike (userId, articleId) {
+        // Transaction to ensure both operations succeed or fail together
+        return await db.transaction(async (trx) => {
+          // Add user like entry
+          await trx('user_likes').insert({
+            user_id: userId,
+            article_id: articleId
+          });
+          
+          // Increment article like count
+          await trx('articles')
+            .where('id', articleId)
+            .increment('likes', 1);
+          
+          // Get updated like count
+          const article = await trx('articles')
+            .select('likes')
+            .where('id', articleId)
+            .first();
+            
+          return article.likes;
+        });
+      },
+      
+      async removeLike (userId, articleId){
+        // Transaction to ensure both operations succeed or fail together
+        return await db.transaction(async (trx) => {
+          // Remove user like entry
+          await trx('user_likes')
+            .where({
+              user_id: userId,
+              article_id: articleId
+            })
+            .delete();
+          
+          // Decrement article like count
+          await trx('articles')
+            .where('id', articleId)
+            .decrement('likes', 1);
+          
+          // Get updated like count
+          const article = await trx('articles')
+            .select('likes')
+            .where('id', articleId)
+            .first();
+            
+          return article.likes;
+        });
+      },
+      
+      async toggleLike  (userId, articleId) {
+        const existingLike = await this.checkUserLike(userId, articleId);
+        
+        if (existingLike) {
+          // User already liked - remove the like
+          return await this.removeLike(userId, articleId);
+        } else {
+          // User hasn't liked - add the like
+          return await this.addLike(userId, articleId);
+        }
+      }
     
 }

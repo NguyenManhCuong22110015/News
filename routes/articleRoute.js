@@ -227,5 +227,33 @@ router.put('/:id/premium', async function (req, res) {
   }
 });
 
+router.post('/like', async (req, res) => {
+  try {
+    const { articleId } = req.body;
+    const userId = req.session.authUser?.id; 
+    
+    if (!articleId) {
+      return res.status(400).json({ error: 'Article ID is required' });
+    }
+    
+    if (!userId) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+
+    // Use the service to handle like logic
+    const updatedLikeCount = await articleService.toggleLike(userId, articleId);
+
+    // Return updated like count
+    return res.json({ 
+      likes: updatedLikeCount
+    });
+    
+  } catch (error) {
+    console.error('Error updating article likes:', error);
+    return res.status(500).json({ error: 'Failed to update likes' });
+  }
+});
+
+
 
 export default router;

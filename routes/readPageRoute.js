@@ -46,8 +46,13 @@ router.get('/', async (req, res) => {
         }
 
         const tags = await articleService.getTagsByArticleId(id);
-
-        
+        let isLiked = false;
+        if (req.session.userId != null) {
+            const  test= await articleService.checkUserLike(req.session.userId,id);
+            if (test != null) {
+                isLiked = true;
+            }
+        }
 
         res.render('readPage', {
             article,
@@ -58,6 +63,7 @@ router.get('/', async (req, res) => {
             parent_cat,
             comments,
             tags,
+            isLiked,
             num_cmt: comments.length || 0,
             layout: "footer"
         });
