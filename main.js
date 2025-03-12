@@ -28,6 +28,7 @@ import payment from "./routes/payment/payment.js"
 import dotenv from 'dotenv'; 
 dotenv.config(); 
 const app = express()
+app.set('trust proxy', 1);
 
 
    app.engine('hbs', engine({
@@ -110,15 +111,15 @@ const app = express()
   app.use(express.static(path.join(__dirname, 'public')));
   
   app.use(session({
-      secret: 'Q2VNTVN3QklsQXZTRmFhRHV6ZEtKcHhDdFNldG4xTHdGSzRCWkunSmJ5UT8',
-      resave: false,
-      saveUninitialized: true,
-      cookie: { 
-        secure: false, // true in production
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000,
-     //   domain:'hostwebproject.onrender.com',
-      
+    secret: 'Q2VNTVN3QklsQXZTRmFhRHV6ZEtKcHhDdFNldG4xTHdGSzRCWkunSmJ5UT8',
+    resave: false,
+    saveUninitialized: false, // Changed to false for better security
+    cookie: { 
+      secure: process.env.NODE_ENV === 'production', // Automatically true in production
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN_URL : undefined,
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
     }
 }));
   router.use((req, res, next) => {
