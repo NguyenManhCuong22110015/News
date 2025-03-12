@@ -1,6 +1,8 @@
 import express from 'express';
 import passport from 'passport';
 import session from 'express-session'
+import mysqlSession from 'express-mysql-session';
+
 import './authentication/passport-setup.js'
 import { engine } from 'express-handlebars'; 
 import path from 'path';
@@ -26,6 +28,7 @@ import ChatbotRoute from './routes/chatbotRoute.js'
 import vnpay from "./routes/payment/vnpay.js"
 import payment from "./routes/payment/payment.js"
 import dotenv from 'dotenv'; 
+import {options} from './utils/db.js';
 dotenv.config(); 
 const app = express()
 app.set('trust proxy', 1);
@@ -109,10 +112,18 @@ app.set('trust proxy', 1);
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
   app.use(express.static(path.join(__dirname, 'public')));
-  
+
+  const MySQLStore = mysqlSession(session);
+  const sessionStore = new MySQLStore({
+    ...options,
+    clearExpired: true,               
+    checkExpirationInterval: 900000,  
+    expiration: 86400000              
+  });
   app.use(session({
     secret: 'Q2VNTVN3QklsQXZTRmFhRHV6ZEtKcHhDdFNldG4xTHdGSzRCWkunSmJ5UT8',
     resave: false,
+    store: sessionStore,
     saveUninitialized: false, // Changed to false for better security
     cookie: { 
       secure: process.env.NODE_ENV === 'production', // Automatically true in production
