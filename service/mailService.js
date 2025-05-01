@@ -5,8 +5,8 @@ const sendConfirmationEmail = async (email, confirmationCode) => {
   // Cấu hình transporter
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com', // Thay bằng SMTP server của bạn
-    port: 587, // Cổng SMTP (thay đổi nếu cần)
-    secure: false, // true cho cổng 465, false cho các cổng khác
+    port: 465, // Cổng SMTP (thay đổi nếu cần)
+    secure: true, // true cho cổng 465, false cho các cổng khác
     auth: {
       user: 'nmcuongg2004@gmail.com', // Thay bằng email của bạn
       pass: 'xmfm pkrx upfk ipvy', // Thay bằng mật khẩu email của bạn
@@ -15,7 +15,7 @@ const sendConfirmationEmail = async (email, confirmationCode) => {
 
   // Cấu hình nội dung email
   const mailOptions = {
-    from: '"My Web Project" ', // Địa chỉ gửi
+    from: '"Quizz Online MVC EXPRESS" ', // Địa chỉ gửi
     to: email, // Địa chỉ nhận
     subject: 'Email xác nhận', // Tiêu đề email
     html: `

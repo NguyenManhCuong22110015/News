@@ -28,7 +28,8 @@ import ChatbotRoute from './routes/chatbotRoute.js'
 import vnpay from "./routes/payment/vnpay.js"
 import payment from "./routes/payment/payment.js"
 import dotenv from 'dotenv'; 
-import {options} from './utils/db.js';
+import {db, pool } from './utils/db.js';
+
 dotenv.config(); 
 const app = express()
 app.set('trust proxy', 1);
@@ -114,14 +115,12 @@ app.set('trust proxy', 1);
   app.use(express.static(path.join(__dirname, 'public')));
 
   const MySQLStore = mysqlSession(session);
-  const sessionStore = new MySQLStore({
-    ...options,
-    clearExpired: true,               
-    checkExpirationInterval: 900000,  
-    expiration: 86400000              
-  });
+
+  const sessionStore = new MySQLStore({}, pool); // ✅ dùng pool object, không dùng `options`
+  
+
   app.use(session({
-    secret: 'Q2VNTVN3QklsQXZTRmFhRHV6ZEtKcHhDdFNldG4xTHdGSzRCWkunSmJ5UT8',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     store: sessionStore,
     saveUninitialized: false, // Changed to false for better security
