@@ -29,4 +29,6 @@ export const pool = mysql.createPool({ // ✅ export thêm raw pool
   queueLimit: 0
 });
 
-export default db; // ✅ export db object
+
+
+export default db;
