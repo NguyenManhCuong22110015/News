@@ -116,7 +116,21 @@ app.set('trust proxy', 1);
 
   const MySQLStore = mysqlSession(session);
 
-  const sessionStore = new MySQLStore({}, pool); // ✅ dùng pool object, không dùng `options`
+  const sessionStore = new MySQLStore({
+    clearExpired: true,
+    checkExpirationInterval: 900000, // 15 minutes
+    expiration: 86400000, // 1 day
+    createDatabaseTable: true,
+    connectionLimit: 1, // Minimize connections
+    schema: {
+      tableName: 'sessions',
+      columnNames: {
+        session_id: 'session_id',
+        expires: 'expires',
+        data: 'data'
+      }
+    }
+  }, pool); // ✅ dùng pool object, không dùng `options`
   
 
   app.use(session({

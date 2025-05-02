@@ -26,7 +26,9 @@ export const pool = mysql.createPool({ // ✅ export thêm raw pool
   database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 3,
-  queueLimit: 0
+  queueLimit: 0,
+  connectTimeout: 10000,     
+  idleTimeout: 60000 
 });
 
 
