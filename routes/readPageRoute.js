@@ -8,12 +8,23 @@ const router = Router();
 
 router.get('/', async (req, res) => {
     try {
-        const id = parseInt(req.query.id) || 0;
+        // Validate id is purely numeric
+        const idParam = req.query.id;
+        if (!idParam || !/^\d+$/.test(idParam)) {
+            return res.redirect('/error');
+        }
+        
+        const id = parseInt(idParam);
         const article = await articleService.getArticleById(id);
+        
+        if (!article) {
+            return res.redirect('/error');
+        }
         
         if (article.is_premium == true) {
             return res.redirect('/error');
         }
+        
         const author = await articleService.getAuthorById(article.writer_id);
 
         let isPremium = req.session.is_premium ? true : false;
@@ -73,10 +84,20 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/premium', premiumPage,async (req, res) => {
+router.get('/premium', premiumPage, async (req, res) => {
     try {
-        const id = parseInt(req.query.id) || 0;
+        // Validate id is purely numeric
+        const idParam = req.query.id;
+        if (!idParam || !/^\d+$/.test(idParam)) {
+            return res.redirect('/error');
+        }
+        
+        const id = parseInt(idParam);
         const article = await articleService.getArticleById(id);
+        
+        if (!article) {
+            return res.redirect('/error');
+        }
         
         const author = await articleService.getAuthorById(article.writer_id);
         let isPremium = req.session.is_premium ? true : false;

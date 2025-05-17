@@ -7,13 +7,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="/css/login.css"/>
-    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
     
 <div class="form-login">
-    <form class="" method="post">
+    <form class="" method="post" >
+                <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
         <div class="content">
             <div class="data">
                 <h4 class="text-center">Logo</h4>
@@ -58,101 +59,52 @@
     </form>
 </div> 
 
-       <div class="modal fade" id="captchaModal">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Please verify you're human</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<form id="signupForm" class="form-signup" method="post" action="/auth/signup">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <div class="content">
+        <div class="data">
+            <h4 class="text-center" > Logo </h4>
+            <h4 class="text-center"><b>Sign up for your CNN account</b></h4>
+            <h5 class="text-center" >Already have an account? <span class="redr" onclick="showFormLogIn()" > Sign in</span>  </h5>
+            
+            <div class="mt-4">
+                <input type="text" name="reg_email" required />
+                <label placeholder="Adaptive Placeholder" alt="Email address"></label>
             </div>
-            <div class="modal-body">
-                 <form id="captcha-form" action="/verify-captcha" method="POST">
-                     <div class="h-captcha" 
-                     data-sitekey="f2aacc22-14fa-4572-bc96-0028525e7082"
-                     data-callback="onCaptchaVerified">
+            <div>
+                <div class="password-container">
+                    <input type="password" id="password2"  name="reg_password" placeholder=""required />
+                    <label placeholder="Adaptive Placeholder" alt="Enter password" ></label>
+                    <span id="toggle-password2" onclick="togglePassword2()">👁️</span>  
                 </div>
-                </form>
-               
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <p class="sm-txt">By creating an account, I agree to the Terms of Use and have read our Privacy Policy.</p>
+            <label>
+             {{#if errorMessage}}
+                 <span style="" class="btn btn-danger w-100">{{errorMessage}}</span>
+             {{/if}}
+            </label>
+            <button type="submit"  class="submit">Create Account</button>
+            <div class="divider mt-3">
+                <span>or</span>
+            </div>
+            
+            <div class="login-buttons">
+                <button type="button" class="btn btn-social btn-google" onclick="window.location.href='/auth/google'">
+                <i class="fab fa-google"></i> Continue with Google
+                </button>
+                <button type="button" class="btn btn-social btn-facebook" onclick="window.location.href='/auth/facebook'" > 
+                <i class="fab fa-facebook-f"></i> Continue with Facebook
+                </button>
+                <button  type="button" class="btn btn-social btn-apple" onclick="window.location.href='/auth/github'" >
+                <i class="fab fa-github"></i> Continue with Github 
+                </button>
             </div>
         </div>
     </div>
-</div>
-       
-        
+</form>
 
-       <form id="signupForm" class="form-signup" method="post" onsubmit="return validateCaptcha(event)">
-
-            <div class="content">
-                <div class="data">
-                    <h4 class="text-center" > Logo </h4>
-                    <h4 class="text-center"><b>Sign up for your CNN account</b></h4>
-                    <h5 class="text-center" >Already have an account? <span class="redr" onclick="showFormLogIn()" > Sign in</span>  </h5>
-                    
-                    <div class="mt-4">
-                        <input type="text" name="reg_email" required />
-                        <label placeholder="Adaptive Placeholder" alt="Email address"></label>
-                    </div>
-                    <div>
-                        <div class="password-container">
-                            <input type="password" id="password2"  name="reg_password" placeholder=""required />
-                            <label placeholder="Adaptive Placeholder" alt="Enter password" ></label>
-                            <span id="toggle-password2" onclick="togglePassword2()">👁️</span>  
-                        </div>
-                    </div>
-                    <p class="sm-txt">By creating an account, I agree to the Terms of Use and have read our Privacy Policy.</p>
-                    <label>
-                     {{#if errorMessage}}
-                         <span style="" class="btn btn-danger w-100">{{errorMessage}}</span>
-                     {{/if}}
-                    </label>
-                    <button type="submit"  class="submit" formaction="/auth/signup" >Create Account</button>
-                    <div class="divider mt-3">
-                        <span>or</span>
-                    </div>
-                    
-                    <div class="login-buttons">
-                        <button type="button" class="btn btn-social btn-google" onclick="window.location.href='/auth/google'">
-                        <i class="fab fa-google"></i> Continue with Google
-                        </button>
-                        <button type="button" class="btn btn-social btn-facebook" onclick="window.location.href='/auth/facebook'" > 
-                        <i class="fab fa-facebook-f"></i> Continue with Facebook
-                        </button>
-                        <button  type="button" class="btn btn-social btn-apple" onclick="window.location.href='/auth/github'" >
-                        <i class="fab fa-github"></i> Continue with Github 
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    
-   
-
-
-   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    const signupForm = document.getElementById('signupForm');
-    const captchaModal = new bootstrap.Modal(document.getElementById('captchaModal'));
-
-    if (signupForm) {
-        signupForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            captchaModal.show();
-        });
-    }
-
-    window.onCaptchaSuccess = function(token) {
-        const form = document.getElementById('signupForm');
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'h-captcha-response';
-        input.value = token;
-        form.appendChild(input);
-        form.submit();
-    };
-});
+<script nonce="{{nonce}}">
     function togglePassword() {
       const passwordField = document.getElementById("password");
       const toggleIcon = document.getElementById("toggle-password");
@@ -165,6 +117,7 @@
         toggleIcon.textContent = "👁️";  // Trở lại icon mắt khi ẩn mật khẩu
       }
     }
+    
     function togglePassword2() {
         const passwordField = document.getElementById("password2");
         const toggleIcon = document.getElementById("toggle-password2");
@@ -176,41 +129,19 @@
           passwordField.type = "password";
           toggleIcon.textContent = "👁️";  // Trở lại icon mắt khi ẩn mật khẩu
         }
-      }
+    }
    
-      function showFormLogIn() {
+    function showFormLogIn() {
         document.querySelector(".form-login").style.display = "block";
-        
         document.querySelector(".form-signup").style.display = "none";
-      }
+    }
     
-      function showFormSignUp() {
+    function showFormSignUp() {
         document.querySelector(".form-login").style.display = "none";
-        
         document.querySelector(".form-signup").style.display = "block";
-      }
-window.onCaptchaVerified = function(token) {
-    const form = document.getElementById('signupForm');
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'h-captcha-response';
-    input.value = token;
-    form.appendChild(input);
-     form.action = '/auth/signup';
-    form.submit();
-}
+    }
 
-function validateCaptcha(event) {
-    event.preventDefault();
-    const modal = new bootstrap.Modal(document.getElementById('captchaModal'));
-    hcaptcha.render('h-captcha', {
-        sitekey: 'f2aacc22-14fa-4572-bc96-0028525e7082'
-    });
-    modal.show();
-    return false;
-}
-
-        document.getElementById("getCodeButton").addEventListener("click", function () {
+    document.getElementById("getCodeButton").addEventListener("click", function () {
         const emailInput = document.getElementById("emailInput");
         const email = emailInput.value.trim();
 
@@ -243,7 +174,7 @@ function validateCaptcha(event) {
         } else {
             alert("Please enter a valid email address!");
         }
-        });
-  </script>
+    });
+</script>
 </body>
 </html>

@@ -160,41 +160,43 @@ export default {
                 fullTextQuery = fullTextQuery.where('is_premium', false);
             }
     
-            // SQL LIKE Query
+            // SQL LIKE Query - FIXED to prevent SQL injection
             let likeQuery = db('articles')
                 .select(
                     'id',
                     'title',
                     'content',
                     'summary',
-                    db.raw('0 AS score') // LIKE không có điểm số, mặc định là 0
+                    db.raw('0 AS score') // LIKE doesn't have a score, default is 0
                 )
                 .where('status', 'Published')
                 .andWhere(function () {
-                    this.where('title', 'LIKE', `%${keyword}%`)
-                        .orWhere('content', 'LIKE', `%${keyword}%`)
-                        .orWhere('summary', 'LIKE', `%${keyword}%`);
+                    // Using parameterized queries for LIKE statements
+                    this.where('title', 'LIKE', db.raw('CONCAT(\'%\', ?, \'%\')', [keyword]))
+                        .orWhere('content', 'LIKE', db.raw('CONCAT(\'%\', ?, \'%\')', [keyword]))
+                        .orWhere('summary', 'LIKE', db.raw('CONCAT(\'%\', ?, \'%\')', [keyword]));
                 });
     
             if (!isPremiumUser) {
                 likeQuery = likeQuery.where('is_premium', false);
             }
     
-            // Kết hợp Full-Text và LIKE
+            // Combine Full-Text and LIKE
             const articles = await db
                 .union([fullTextQuery, likeQuery], true)
                 .orderBy('score', 'desc');
     
-            // Đếm tổng số kết quả
+            // Count total results - FIXED to prevent SQL injection
             const totalQuery = db('articles')
                 .where('status', 'Published')
                 .andWhere(function () {
                     this.whereRaw(
                         `MATCH (title, content, summary) AGAINST (? IN NATURAL LANGUAGE MODE)`,
                         [keyword]
-                    ).orWhere('title', 'LIKE', `%${keyword}%`)
-                     .orWhere('content', 'LIKE', `%${keyword}%`)
-                     .orWhere('summary', 'LIKE', `%${keyword}%`);
+                    )
+                    .orWhere('title', 'LIKE', db.raw('CONCAT(\'%\', ?, \'%\')', [keyword]))
+                    .orWhere('content', 'LIKE', db.raw('CONCAT(\'%\', ?, \'%\')', [keyword]))
+                    .orWhere('summary', 'LIKE', db.raw('CONCAT(\'%\', ?, \'%\')', [keyword]));
                 });
     
             if (!isPremiumUser) {

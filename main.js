@@ -4,7 +4,7 @@ import session from 'express-session'
 import mysqlSession from 'express-mysql-session';
 
 import './authentication/passport-setup.js'
-import { engine } from 'express-handlebars'; 
+import { engine } from 'express-handlebars';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import facebookPassport from './authentication/facebook.js';
@@ -12,9 +12,9 @@ import googlePassport from './authentication/google.js';
 import router from './routes/index.js';
 import githubPassport from './authentication/github.js';
 import flash from 'connect-flash';
-import adminRoute from  './routes/adminRoute.js';
-import writerRoute from  './routes/writerRoute.js';
-import authLogin from  './routes/authLoginRoute.js';
+import adminRoute from './routes/adminRoute.js';
+import writerRoute from './routes/writerRoute.js';
+import authLogin from './routes/authLoginRoute.js';
 import articleRoute from './routes/articleRoute.js';
 import mainPageRoute from './routes/mainPageRoute.js';
 import moment from 'moment-timezone';
@@ -22,182 +22,294 @@ import readPageRoute from './routes/readPageRoute.js';
 import accountRoute from './routes/accountRoute.js';
 import editorRoute from './routes/editorRoute.js';
 import subRoute from './routes/subRoute.js';
-import {authAdmin, authWriter, authEditor} from './middlewares/auth.mdw.js';
+import { authAdmin, authWriter, authEditor } from './middlewares/auth.mdw.js';
 import captchaRoute from './routes/captchaRoute.js'
 import ChatbotRoute from './routes/chatbotRoute.js'
 import vnpay from "./routes/payment/vnpay.js"
 import payment from "./routes/payment/payment.js"
-import dotenv from 'dotenv'; 
-import {db, pool } from './utils/db.js';
+import dotenv from 'dotenv';
+import csrf from 'csurf';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+import crypto from 'crypto';
+import { db, pool } from './utils/db.js';
 
-dotenv.config(); 
+// 
+
+import fs from 'fs';
+import https from 'https';
+
+//
+
+
+dotenv.config();
 const app = express()
 app.set('trust proxy', 1);
 
 
-   app.engine('hbs', engine({
-    extname : 'hbs',
-    helpers: {
-      extractFirstImage: function (content) {
-        if (!content) {
-          return 'imgs/no_image.jpg';
-        }
-        const imgTagMatch = content.match(/<img[^>]+src="([^">]+)"/);
-        return imgTagMatch ? imgTagMatch[1] : 'imgs/no_image.jpg';
-      },
-      chunk: function (array, size) {
-        const chunkedArr = [];
-        for (let i = 0; i < array.length; i += size) {
-          chunkedArr.push(array.slice(i, i + size));
-        }
-        return chunkedArr;
-      },
-      eq: function (a, b) {
-        return a === b;
-      },
-      noteq: function (a, b) {
-        return a !== b;
-      },
-      formatDate: function (dateString) {
-        return moment(dateString)
-          .tz('Asia/Ho_Chi_Minh')  
-          .format('h:mm A z, dddd MMMM D, YYYY');  
-      },
-      formatLongDate: function(dateString) {
-        return moment(dateString)
-            .tz('Asia/Ho_Chi_Minh')
-            .format('dddd, MMMM Do YYYY');
+app.engine('hbs', engine({
+  extname: 'hbs',
+  helpers: {
+    extractFirstImage: function (content) {
+      if (!content) {
+        return 'imgs/no_image.jpg';
+      }
+      const imgTagMatch = content.match(/<img[^>]+src="([^">]+)"/);
+      return imgTagMatch ? imgTagMatch[1] : 'imgs/no_image.jpg';
     },
-      isUndefined: function(value) {
-        return value === null || value === undefined;
-       },
-       toUpperCase: function(text) {
-        return text ? text.toUpperCase() : '';
+    chunk: function (array, size) {
+      const chunkedArr = [];
+      for (let i = 0; i < array.length; i += size) {
+        chunkedArr.push(array.slice(i, i + size));
+      }
+      return chunkedArr;
     },
-    or: function() {
+    eq: function (a, b) {
+      return a === b;
+    },
+    noteq: function (a, b) {
+      return a !== b;
+    },
+    formatDate: function (dateString) {
+      return moment(dateString)
+        .tz('Asia/Ho_Chi_Minh')
+        .format('h:mm A z, dddd MMMM D, YYYY');
+    },
+    formatLongDate: function (dateString) {
+      return moment(dateString)
+        .tz('Asia/Ho_Chi_Minh')
+        .format('dddd, MMMM Do YYYY');
+    },
+    isUndefined: function (value) {
+      return value === null || value === undefined;
+    },
+    toUpperCase: function (text) {
+      return text ? text.toUpperCase() : '';
+    },
+    or: function () {
       // Remove the last argument (Handlebars options)
       const args = Array.prototype.slice.call(arguments, 0, -1);
       return args.some(Boolean);
-  },
-    isSubscriptionActive : function(expiryDate) {
+    },
+    isSubscriptionActive: function (expiryDate) {
       if (!expiryDate) return false;
       const today = new Date();
       const expiry = new Date(expiryDate);
-      
+
       return expiry > today;
-  },
-  getRemainingDays: function(expiryDate) {
-    if (!expiryDate) return 'No subscription';
-    
-    const today = new Date();
-    const expiry = new Date(expiryDate);
-    
-    // Reset time part for accurate day calculation
-    today.setHours(0, 0, 0, 0);
-    expiry.setHours(0, 0, 0, 0);
-    
-    const diffTime = expiry - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays < 0) return 'Expired';
-    if (diffDays === 0) return 'Expires today';
-    if (diffDays === 1) return '1 day remaining';
-    return `${diffDays} days remaining`;
-}
-    
-    }
-  }));
-  app.set('view engine', 'hbs');
-  app.set('views', './view');
-  
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  app.use(express.static(path.join(__dirname, 'public')));
+    },
+    getRemainingDays: function (expiryDate) {
+      if (!expiryDate) return 'No subscription';
 
-  const MySQLStore = mysqlSession(session);
+      const today = new Date();
+      const expiry = new Date(expiryDate);
 
-  const sessionStore = new MySQLStore({
-    clearExpired: true,
-    checkExpirationInterval: 900000, // 15 minutes
-    expiration: 86400000, // 1 day
-    createDatabaseTable: true,
-    connectionLimit: 1, // Minimize connections
-    schema: {
-      tableName: 'sessions',
-      columnNames: {
-        session_id: 'session_id',
-        expires: 'expires',
-        data: 'data'
-      }
-    }
-  }, pool); // ✅ dùng pool object, không dùng `options`
-  
+      // Reset time part for accurate day calculation
+      today.setHours(0, 0, 0, 0);
+      expiry.setHours(0, 0, 0, 0);
 
-  app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    store: sessionStore,
-    saveUninitialized: false, // Changed to false for better security
-    cookie: { 
-      secure: process.env.NODE_ENV === 'production', // Automatically true in production
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
-      domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN_URL : undefined,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+      const diffTime = expiry - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 0) return 'Expired';
+      if (diffDays === 0) return 'Expires today';
+      if (diffDays === 1) return '1 day remaining';
+      return `${diffDays} days remaining`;
     }
+
+  }
 }));
-  router.use((req, res, next) => {
-    if (req.session.user) {
-      req.user = req.session.user;
+app.set('view engine', 'hbs');
+app.set('views', './view');
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use(express.static(path.join(__dirname, 'public'),{
+  redirect: false  // this prevents the redirect to `/css/`
+}));
+
+const MySQLStore = mysqlSession(session);
+
+const sessionStore = new MySQLStore({
+  clearExpired: true,
+  checkExpirationInterval: 900000, // 15 minutes
+  expiration: 86400000, // 1 day
+  createDatabaseTable: true,
+  connectionLimit: 1, // Minimize connections
+  schema: {
+    tableName: 'sessions',
+    columnNames: {
+      session_id: 'session_id',
+      expires: 'expires',
+      data: 'data'
     }
-    
-    next();
-    });
-    app.use(flash());
-    app.use((req, res, next) => {
-      res.locals.errorMessage = req.flash('error');
-      res.locals.successMessage = req.flash('success');
-      next();
-  });
+  }
+}, pool); // ✅ dùng pool object, không dùng `options`
 
 
-  app.use(async function (req, res, next) {
-    if(req.session.auth === null || req.session.auth === undefined){
-      req.session.auth = false;
-    }
-    
-    res.locals.auth = req.session.auth;
-    res.locals.authUser = req.session.authUser || null;
-    console.log(res.locals.auth);
-    next();
-  });
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  store: sessionStore,
+  saveUninitialized: false, // Changed to false for better security
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // Automatically true in production
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000,
+    domain: process.env.NODE_ENV === 'production' ? process.env.DOMAIN_URL : undefined,
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  }
+}));
 
-  app.use(async function (req, res, next) {
-    res.locals.is_premium = req.session.is_premium;
-    next();
-  });
+app.use(cookieParser());
+app.use(csrf());
 
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
   
-  app.use(express.urlencoded({ extended: true }));
-  app.use(express.json()); 
-  app.use(facebookPassport.initialize());
-  app.use(facebookPassport.session());
-  app.use(googlePassport.initialize());
-  app.use(googlePassport.session());
-  app.use(passport.initialize());
-  app.use(passport.session());
-  app.use(githubPassport.initialize());
-  app.use(githubPassport.session());
-  app.use('/', router);
+  // Generate nonce FIRST (before Helmet uses it)
+  const nonce = crypto.randomUUID();
+  res.locals.nonce = nonce;
   
-  app.use('/article', articleRoute);
+  next();
+});
+app.use('/css', (req, res, next) => {
+  if (req.path === '/') {
+    return res.status(403).send('Access denied.');
+  }
+  next();
+});
+app.use('/imgs', (req, res, next) => {
+  if (req.path === '/') {
+    return res.status(403).send('Access denied.');
+  }
+  next();
+});
+app.use('/js', (req, res, next) => {
+  if (req.path === '/') {
+    return res.status(403).send('Access denied.');
+  }
+  next();
+});
+app.use('/article', (req, res, next) => {
+  if (req.path === '/') {
+    return res.status(403).send('Access denied.');
+  }
+  next();
+});
+
+
+// Now configure Helmet with access to the generated nonce
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'", 
+          "https://js.hcaptcha.com",
+          "https://hcaptcha.com", 
+          "https://newassets.hcaptcha.com",
+          "https://cdn.jsdelivr.net",
+          "https://code.jquery.com",
+          "https://stackpath.bootstrapcdn.com", 
+          (req, res) => `'nonce-${res.locals.nonce}'`
+        ],
+        styleSrc: [
+          "'self'", 
+          "'unsafe-inline'", 
+          "https://cdn.jsdelivr.net",
+          "https://stackpath.bootstrapcdn.com",
+          "https://hcaptcha.com", 
+          "https://newassets.hcaptcha.com",
+          "https://cdnjs.cloudflare.com" 
+        ],
+        imgSrc: [
+          "'self'", 
+          "data:", 
+          "https://res.cloudinary.com", 
+          "https://upload.wikimedia.org", 
+          "https://www.smashingmagazine.com",
+          "https://hcaptcha.com",
+          "https://newassets.hcaptcha.com",
+          "https://localhost"
+        ],
+        connectSrc: [
+          "'self'",
+          "https://hcaptcha.com",
+          "https://*.hcaptcha.com"
+        ],
+        frameSrc: [
+          "'self'",
+          "https://hcaptcha.com", 
+          "https://*.hcaptcha.com"
+        ],
+        fontSrc: [
+          "'self'", 
+          "data:",
+          "https://cdn.jsdelivr.net",
+          "https://stackpath.bootstrapcdn.com"
+        ],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+  })
+);
+
+app.use((req, res, next) => {
+  if (req.session.user) {
+    req.user = req.session.user;
+  }
+
+  next();
+});
+app.use(flash());
+app.use((req, res, next) => {
+  res.locals.errorMessage = req.flash('error');
+  res.locals.successMessage = req.flash('success');
+  next();
+});
+
+
+app.use(async function (req, res, next) {
+  if (req.session.auth === null || req.session.auth === undefined) {
+    req.session.auth = false;
+  }
+
+  res.locals.auth = req.session.auth;
+  res.locals.authUser = req.session.authUser || null;
+  console.log(res.locals.auth);
+  next();
+});
+
+app.use(async function (req, res, next) {
+  res.locals.is_premium = req.session.is_premium;
+  next();
+});
+
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(facebookPassport.initialize());
+app.use(facebookPassport.session());
+app.use(googlePassport.initialize());
+app.use(googlePassport.session());
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(githubPassport.initialize());
+app.use(githubPassport.session());
+app.use('/', router);
+
+app.use('/article', articleRoute);
 
 
 app.use('/auth', authLogin);
 
-app.use('/writer',authWriter, writerRoute);
+app.use('/writer', authWriter, writerRoute);
 
-app.use('/admin',authAdmin, adminRoute);
+app.use('/admin', authAdmin, adminRoute);
 app.use('/', mainPageRoute);
 
 app.use('/chatbot', ChatbotRoute);
@@ -211,15 +323,26 @@ app.use('/read', readPageRoute);
 
 app.use('/account', accountRoute);
 
-app.use('/editor',authEditor, editorRoute);
+app.use('/editor', authEditor, editorRoute);
 
 app.use('/subscriber', subRoute);
 app.get("/", (req, res) => {
-    res.send("Hello word")
+  res.send("Hello word")
 })
 
+
+//
+const privateKey = fs.readFileSync('cert/key.pem', 'utf8');
+const certificate = fs.readFileSync('cert/cert.pem', 'utf8');
+
+const credentials = { key: privateKey, cert: certificate }
+//
+
+
 app.use('/captchane', captchaRoute);
+//verify-captcha
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, ()  => {
-    console.log("App is running")
-})
+https.createServer(credentials, app).listen(443, () => {
+  console.log('Server running at https://localhost/');
+});

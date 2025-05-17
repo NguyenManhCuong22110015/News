@@ -159,7 +159,7 @@ body.modal-open {
             </div>
         </div>
 
-    <script>
+<script nonce="{{nonce}}">
         $(document).ready(function() {
 
            const content = {{{data.content}}}; 
@@ -168,7 +168,7 @@ body.modal-open {
     </script>
     <script src="../js/scripts.js"></script>
      <script src="../js/loading.js"></script>
-     <script>
+<script nonce="{{nonce}}">
        async function loadTags() {
         const articleTagsResponse = await fetch(`/writer/article-tags?id={{data.id}}`);
         const articleTags = await articleTagsResponse.json() || [];
