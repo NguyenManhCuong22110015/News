@@ -2,8 +2,8 @@ import express from 'express';
 import passport from 'passport';
 import session from 'express-session'
 import mysqlSession from 'express-mysql-session';
-import https from 'https'; // Import https module
-import fs from 'fs'; // Import fs to read files
+import https from 'https'; 
+import fs from 'fs'; 
 import './authentication/passport-setup.js'
 import { engine } from 'express-handlebars';
 import path from 'path';
@@ -33,11 +33,14 @@ import { db, pool } from './utils/db.js';
 import helmet from 'helmet';
 dotenv.config();
 const app = express()
+app.use(helmet()); 
 app.use(helmet.hsts({
-  maxAge: 63072000, // 2 năm tính bằng giây
+  maxAge: 63072000, 
   includeSubDomains: true,
   preload: true
 }));
+
+
 app.use(helmet.xssFilter());
 app.use(helmet.noSniff());
 app.use(helmet.frameguard({ action: 'deny' }));
@@ -178,7 +181,12 @@ app.use((req, res, next) => {
   res.locals.successMessage = req.flash('success');
   next();
 });
-
+app.use((req, res, next) => {
+  if (decodeURIComponent(req.url).toLowerCase().includes('script')) {
+    return res.status(400).send('Bad Request');
+  }
+  next();
+});
 
 app.use(async function (req, res, next) {
   if (req.session.auth === null || req.session.auth === undefined) {
@@ -195,7 +203,65 @@ app.use(async function (req, res, next) {
   res.locals.is_premium = req.session.is_premium;
   next();
 });
-
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          
+          "https://js.hcaptcha.com",
+          "https://hcaptcha.com",
+          "https://newassets.hcaptcha.com",
+          "https://cdn.jsdelivr.net",
+          "https://code.jquery.com",
+          "https://stackpath.bootstrapcdn.com",
+          (req, res) => `'nonce-${res.locals.nonce}'`
+        ],
+        styleSrc: [
+          "'self'",
+          
+          "https://cdn.jsdelivr.net",
+          "https://stackpath.bootstrapcdn.com",
+          "https://hcaptcha.com",
+          "https://newassets.hcaptcha.com",
+          "https://cdnjs.cloudflare.com",
+          (req, res) => `'nonce-${res.locals.nonce}'`
+        ],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "https://res.cloudinary.com",
+          "https://upload.wikimedia.org",
+          "https://www.smashingmagazine.com",
+          "https://hcaptcha.com",
+          "https://newassets.hcaptcha.com",
+          "https://localhost"
+        ],
+        connectSrc: [
+          "'self'",
+          "https://hcaptcha.com",
+          "https://*.hcaptcha.com"
+        ],
+        frameSrc: [
+          "'self'",
+          "https://hcaptcha.com",
+          "https://*.hcaptcha.com"
+        ],
+        fontSrc: [
+          "'self'",
+          "data:",
+          "https://cdn.jsdelivr.net",
+          "https://stackpath.bootstrapcdn.com"
+        ],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+  })
+);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -244,6 +310,9 @@ app.use((err, req, res, next) => {
 app.disable('x-powered-by');
 app.use('/captchane', captchaRoute);
 const PORT = process.env.PORT || 3000;
+
+
+
 https.createServer(options, app).listen(PORT, () => {
   console.log(`App is running on https://localhost:${PORT}`);
 });

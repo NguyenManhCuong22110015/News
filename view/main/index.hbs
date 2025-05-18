@@ -1,40 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="cystack-verification" content="5d65920be12193433b1632152186997f"/>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  
-  <style>
-        .main-container {
-    width: 100%;
-    max-width: 1400px;  /* Add max-width for container behavior */
-    margin: 0 auto;     /* Center the container */
-    padding-right: 15px; /* Standard Bootstrap padding */
-    padding-left: 15px;
-    box-sizing: border-box; /* Include padding in width calculation */
-}
 
-@media (min-width: 768px) {
-    .main-container {
-        padding-right: 30px;
-        padding-left: 30px;
-    }
-}
-@media (max-width: 768px) {
-    .carousel-item .col-md-4:not(:first-child) {
-        display: none;
-    }
-    .carousel-item .col-md-4:first-child {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-}
-
-  </style>
-<body>
 
 
 
@@ -50,7 +20,7 @@
        {{/if}}
       <h1>{{this.topArticle.title}}</h1>
      
-      <img class="card-img-top" style="max-width:100%; max-height:60%"  src={{extractFirstImage this.topArticle.content}} alt="Card image cap">
+      <img class="card-img-top" style="max-width:100%; max-height:60%"  src={{extractFirstImage this.topArticle.content}} alt="Card image cap"/>
       <div class="article-info">
         <p class="read-time">
             <i class="fas fa-clock"></i> 
@@ -75,7 +45,7 @@
             <div class="col-md-6 col-sm-6 col-xs-6">
         <a href="{{#if is_premium}}/read/premium{{else}}/read{{/if}}?id={{id}}" style="text-decoration-thickness: 1px;color: inherit;">      
               <div class="card mb-4">
-                <img class="card-img-top custom-img" src={{extractFirstImage content}} alt="Card image cap">
+                <img class="card-img-top custom-img" src={{extractFirstImage content}} alt="Card image cap"/>
                 <div class="card-body">
                   <h5 class="card-title">
                     {{title}}
@@ -150,7 +120,7 @@
                 <div class="col-md-4 col-sm-12">
         <a href="{{#if is_premium}}/read/premium{{else}}/read{{/if}}?id={{id}}" style="text-decoration-thickness: 1px;color: inherit;">      
                   <div class="card mb-4">
-                    <img class="card-img-top custom-img" src="{{extractFirstImage content}}" alt="Card image cap">
+                    <img class="card-img-top custom-img" src="{{extractFirstImage content}}" alt="Card image cap"/>
                     <div class="card-body">
                       <h5 class="card-title">{{title}}</h5>
                       <p class="card-text">{{summary}}</p>
@@ -203,7 +173,7 @@
                 <a href="{{#if category.article.is_premium}}/read/premium{{else}}/read{{/if}}?id={{category.article.id}}" style="text-decoration-thickness: 1px;color: inherit;">      
 
                <div>
-                 <img class="card-img-top custom-img" src="{{extractFirstImage category.article.content}}" alt="Card image cap">
+                 <img class="card-img-top custom-img" src="{{extractFirstImage category.article.content}}" alt="Card image cap"/>
                 <h6 class="card-title">{{category.article.title}}</h6>
                 <p class="card-text long-description">{{category.article.summary}}</p>
                   <p class="updated-time">Updated {{formatDate updated_at}}</p>
@@ -234,8 +204,4 @@
   integrity="sha384-4qpa6bKcW/U8p5+GFiYj6p5zocpcfB8rDZRm4+GU2hrfu5DzN07mK2SHQr90qJpD2y60PZbTJx8uT3KzXqTjlC+Zr1rNPtAXsp/lA7OnxRfO1Q3mKZarVqu1K4xkQ/2On"
   crossorigin="anonymous"></script>
  <script src="<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>"></script>
-<script src="js/index.js"></script>
-
-
-</body>
-</html>
+<script src="js/index.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous" ></script>

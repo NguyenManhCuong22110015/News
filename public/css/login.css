@@ -40,7 +40,27 @@ body {
   padding: 60px;
   
 }
-
+.hidden {
+      display: none;
+    }
+    .code-inputs {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 15px;
+    }
+    .code-input {
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .code-input:focus {
+      border-color: #007bff;
+      outline: none;
+    }
 .redr {
   color: rgb(110, 29, 29);
   text-decoration: underline;

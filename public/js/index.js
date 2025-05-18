@@ -42,3 +42,50 @@ $(document).ready(function() {
         }
     });
 });
+
+
+  $(document).ready(function() {
+    $('.dropdown-toggle').dropdown();
+    
+});
+
+ document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.querySelector('.form-inline');
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('search-icon');
+
+    function handleSearch(e) {
+        e.preventDefault();
+        
+        const searchTerm = searchInput?.value?.trim();
+        
+        if (!searchTerm || searchTerm.length < 2) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Search Error',
+                text: 'Please enter at least 2 characters to search'
+            });
+            return;
+        }
+
+        try {
+            window.location.href = `/article/search?q=${encodeURIComponent(searchTerm)}`;
+        } catch (error) {
+            console.error('Search error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while searching. Please try again.'
+            });
+        }
+    }
+
+    searchForm?.addEventListener('submit', handleSearch);
+    searchButton?.addEventListener('click', handleSearch);
+    searchInput?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSearch(e);
+        }
+    });
+});

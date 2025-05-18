@@ -63,7 +63,9 @@ router.get('/search', async (req, res) => {
 router.put('/:id/status', async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
-  
+    if (!/^[a-zA-Z0-9\-]+$/.test(id)) {
+    return res.status(400).send('Invalid id');
+  }
     try {
       await articleService.updateStatus(id, status);
       res.json({ success: true });

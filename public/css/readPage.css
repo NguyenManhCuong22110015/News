@@ -3,6 +3,7 @@ body {
   width: 100%;
   background-color: #fff;
   color: #000;
+  
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
@@ -11,6 +12,207 @@ body {
   flex-direction: column;
 }
 
+.sidebar {
+    height: 100%;
+    width: 50px;
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    padding-top: 100px;
+}
+.sidebar i.bi {
+    font-size: 24px;
+    
+    }
+.sidebar i:hover {
+    color: #d32710;
+    cursor: pointer;
+}
+.content-with-sidebar {
+    display: flex;
+    max-width: 1400px;  
+    margin: 0 auto;
+    padding: 15px;
+}
+
+.main-content {
+    flex: 1;
+    padding-left: 20px;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+    
+    .sidebar.active {
+        display: block;
+        width: 50px;
+        position: fixed;
+        z-index: 1000;
+        height: 100vh;
+    }
+
+    .main-content {
+        padding-left: 0;
+    }
+}
+
+    /* Chatbot button */
+    .chat-button {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background-color: #055a1b;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      padding: 15px;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    /* Chatbot container */
+    .chat-container {
+      position: fixed;
+      bottom: 80px;
+      right: 100px;
+      width: 300px;
+      height: auto;
+      background-color: white;
+      border: 2px solid #007bff;
+      border-radius: 10px;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+      margin-bottom: 5px;
+    }
+
+    /* Chat messages */
+    .chat-messages {
+      padding: 10px;
+      overflow-y: auto;
+      flex-grow: 1;
+      height: 65vh;
+      
+      
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      font-size: 14px;
+    }
+
+    /* Chat input container */
+    .chat-input-container {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+    }
+
+    .chat-input {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    .chat-send {
+      background-color: #b74508;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .chat-send:hover {
+      background-color: #0056b3;
+    }
+
+    /* Add some style to distinguish user and bot messages */
+    .user-message {
+        
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    .bot-message {
+      margin-bottom: 10px;
+      font-weight: normal;
+      color: #333;
+    }
+
+.main-container {
+    width: 100%;
+    max-width: 1400px;  /* Add max-width for container behavior */
+    margin: 0 auto;     /* Center the container */
+    padding-right: 15px; /* Standard Bootstrap padding */
+    padding-left: 15px;
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+.premium-container {
+  width: 100%;
+  margin: 10px 0;
+}
+
+.premium-wrapper {
+  max-width: 100%;
+  padding: 5px 0;
+}
+
+.premium-badge {
+  font-size: 12px !important;
+}
+
+.download-btn {
+  margin-left: 10px;
+}
+
+@media (min-width: 768px) {
+    .main-container {
+        padding-right: 30px;
+        padding-left: 30px;
+    }
+}
+.article-content {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.article-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+.content-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+.scroll-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #007bff;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: none;
+  z-index: 999;
+  transition: all 0.3s ease;
+}
+
+.scroll-to-top:hover {
+  background: #0056b3;
+  transform: translateY(-3px);
+}
 /* Container */
 .container {
   width: 100%;
@@ -522,59 +724,5 @@ box-shadow: 10px 10px 5px #aaaaaa;
 font-size: 13px;
 font-weight: 500;
 color: #56575b;
-}
-
-@media (max-width: 768px) {
-  .header__actions {
-      flex-direction: column; 
-      gap: 10px;
-  }
-}
-
-
-@media (max-width: 992px) {
-  .navbar-collapse {
-      background-color: dodgerblue;
-      padding: 1rem;
-  }
-
-  .navbar-nav .nav-link {
-      text-align: center;
-      margin: 0.5rem 0;
-  }
-}
-
-
-@media (max-width: 768px) {
-  .nav-item.health,
-  .nav-item.entertainment,
-  .nav-item.style,
-  .nav-item.travel,
-  .nav-item.sports {
-      display: none;
-  }
-}
-
-@media (max-width: 576px) {
-  .nav-item.world,
-  .nav-item.politics,
-  .nav-item.business,
-  .nav-item.us,
-  .navbar .form-inline {
-      display: none;
-  }
-}
-
-
-
-@media (min-width: 1200px) {
-  .container {
-      padding: 0 40px;
-  }
-
-  .navbar{
-      max-width: 100%;
-      padding: 0 20px;
-  }
 }
 

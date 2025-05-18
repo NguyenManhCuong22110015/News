@@ -10,26 +10,7 @@
    
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="/css/index.css">
-  <style>
-    body {
-        padding-top: 56px; /* Height of navbar */
-    }
-    .main-container {
-    width: 100%;
-    max-width: 1400px;  /* Add max-width for container behavior */
-    margin: 0 auto;     /* Center the container */
-    padding-right: 15px; /* Standard Bootstrap padding */
-    padding-left: 15px;
-    box-sizing: border-box; /* Include padding in width calculation */
-}
 
-@media (min-width: 768px) {
-    .main-container {
-        padding-right: 30px;
-        padding-left: 30px;
-    }
-}
-</style>
 
 </head>
 <body>
@@ -161,54 +142,5 @@
   crossorigin="anonymous"></script>
  <script src="<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>"></script>
 <script src="/js/index.js"></script>
-<script>
-  
 
-  $(document).ready(function() {
-    $('.dropdown-toggle').dropdown();
-    
-});
-
- document.addEventListener('DOMContentLoaded', function() {
-    const searchForm = document.querySelector('.form-inline');
-    const searchInput = document.getElementById('searchInput');
-    const searchButton = document.getElementById('search-icon');
-
-    function handleSearch(e) {
-        e.preventDefault();
-        
-        const searchTerm = searchInput?.value?.trim();
-        
-        if (!searchTerm || searchTerm.length < 2) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Search Error',
-                text: 'Please enter at least 2 characters to search'
-            });
-            return;
-        }
-
-        try {
-            window.location.href = `/article/search?q=${encodeURIComponent(searchTerm)}`;
-        } catch (error) {
-            console.error('Search error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'An error occurred while searching. Please try again.'
-            });
-        }
-    }
-
-    searchForm?.addEventListener('submit', handleSearch);
-    searchButton?.addEventListener('click', handleSearch);
-    searchInput?.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            handleSearch(e);
-        }
-    });
-});
-
-</script>
 </html>

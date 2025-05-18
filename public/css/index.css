@@ -451,3 +451,57 @@ body {
   right: 0;
   left: auto;
 }
+
+  .long-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;  /* Show 3 lines */
+  max-height: 5.4em;      /* Increase height: line-height * number of lines */
+  line-height: 1.8em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: calc(100% - 60px);
+}
+
+    .main-container {
+    width: 100%;
+    max-width: 1400px;  /* Add max-width for container behavior */
+    margin: 0 auto;     /* Center the container */
+    padding-right: 15px; /* Standard Bootstrap padding */
+    padding-left: 15px;
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+@media (min-width: 768px) {
+    .main-container {
+        padding-right: 30px;
+        padding-left: 30px;
+    }
+}
+@media (max-width: 768px) {
+    .carousel-item .col-md-4:not(:first-child) {
+        display: none;
+    }
+    .carousel-item .col-md-4:first-child {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+    body {
+        padding-top: 56px; /* Height of navbar */
+    }
+    .main-container {
+    width: 100%;
+    max-width: 1400px;  /* Add max-width for container behavior */
+    margin: 0 auto;     /* Center the container */
+    padding-right: 15px; /* Standard Bootstrap padding */
+    padding-left: 15px;
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+@media (min-width: 768px) {
+    .main-container {
+        padding-right: 30px;
+        padding-left: 30px;
+    }
+}
