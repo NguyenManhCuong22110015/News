@@ -31,6 +31,10 @@ import payment from "./routes/payment/payment.js"
 import dotenv from 'dotenv';
 import { db, pool } from './utils/db.js';
 import helmet from 'helmet';
+import csurf from 'csurf';
+import cookieParser from 'cookie-parser';
+import crypto from 'crypto';
+
 dotenv.config();
 const app = express()
 app.use(helmet()); 
@@ -45,6 +49,7 @@ app.use(helmet.xssFilter());
 app.use(helmet.noSniff());
 app.use(helmet.frameguard({ action: 'deny' }));
 app.use(helmet.hidePoweredBy());
+
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   next();
@@ -153,6 +158,7 @@ const sessionStore = new MySQLStore({
   }
 }, pool); // ✅ dùng pool object, không dùng `options`
 
+app.use(cookieParser());
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -167,6 +173,11 @@ app.use(session({
     sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
   }
 }));
+
+app.use((req, res, next) => {
+  res.locals.nonce = crypto.randomBytes(16).toString('base64');
+  next();
+});
 
 router.use((req, res, next) => {
   if (req.session.user) {
@@ -265,6 +276,11 @@ app.use(
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(csurf());
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 app.use(facebookPassport.initialize());
 app.use(facebookPassport.session());
 app.use(googlePassport.initialize());

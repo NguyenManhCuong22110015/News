@@ -49,7 +49,7 @@ router.get('/login', (req, res) => {
   if (req.headers.referer && !req.headers.referer.includes('/login')) {
       req.session.retUrl = req.headers.referer;
   }
-  res.render('login');
+  res.render('login', {csrfToken: req.csrfToken()});
 });
 router.post('/login', async (req, res) => {
   const email = req.body.login_email || '';

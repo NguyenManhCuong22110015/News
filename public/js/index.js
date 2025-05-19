@@ -1,32 +1,58 @@
-$(document).ready(function() {
-    // executes when HTML-Document is loaded and DOM is ready
+$(document).ready(function () {
+    const $dropdown = $(".navbar .dropdown");
 
-    // breakpoint and up  
-    function handleResize() {
-        if ($(window).width() >= 980) {  
-            // when you hover a toggle show its dropdown menu
-            $(".navbar .dropdown-toggle").hover(
+    function showDropdown($el) {
+        $el.addClass("show");
+        $el.find(".dropdown-menu").addClass("show");
+    }
+
+    function hideDropdown($el) {
+        $el.removeClass("show");
+        $el.find(".dropdown-menu").removeClass("show");
+    }
+
+    // Hover support for desktop
+    function bindHover() {
+        if ($(window).width() >= 980) {
+            $dropdown.off("mouseenter mouseleave").hover(
                 function () {
-                    $(this).parent().addClass("show");
-                    $(this).parent().find(".dropdown-menu").addClass("show");
+                    showDropdown($(this));
                 },
                 function () {
-                    $(this).parent().removeClass("show");
-                    $(this).parent().find(".dropdown-menu").removeClass("show");
+                    hideDropdown($(this));
                 }
             );
-
-            // hide the menu when the mouse leaves the dropdown
-            $(".navbar .dropdown-menu").mouseleave(function() {
-                $(this).removeClass("show");  
-            });
         } else {
-            // Remove hover classes on smaller screens for better responsiveness
-            $(".navbar .dropdown-toggle").off("mouseenter mouseleave");
+            $dropdown.off("mouseenter mouseleave");
         }
     }
-    
+
+    bindHover();
+    $(window).resize(bindHover);
+
+    // Toggle dropdown on click (independent of hover)
+    $(".dropdown-toggle").click(function (e) {
+        e.preventDefault();
+        const $parent = $(this).parent();
+        const isOpen = $parent.hasClass("show");
+
+        // Close all dropdowns
+        $(".navbar .dropdown").removeClass("show").find(".dropdown-menu").removeClass("show");
+
+        // Open if not already open
+        if (!isOpen) {
+            showDropdown($parent);
+        }
+    });
+
+    // Click outside to close
+    $(document).click(function (e) {
+        if (!$(e.target).closest('.dropdown').length) {
+            $(".navbar .dropdown").removeClass("show").find(".dropdown-menu").removeClass("show");
+        }
+    });
 });
+
 
 $(document).ready(function() {
     // Sự kiện click vào biểu tượng kính lúp

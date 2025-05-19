@@ -5,7 +5,7 @@ import htmlPdfNode from 'html-pdf-node';
 import fs from 'fs';
 import { request } from 'http';
 export default {
-    async getArticlesByWriterID(userID){
+    async getArticlesByWriterID(userID) {
 
         return db('articles').where('writer_id', userID).orderBy('id', 'desc');;
     },
@@ -19,7 +19,7 @@ export default {
     },
 
     async getArticleByPre(pre) {
-        return db('articles').where('is_premium',pre);
+        return db('articles').where('is_premium', pre);
     },
     async getArticleContentById(id) {
         try {
@@ -35,11 +35,11 @@ export default {
                 .where('articles.id', id)
                 .groupBy('articles.id')
                 .first();
-                
+
             if (!article) {
                 throw new Error('Article not found');
             }
-    
+
             const htmlTemplate = `
                 <h1 style="text-align: center; margin-bottom: 30px;">${article.title}</h1>
                 <div style="text-align: center; margin-bottom: 20px;">
@@ -50,7 +50,7 @@ export default {
                     ${article.content}
                 </div>
             `;
-    
+
             return htmlTemplate;
         } catch (error) {
             console.error('Error fetching article:', error);
@@ -70,33 +70,34 @@ export default {
         } catch (error) {
             console.error('Error generating PDF:', error);
             throw error;
-        }},
-        async getOrderedArticles() {
-            return db('articles').orderBy('is_premium', 'desc'); // Orders by is_premium (1 first, 0 after)
-        },
-        async getArticlesBasedOnUserSubscription(userID) {
-            try {
-                // Check if user is premium
-                const user = await db('users').where('id', userID).first();
-                if (!user) {
-                    throw new Error('User not found');
-                }
-    
-                // Determine if the user is premium
-                const isPremiumUser = user.subscription_expiry && new Date(user.subscription_expiry) > new Date();
-    
-                if (isPremiumUser) {
-                    // Premium user: return all articles with premium ones on top
-                    return db('articles').orderBy('is_premium', 'desc');
-                } else {
-                    // Non-premium user: return only non-premium articles
-                    return db('articles').where('is_premium', 0);
-                }
-            } catch (error) {
-                console.error('Error fetching articles based on user subscription:', error);
-                throw error;
+        }
+    },
+    async getOrderedArticles() {
+        return db('articles').orderBy('is_premium', 'desc'); // Orders by is_premium (1 first, 0 after)
+    },
+    async getArticlesBasedOnUserSubscription(userID) {
+        try {
+            // Check if user is premium
+            const user = await db('users').where('id', userID).first();
+            if (!user) {
+                throw new Error('User not found');
             }
-        },
+
+            // Determine if the user is premium
+            const isPremiumUser = user.subscription_expiry && new Date(user.subscription_expiry) > new Date();
+
+            if (isPremiumUser) {
+                // Premium user: return all articles with premium ones on top
+                return db('articles').orderBy('is_premium', 'desc');
+            } else {
+                // Non-premium user: return only non-premium articles
+                return db('articles').where('is_premium', 0);
+            }
+        } catch (error) {
+            console.error('Error fetching articles based on user subscription:', error);
+            throw error;
+        }
+    },
     async searchArticles(keyword, limit, offset, isPremiumUser = false) {
         try {
             let query = db('articles')
@@ -104,12 +105,14 @@ export default {
                     'id',
                     'title',
                     'content',
-                    'summary', 
+                    'summary',
                     'is_premium',
                     db.raw(
-                        `MATCH (title, content, summary) AGAINST (? IN NATURAL LANGUAGE MODE) AS score`,
-                        [keyword]
+                        `MATCH (title, content, summary) AGAINST ('${keyword}' IN NATURAL LANGUAGE MODE) AS score`
                     )
+                )
+                .whereRaw(
+                    `MATCH (title, content, summary) AGAINST ('${keyword}' IN NATURAL LANGUAGE MODE)`
                 )
                 .whereRaw(
                     `MATCH (title, content, summary) AGAINST (? IN NATURAL LANGUAGE MODE)`,
@@ -126,7 +129,7 @@ export default {
             }
 
             const results = await query
-                
+
                 .limit(limit)
                 .offset(offset);
 
@@ -155,11 +158,11 @@ export default {
                     [keyword]
                 )
                 .where('status', 'Published');
-    
+
             if (!isPremiumUser) {
                 fullTextQuery = fullTextQuery.where('is_premium', false);
             }
-    
+
             // SQL LIKE Query
             let likeQuery = db('articles')
                 .select(
@@ -175,16 +178,16 @@ export default {
                         .orWhere('content', 'LIKE', `%${keyword}%`)
                         .orWhere('summary', 'LIKE', `%${keyword}%`);
                 });
-    
+
             if (!isPremiumUser) {
                 likeQuery = likeQuery.where('is_premium', false);
             }
-    
+
             // Kết hợp Full-Text và LIKE
             const articles = await db
                 .union([fullTextQuery, likeQuery], true)
                 .orderBy('score', 'desc');
-    
+
             // Đếm tổng số kết quả
             const totalQuery = db('articles')
                 .where('status', 'Published')
@@ -193,16 +196,16 @@ export default {
                         `MATCH (title, content, summary) AGAINST (? IN NATURAL LANGUAGE MODE)`,
                         [keyword]
                     ).orWhere('title', 'LIKE', `%${keyword}%`)
-                     .orWhere('content', 'LIKE', `%${keyword}%`)
-                     .orWhere('summary', 'LIKE', `%${keyword}%`);
+                        .orWhere('content', 'LIKE', `%${keyword}%`)
+                        .orWhere('summary', 'LIKE', `%${keyword}%`);
                 });
-    
+
             if (!isPremiumUser) {
                 totalQuery.where('is_premium', false);
             }
-    
+
             const totalResults = await totalQuery.count('id as total').first();
-    
+
             return {
                 articles,
                 total: totalResults.total,
@@ -212,27 +215,27 @@ export default {
             throw error;
         }
     },
-    
-    
+
+
     async getArticle() {
         return db('articles').orderBy('id', 'desc').whereIn('status', ['Published', 'draft']);
     },
     async updateStatus(id, status) {
         return db('articles')
-          .where('id', id)
-          .update({ status: status, updated_at: new Date().toISOString().slice(0, 19).replace('T', ' ') });
-      },
+            .where('id', id)
+            .update({ status: status, updated_at: new Date().toISOString().slice(0, 19).replace('T', ' ') });
+    },
 
-      async countByCatId(id, isPremiumUser) {
+    async countByCatId(id, isPremiumUser) {
         let query = db('articles')
             .count('id as total')
             .where('category_id', id)
             .where('status', 'Published');
-    
+
         if (!isPremiumUser) {
             query = query.where('is_premium', false);
         }
-    
+
         return query.first();
     },
     async countByTagId(id, isPremiumUser) {
@@ -241,11 +244,11 @@ export default {
             .where('article_tags.tag_id', id)
             .where('articles.status', 'Published')
             .count('article_tags.id as total');
-    
+
         if (!isPremiumUser) {
             query = query.where('articles.is_premium', false);
         }
-    
+
         return query.first();
     },
     async findPageByCatId(id, limit, offset, isPremiumUser) {
@@ -254,7 +257,7 @@ export default {
             .select('articles.*', 'category.name as category_name')
             .where('articles.category_id', id)
             .where('articles.status', 'Published');
-    
+
         if (!isPremiumUser) {
             query = query
                 .where('articles.is_premium', false)
@@ -263,7 +266,7 @@ export default {
             query = query
                 .orderByRaw('articles.is_premium DESC, articles.updated_at DESC');
         }
-    
+
         return query
             .limit(limit)
             .offset(offset);
@@ -275,26 +278,26 @@ export default {
             .select('articles.*', 'tag.name as tag_name')
             .where('article_tags.tag_id', id)
             .where('articles.status', 'Published');
-    
-            if (!isPremiumUser) {
-                query = query
-                    .where('articles.is_premium', false)
-                    .orderBy('articles.updated_at', 'desc');
-            } else {
-                query = query
-                    .orderByRaw('articles.is_premium DESC, articles.updated_at DESC');
-            }
-        
-            return query
-                .limit(limit)
-                .offset(offset);
+
+        if (!isPremiumUser) {
+            query = query
+                .where('articles.is_premium', false)
+                .orderBy('articles.updated_at', 'desc');
+        } else {
+            query = query
+                .orderByRaw('articles.is_premium DESC, articles.updated_at DESC');
+        }
+
+        return query
+            .limit(limit)
+            .offset(offset);
     },
-      async findChildCatById(id) {
+    async findChildCatById(id) {
         return db('category as child')
-          .select('child.*', 'parent.name as parent_name')
-          .leftJoin('category as parent', 'child.parent_id', 'parent.id')
-          .where('child.parent_id', id);
-      },
+            .select('child.*', 'parent.name as parent_name')
+            .leftJoin('category as parent', 'child.parent_id', 'parent.id')
+            .where('child.parent_id', id);
+    },
     async findCatById(id) {
         return db('category')
             .where('id', id)
@@ -315,16 +318,16 @@ export default {
     getAuthorById(id) {
         return db('users').where('id', id).first();
     },
-    getArticleSameCate(category_id, article_id, isPremiumUser ) {
+    getArticleSameCate(category_id, article_id, isPremiumUser) {
         let query = db('articles')
             .where('category_id', category_id)
             .whereNot('id', article_id)
             .where('status', 'Published');
-    
+
         if (!isPremiumUser) {
             query = query.where('is_premium', false);
         }
-    
+
         return query
             .orderByRaw('RAND()')
             .limit(5);
@@ -359,7 +362,7 @@ export default {
             .where('id', userId)
             .update({
                 subscription_expiry: new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' '),
-                request : false
+                request: false
             });
     },
     cancelSubscription(userId) {
@@ -367,7 +370,7 @@ export default {
             .where('id', userId)
             .update({
                 subscription_expiry: new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' '),
-                request : false
+                request: false
             });
     },
     async updatePremium(id) {
@@ -375,15 +378,15 @@ export default {
         const article = await db('articles')
             .where('id', id)
             .first('is_premium');
-        
+
         // Toggle value
         return db('articles')
             .where('id', id)
-            .update({ 
-                is_premium: article.is_premium ? 0 : 1 
+            .update({
+                is_premium: article.is_premium ? 0 : 1
             });
     },
-    approveArticle(articleId,categoryId,publishDate,tags){
+    approveArticle(articleId, categoryId, publishDate, tags) {
         const date = new Date(publishDate);
         const offset = date.getTimezoneOffset();
         date.setMinutes(date.getMinutes() - offset);
@@ -413,13 +416,13 @@ export default {
                     message: text,
                     create_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
                 });
-    
+
             await trx('articles')
                 .where('id', articleId)
                 .update({
                     status: 'Rejected'
                 });
-    
+
             return { success: true };
         });
     },
@@ -444,76 +447,76 @@ export default {
             .where('article_id', id)
             .select('tag.*');
     },
-    async checkUserLike (userId, articleId) {
+    async checkUserLike(userId, articleId) {
         const result = await db('user_likes')
-          .where({
-            user_id: userId,
-            article_id: articleId
-          })
-          .first();
-        return result;
-      },
-      
-      async addLike (userId, articleId) {
-        // Transaction to ensure both operations succeed or fail together
-        return await db.transaction(async (trx) => {
-          // Add user like entry
-          await trx('user_likes').insert({
-            user_id: userId,
-            article_id: articleId
-          });
-          
-          // Increment article like count
-          await trx('articles')
-            .where('id', articleId)
-            .increment('likes', 1);
-          
-          // Get updated like count
-          const article = await trx('articles')
-            .select('likes')
-            .where('id', articleId)
-            .first();
-            
-          return article.likes;
-        });
-      },
-      
-      async removeLike (userId, articleId){
-        // Transaction to ensure both operations succeed or fail together
-        return await db.transaction(async (trx) => {
-          // Remove user like entry
-          await trx('user_likes')
             .where({
-              user_id: userId,
-              article_id: articleId
+                user_id: userId,
+                article_id: articleId
             })
-            .delete();
-          
-          // Decrement article like count
-          await trx('articles')
-            .where('id', articleId)
-            .decrement('likes', 1);
-          
-          // Get updated like count
-          const article = await trx('articles')
-            .select('likes')
-            .where('id', articleId)
             .first();
-            
-          return article.likes;
+        return result;
+    },
+
+    async addLike(userId, articleId) {
+        // Transaction to ensure both operations succeed or fail together
+        return await db.transaction(async (trx) => {
+            // Add user like entry
+            await trx('user_likes').insert({
+                user_id: userId,
+                article_id: articleId
+            });
+
+            // Increment article like count
+            await trx('articles')
+                .where('id', articleId)
+                .increment('likes', 1);
+
+            // Get updated like count
+            const article = await trx('articles')
+                .select('likes')
+                .where('id', articleId)
+                .first();
+
+            return article.likes;
         });
-      },
-      
-      async toggleLike  (userId, articleId) {
+    },
+
+    async removeLike(userId, articleId) {
+        // Transaction to ensure both operations succeed or fail together
+        return await db.transaction(async (trx) => {
+            // Remove user like entry
+            await trx('user_likes')
+                .where({
+                    user_id: userId,
+                    article_id: articleId
+                })
+                .delete();
+
+            // Decrement article like count
+            await trx('articles')
+                .where('id', articleId)
+                .decrement('likes', 1);
+
+            // Get updated like count
+            const article = await trx('articles')
+                .select('likes')
+                .where('id', articleId)
+                .first();
+
+            return article.likes;
+        });
+    },
+
+    async toggleLike(userId, articleId) {
         const existingLike = await this.checkUserLike(userId, articleId);
-        
+
         if (existingLike) {
-          // User already liked - remove the like
-          return await this.removeLike(userId, articleId);
+            // User already liked - remove the like
+            return await this.removeLike(userId, articleId);
         } else {
-          // User hasn't liked - add the like
-          return await this.addLike(userId, articleId);
+            // User hasn't liked - add the like
+            return await this.addLike(userId, articleId);
         }
-      }
-    
+    }
+
 }

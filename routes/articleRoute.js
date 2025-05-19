@@ -77,6 +77,10 @@ router.put('/:id/status', async (req, res) => {
 
   router.get('/byCat', async function (req, res) {
     const id = req.query.id || 0;
+    const parsedId = parseInt(id, 10);
+    if (isNaN(parsedId)) {
+      return res.status(400).send('Invalid category ID');
+    }
     const limit = 6;
     const current_page = req.query.page || 1;
     const offset = (current_page - 1) * limit;

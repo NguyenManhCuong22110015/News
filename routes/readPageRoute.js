@@ -2,15 +2,19 @@ import { Router } from 'express';
 
 import indexService from '../service/indexService.js';
 import articleService from '../service/articleService.js';
-import {premiumPage} from '../middlewares/auth.mdw.js';
+import { premiumPage } from '../middlewares/auth.mdw.js';
 
 const router = Router();
 
 router.get('/', async (req, res) => {
     try {
         const id = parseInt(req.query.id) || 0;
+        const parsedId = parseInt(id, 10);
+        if (isNaN(parsedId)) {
+            return res.status(400).send('Invalid article ID');
+        }
         const article = await articleService.getArticleById(id);
-        
+
         if (article.is_premium == true) {
             return res.redirect('/error');
         }
@@ -27,7 +31,7 @@ router.get('/', async (req, res) => {
         }
 
         // Category handling
-        const cat = await articleService.findCatById(article.category_id); 
+        const cat = await articleService.findCatById(article.category_id);
         let child_cat;
         let parent_cat;
 
@@ -48,7 +52,7 @@ router.get('/', async (req, res) => {
         const tags = await articleService.getTagsByArticleId(id);
         let isLiked = false;
         if (req.session.userId != null) {
-            const  test= await articleService.checkUserLike(req.session.userId,id);
+            const test = await articleService.checkUserLike(req.session.userId, id);
             if (test != null) {
                 isLiked = true;
             }
@@ -59,7 +63,7 @@ router.get('/', async (req, res) => {
             author,
             articlesSameCate,
             categories: child_cat,
-            main_cat:parent_cat,
+            main_cat: parent_cat,
             parent_cat,
             comments,
             tags,
@@ -73,11 +77,11 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/premium', premiumPage,async (req, res) => {
+router.get('/premium', premiumPage, async (req, res) => {
     try {
         const id = parseInt(req.query.id) || 0;
         const article = await articleService.getArticleById(id);
-        
+
         const author = await articleService.getAuthorById(article.writer_id);
         let isPremium = req.session.is_premium ? true : false;
 
@@ -90,7 +94,7 @@ router.get('/premium', premiumPage,async (req, res) => {
         }
 
         // Category handling
-        const cat = await articleService.findCatById(article.category_id); 
+        const cat = await articleService.findCatById(article.category_id);
         let child_cat;
         let parent_cat;
 
@@ -109,13 +113,13 @@ router.get('/premium', premiumPage,async (req, res) => {
         }
         const tags = await articleService.getTagsByArticleId(id);
 
-      
+
         res.render('readPagePremium', {
             article,
             author,
             articlesSameCate,
             categories: child_cat,
-            main_cat:parent_cat,
+            main_cat: parent_cat,
             parent_cat,
             comments,
             tags,
